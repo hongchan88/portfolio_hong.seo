@@ -27,3 +27,6 @@ a {
 .main-contents {
   min-height: 60vh;
 }
+h1 {
+  white-space: pre-line;
+}

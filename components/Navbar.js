@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 // import userData from "@constants/data";
 
-export default function Navbar({ aboutRef }) {
+export default function Navbar({ aboutRef, projectRef }) {
   const router = useRouter();
   console.log(router.asPath);
   const { theme, setTheme } = useTheme();
@@ -14,10 +14,23 @@ export default function Navbar({ aboutRef }) {
     setMounted(true);
   }, []);
 
-  const scrollTo = () => {
-    if (aboutRef && aboutRef.current /* + other conditions */) {
-      aboutRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollTo = (e) => {
+    console.log(e.target.text);
+    if (e.target.text === "About") {
+      if (aboutRef && aboutRef.current /* + other conditions */) {
+        aboutRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    } else if (e.target.text === "Projects") {
+      if (projectRef && projectRef.current) {
+        projectRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     }
+  };
+  const mainPage = (pageTo) => {
+    router.push({ pathname: "/", query: { name: pageTo } });
   };
 
   return (
@@ -39,7 +52,14 @@ export default function Navbar({ aboutRef }) {
         </div>
 
         <div className="space-x-8 hidden md:block">
-          <a className="cursor-pointer" onClick={() => scrollTo()}>
+          <a
+            className="cursor-pointer"
+            onClick={
+              router.asPath !== "/contact"
+                ? (e) => scrollTo(e)
+                : () => mainPage("about")
+            }
+          >
             <a
               className={`text-base  ${
                 router.asPath === "/about"
@@ -50,7 +70,14 @@ export default function Navbar({ aboutRef }) {
               About
             </a>
           </a>
-          <Link href="/projects">
+          <a
+            className="cursor-pointer"
+            onClick={
+              router.asPath !== "/contact"
+                ? (e) => scrollTo(e)
+                : () => mainPage("projects")
+            }
+          >
             <a
               className={`text-base  ${
                 router.asPath === "/projects"
@@ -75,7 +102,7 @@ export default function Navbar({ aboutRef }) {
                 </svg>
               )}
             </a>
-          </Link>
+          </a>
 
           <Link href="/contact">
             <a

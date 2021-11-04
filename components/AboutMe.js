@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from "react";
 
-export default function AboutMe({ scrollAbout }) {
+export default function AboutMe({ setAbout }) {
   const aboutMe = useRef(null);
   useEffect(() => {
-    scrollAbout(aboutMe);
+    setAbout(aboutMe);
   }, []);
   return (
-    <section ref={aboutMe} className="bg-white dark:bg-gray-800">
+    <section ref={aboutMe} id="aboutme" className="bg-white dark:bg-gray-800">
       <div className="max-w-6xl mx-auto h-48 bg-white dark:bg-gray-800">
         <h1 className=" text-5xl md:text-9xl font-bold py-20 text-center md:text-left">
           About Me.
@@ -126,8 +126,8 @@ export default function AboutMe({ scrollAbout }) {
             </h1>
             <div className="flex flex-row flex-wrap mt-8">
               <img
-                src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png"
                 className="h-20 w-20 mx-4 my-4"
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
               />
               <img
                 src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/java/java.png"
