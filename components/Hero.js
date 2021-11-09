@@ -35,7 +35,11 @@ export default function Hero() {
       {/* Image container */}
       <div className="hidden lg:block relative w-full md:w-1/2 -mr-40 mt-20">
         <div className="w-3/4 ">
-          <img alt="img" src="img/thumbnail_.jpg" className="shadow" />
+          <img
+            alt="img"
+            src="https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459650/portfolio/xrtife2m2ps7tpttaree.jpg"
+            className="shadow"
+          />
           <div className="flex flex-row justify-between mt-4">
             <div className="flex flex-row space-x-4">
               <svg

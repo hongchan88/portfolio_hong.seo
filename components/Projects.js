@@ -5,7 +5,8 @@ export default function Projects({ setProject }) {
     {
       title: "Boot Drive Thru",
       link: "https://boot-drive-thru.netlify.app/",
-      imgUrl: "/img/bootdrive.png",
+      imgUrl:
+        "https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459643/portfolio/bzrhiuinz3tlqfrovjbg.png",
 
       info: `This is the project that I started during covid locked down.😂\n I had an idea✨ that this ecommerce platform could be in demand as people's bahaviour changed to avoid contact with others when they shopping.`,
       stacks: ["javascript", "react", "firebase", "tailwind", "netflify"],
@@ -14,8 +15,9 @@ export default function Projects({ setProject }) {
     },
     {
       title: "BecomeID",
-      link: "www.google.com",
-      imgUrl: "/img/become1.png",
+      link: "https://becomeid.netlify.app/",
+      imgUrl:
+        "https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459640/portfolio/imeaazfuvl0v3fnilozb.png",
       live: "https://becomeid.netlify.app/",
       info: "Many things are representing you publically, such as, car plates number , address , location which does not disclose your full identity. These can become ID of you and can be reached by people who is in need of your data/info derive from your ID.",
       stacks: ["react", "apollo", "prisma", "graphql", "netflify"],
@@ -23,8 +25,9 @@ export default function Projects({ setProject }) {
     },
     {
       title: "Simple API Service",
-      link: "www.google.com",
-      imgUrl: "/img/expressjs.png",
+      link: "https://github.com/hongchan88/Simple_API_ExpressJs",
+      imgUrl:
+        "https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459646/portfolio/fkdoj7cza7aol9nnpqpq.png",
 
       info: "I used MVC architectural pattern which is most popular architectures for applications. This is is good coding practice for easy code maintenance. Choosing the same language on front-end and backend can improve developer productivity. JavaScript is everywhere!! 👍",
       stacks: ["nodejs", "expressjs", "jest", "postman"],
@@ -32,8 +35,9 @@ export default function Projects({ setProject }) {
     },
     {
       title: "Portfolio website",
-      link: "www.google.com",
-      imgUrl: "/img/portfolio.png",
+      link: "https://github.com/hongchan88/portfolio_hong.seo",
+      imgUrl:
+        "https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459648/portfolio/mb0i9wdcje1nqtxrucwq.png",
 
       info: "This Portfolio website",
       stacks: ["react", "nextjs", "tailwind"],
