@@ -9,7 +9,7 @@ export default function ContainerBlock({ children, aboutRef, projectRef }) {
 
   return (
     <div>
-      <main className="dark:bg-red-800 w-full">
+      <main className="dark:bg-gray-800 w-full">
         <Navbar aboutRef={aboutRef} projectRef={projectRef} />
         <div className="main-contents">{children}</div>
         <Footer />

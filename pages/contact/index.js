@@ -71,7 +71,7 @@ export default function Contact() {
                   </p>
                 </div>
               </div>
-              <div className="social-icons flex flex-row space-x-8">
+              {/* <div className="social-icons flex flex-row space-x-8">
                 <a className="h-10 w-10 rounded-full hover:bg-blue-500 flex items-center justify-center cursor-pointer">
                   <svg
                     width="24"
@@ -131,7 +131,7 @@ export default function Contact() {
                     />
                   </svg>
                 </a>
-              </div>
+              </div> */}
             </div>
             {/* <form className="form rounded-lg bg-white p-4 flex flex-col">
             <label htmlFor="name" className="text-sm text-gray-600 mx-4">

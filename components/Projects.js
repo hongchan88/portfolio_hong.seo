@@ -3,23 +3,41 @@ import React, { useEffect, useRef } from "react";
 export default function Projects({ setProject }) {
   const projects = [
     {
-      title: "Boot drive Thru",
-      link: "www.google.com",
-      imgUrl: "",
-      number: "",
-      info: "customer service",
-      stacks: ["javascript", "react"],
-      git: "ssldkfj",
+      title: "Boot Drive Thru",
+      link: "https://boot-drive-thru.netlify.app/",
+      imgUrl: "/img/bootdrive.png",
+
+      info: `This is the project that I started during covid locked down.😂\n I had an idea✨ that this ecommerce platform could be in demand as people's bahaviour changed to avoid contact with others when they shopping.`,
+      stacks: ["javascript", "react", "firebase", "tailwind", "netflify"],
+      git: "https://github.com/hongchan88/driveboot",
+      live: "https://boot-drive-thru.netlify.app/",
     },
     {
-      title: "Boot Drive Thru",
+      title: "BecomeID",
       link: "www.google.com",
-      imgUrl: "/img/bootdrive.png",
-      number: "",
-      info: `Project that I created during covid locked down.😂\n I had an idea✨ that this ecommerce platform could be in demand as people's bahaviour changed to avoid contact with others when they shopping.`,
-      stacks: ["javascript", "react", "firebase", "tailwind", "netflify"],
-      git: "git.com",
-      live: "https://boot-drive-thru.netlify.app/",
+      imgUrl: "/img/become1.png",
+      live: "https://becomeid.netlify.app/",
+      info: "Many things are representing you publically, such as, car plates number , address , location which does not disclose your full identity. These can become ID of you and can be reached by people who is in need of your data/info derive from your ID.",
+      stacks: ["react", "apollo", "prisma", "graphql", "netflify"],
+      git: "https://github.com/hongchan88/becomeID-backend",
+    },
+    {
+      title: "Simple API Service",
+      link: "www.google.com",
+      imgUrl: "/img/expressjs.png",
+
+      info: "I used MVC architectural pattern which is most popular architectures for applications. This is is good coding practice for easy code maintenance. Choosing the same language on front-end and backend can improve developer productivity. JavaScript is everywhere!! 👍",
+      stacks: ["nodejs", "expressjs", "jest", "postman"],
+      git: "https://github.com/hongchan88/Simple_API_ExpressJs",
+    },
+    {
+      title: "Portfolio website",
+      link: "www.google.com",
+      imgUrl: "/img/portfolio.png",
+
+      info: "This Portfolio website",
+      stacks: ["react", "nextjs", "tailwind"],
+      git: "https://github.com/hongchan88/portfolio_hong.seo",
     },
   ];
 
@@ -42,8 +60,8 @@ export default function Projects({ setProject }) {
       {/* Grid starts here */}
       <div className="bg-[#F1F1F1] dark:bg-gray-900">
         {projects.map((proj, idx) => (
-          <div className="max-w-6xl mx-auto  gap-20 py-10 pb-10">
-            <div className="flex">
+          <div className="max-w-6xl mx-auto gap-20 py-10 pb-20">
+            <div className="flex mt-14">
               <ProjectCard
                 title={proj.title}
                 link={proj.link}
@@ -81,7 +99,7 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
         };
       case "firebase":
         return {
-          url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg",
+          url: "https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/firebase/firebase.png",
           desc: "Firebase",
         };
       case "tailwind":
@@ -93,6 +111,51 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
         return {
           url: "https://api.iconify.design/logos/netlify.svg",
           desc: "Netlify",
+        };
+      case "cloudinary":
+        return {
+          url: "https://res.cloudinary.com/cloudinary-marketing/image/upload/v1599098500/creative_source/Logo/Cloud%20Glyph/cloudinary_cloud_glyph_blue_png.png",
+          desc: "Cloudinary",
+        };
+      case "apollo":
+        return {
+          url: "https://www.vectorlogo.zone/logos/apollographql/apollographql-icon.svg",
+          desc: "Apollo",
+        };
+      case "graphql":
+        return {
+          url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg",
+          desc: "GraphQL",
+        };
+      case "prisma":
+        return {
+          url: "img/prisma.svg",
+          desc: "Prisma",
+        };
+      case "nodejs":
+        return {
+          url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+          desc: "NodeJS",
+        };
+      case "expressjs":
+        return {
+          url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original-wordmark.svg",
+          desc: "Express.js",
+        };
+      case "jest":
+        return {
+          url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg",
+          desc: "jest",
+        };
+      case "postman":
+        return {
+          url: "https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg",
+          desc: "POSTMAN",
+        };
+      case "nextjs":
+        return {
+          url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original-wordmark.svg",
+          desc: "NextJS",
         };
       default:
       // code block
@@ -108,7 +171,11 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
             </div>
             <div className="flex ">
               {git && (
-                <a href={git}>
+                <a
+                  href={git}
+                  target={"_blank"}
+                  className="dark:bg-yellow-50 rounded-lg mx-1"
+                >
                   <img
                     className="h-10 w-10 mx-4 "
                     src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
@@ -116,7 +183,11 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
                 </a>
               )}
               {live && (
-                <a href={live}>
+                <a
+                  href={live}
+                  target={"_blank"}
+                  className="dark:bg-yellow-50 rounded-lg"
+                >
                   <img
                     className="h-10 w-10 mx-4 "
                     src="https://img.icons8.com/pastel-glyph/64/000000/external-link--v1.png"
@@ -141,7 +212,7 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
               const stackInfo = getStackImg(stack);
               return (
                 <img
-                  className="h-14 w-14 mx-4 my-4"
+                  className="h-14 w-14 mx-4 my-4 dark:bg-white rounded-lg"
                   src={stackInfo.url}
                   title={stackInfo.desc}
                 />
@@ -166,7 +237,7 @@ const ProjectCard = ({ title, link, imgUrl, number }) => {
           />
         </div>
         <h1 className="absolute top-10 left-10 text-gray-50 font-bold text-xl bg-red-500 rounded-md px-2">
-          {title} sdf
+          {title}
         </h1>
         <h1 className="absolute bottom-10 left-10 text-gray-50 font-bold text-xl">
           {number.length === 1 ? "0" + number : number}
