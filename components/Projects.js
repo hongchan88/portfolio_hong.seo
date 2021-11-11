@@ -8,7 +8,7 @@ export default function Projects({ setProject }) {
       imgUrl:
         "https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459643/portfolio/bzrhiuinz3tlqfrovjbg.png",
 
-      info: `This is the project that I started during covid locked down.😂\n I had an idea✨ that this ecommerce platform could be in demand as people's bahaviour changed to avoid contact with others when they shopping.`,
+      info: `This is the project that I started during covid locked down.😂\n I had an idea✨ that this E-commerce platform could be in demand as consumer's behaviour changed to prefer contacless shopping after pandemic.`,
       stacks: ["javascript", "react", "firebase", "tailwind", "netflify"],
       git: "https://github.com/hongchan88/driveboot",
       live: "https://boot-drive-thru.netlify.app/",
@@ -19,7 +19,7 @@ export default function Projects({ setProject }) {
       imgUrl:
         "https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459640/portfolio/imeaazfuvl0v3fnilozb.png",
       live: "https://becomeid.netlify.app/",
-      info: "Many things are representing you publically, such as, car plates number , address , location which does not disclose your full identity. These can become ID of you and can be reached by people who is in need of your data/info derive from your ID.",
+      info: "Many things are representing you such as, car plates number , address , location. These can become ID of you and can be reached by people who is in need of your data/info derive from your ID.",
       stacks: ["react", "apollo", "prisma", "graphql", "netflify"],
       git: "https://github.com/hongchan88/becomeID-backend",
     },

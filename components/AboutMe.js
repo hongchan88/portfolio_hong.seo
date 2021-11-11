@@ -94,14 +94,14 @@ export default function AboutMe({ setAbout }) {
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
               I just finished my diploma of website development course in TAFE.
               It wasn't easy to finish the course while working as a full time.
-              But I have learned to become a goal oriented person with a mindset
-              of can-do attitude.
+              However I have learned to become a goal-oriented person with a
+              mindset of can-do attitude.
             </p>
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
               I figured out that my skills and personalities are a good fit to
               become a software developer. Currently, I'm enjoying the process
-              to become a expert. and here are a few technologies I've been
-              taught myself along the journey :
+              to become an expert. Here are a few technologies I've been taught
+              myself along the journey :
             </p>
 
             <h1 className="bg-red-500 text-3xl rounded-md px-2 py-1 inline-block font-bold text-gray-50">
