@@ -168,7 +168,7 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
   return (
     <div className="w-full px-5 py-1">
       <div className="relative">
-        <div className="absolute w-full left-0 -top-10">
+        <div className="absolute w-full left-0 -top-14">
           <div className="flex justify-between">
             <div className="flex">
               <h1 className="text-4xl font-bold text-black-50">{title}</h1>
@@ -231,7 +231,7 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
 
 const ProjectCard = ({ title, link, imgUrl, number }) => {
   return (
-    <a href={link} className="w-full block shadow-2xl">
+    <a href={link} className="hidden md:block w-full shadow-2xl">
       <div className="relative overflow-hidden">
         <div className="h-72 object-cover">
           <img

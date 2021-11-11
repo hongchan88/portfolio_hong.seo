@@ -33,7 +33,7 @@ export default function Hero() {
         </RoughNotationGroup>
       </div>
       {/* Image container */}
-      <div className="hidden lg:block relative w-full md:w-1/2 -mr-40 mt-20">
+      <div className="hidden lg:block relative left-48 w-full md:w-1/2 -mr-40 mt-20">
         <div className="w-3/4 ">
           <img
             alt="img"

@@ -60,15 +60,7 @@ export default function Navbar({ aboutRef, projectRef }) {
                 : () => mainPage("about")
             }
           >
-            <a
-              className={`text-base  ${
-                router.asPath === "/about"
-                  ? "text-gray-800 font-bold dark:text-gray-400"
-                  : "text-gray-600 dark:text-gray-300 font-normal "
-              }`}
-            >
-              About
-            </a>
+            <a className={`text-base`}>About</a>
           </a>
           <a
             className="cursor-pointer"
