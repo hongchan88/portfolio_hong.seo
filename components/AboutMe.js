@@ -48,15 +48,15 @@ export default function AboutMe({ setAbout }) {
                 Job Opportunities
               </h1>
               <p className="text-lg text-gray-500 mt-4 dark:text-gray-300">
-                I'm looking for a job currently, If you see me as a good fit for
-                your company, please{" "}
+                I'm currently looking for a job, If you see me as a good fit for
+                your company, you may{" "}
                 <a
                   href={"/contact"}
                   className="text-gray-800 border-b-2 border-gray-800 dark:border-gray-300 font-bold dark:text-gray-300"
                 >
                   contact
                 </a>{" "}
-                me . and I'd love to work for your company.
+                me . and I'd love to be a part of your company.
               </p>
             </div>
             {/* Social Links */}
@@ -94,7 +94,7 @@ export default function AboutMe({ setAbout }) {
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
               I just finished my diploma of website development course in TAFE.
               It wasn't easy to finish the course while working as a full time.
-              However I have learned to become a goal-oriented person with a
+              However, I have learned to become a goal-oriented person with a
               mindset of can-do attitude.
             </p>
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
