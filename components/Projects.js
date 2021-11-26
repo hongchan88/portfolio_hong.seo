@@ -169,7 +169,7 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
     <div className="w-full px-5 py-1">
       <div className="relative">
         <div className="absolute w-full left-0 -top-14">
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-5">
             <div className="flex">
               <h1 className="text-4xl font-bold text-black-50">{title}</h1>
             </div>
@@ -211,7 +211,7 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
           <h1 className="bg-red-500 text-xl rounded-md px-2 py-1 inline-block font-bold text-gray-50">
             Tech Stack Used
           </h1>
-          <div className="flex">
+          <div className="flex flex-wrap">
             {arrayStacks.map((stack) => {
               const stackInfo = getStackImg(stack);
               return (
