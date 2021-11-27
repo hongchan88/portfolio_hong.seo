@@ -33,6 +33,77 @@ export default function Navbar({ aboutRef, projectRef }) {
     router.push({ pathname: "/", query: { name: pageTo } });
   };
 
+  const navMenu = () => {
+    return (
+      <>
+        <a
+          className="cursor-pointer"
+          onClick={
+            router.asPath !== "/contact"
+              ? (e) => scrollTo(e)
+              : () => mainPage("about")
+          }
+        >
+          <a className={`text-base`}>About</a>
+        </a>
+        <a
+          className="cursor-pointer"
+          onClick={
+            router.asPath !== "/contact"
+              ? (e) => scrollTo(e)
+              : () => mainPage("projects")
+          }
+        >
+          <a className="cursor-pointer">
+            Projects
+            {router.asPath === "/projects" && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-arrow-down inline-block h-3 w-3"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"
+                />
+              </svg>
+            )}
+          </a>
+        </a>
+
+        <Link href="/contact">
+          <a
+            className={`text-base  ${
+              router.asPath === "/contact"
+                ? "text-gray-800 font-bold dark:text-gray-400"
+                : "text-gray-600 dark:text-gray-300 font-normal "
+            }`}
+          >
+            Contact
+            {router.asPath === "/contact" && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-arrow-down inline-block h-3 w-3"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"
+                />
+              </svg>
+            )}
+          </a>
+        </Link>
+      </>
+    );
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 md:py-20">
       <div className="flex  md:flex-row justify-between items-center">
@@ -51,72 +122,7 @@ export default function Navbar({ aboutRef, projectRef }) {
           </Link>
         </div>
 
-        <div className="space-x-8 hidden md:block">
-          <a
-            className="cursor-pointer"
-            onClick={
-              router.asPath !== "/contact"
-                ? (e) => scrollTo(e)
-                : () => mainPage("about")
-            }
-          >
-            <a className={`text-base`}>About</a>
-          </a>
-          <a
-            className="cursor-pointer"
-            onClick={
-              router.asPath !== "/contact"
-                ? (e) => scrollTo(e)
-                : () => mainPage("projects")
-            }
-          >
-            <a className="cursor-pointer">
-              Projects
-              {router.asPath === "/projects" && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-arrow-down inline-block h-3 w-3"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"
-                  />
-                </svg>
-              )}
-            </a>
-          </a>
-
-          <Link href="/contact">
-            <a
-              className={`text-base  ${
-                router.asPath === "/contact"
-                  ? "text-gray-800 font-bold dark:text-gray-400"
-                  : "text-gray-600 dark:text-gray-300 font-normal "
-              }`}
-            >
-              Contact
-              {router.asPath === "/contact" && (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-arrow-down inline-block h-3 w-3"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"
-                  />
-                </svg>
-              )}
-            </a>
-          </Link>
-        </div>
+        <div className="space-x-8 hidden md:block">{navMenu()}</div>
 
         <div className="space-x-4 flex flex-row items-center">
           <a
@@ -170,22 +176,7 @@ export default function Navbar({ aboutRef, projectRef }) {
         </div>
       </div>
       <div className="space-x-8 flex justify-center md:hidden mt-4">
-        <Link href="/about">
-          <a className="text-base font-normal text-gray-600 dark:text-gray-300">
-            About
-          </a>
-        </Link>
-        <Link href="/projects">
-          <a className="text-base font-normal text-gray-600 dark:text-gray-300">
-            Projects
-          </a>
-        </Link>
-
-        <Link href="/contact">
-          <a className="text-base font-normal text-gray-600 dark:text-gray-300">
-            Contact
-          </a>
-        </Link>
+        {navMenu()}
       </div>
     </div>
   );
