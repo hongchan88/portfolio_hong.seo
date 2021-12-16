@@ -14,6 +14,17 @@ export default function Projects({ setProject }) {
       live: "https://boot-drive-thru.netlify.app/",
     },
     {
+      title: "Noogle",
+      link: "https://netflix-noogle-search-movie.vercel.app/",
+      imgUrl:
+        "https://res.cloudinary.com/dwbsxpk82/image/upload/v1639613226/portfolio/tqrzdspkhhwyupksruv5.png",
+
+      info: `This was my final project from the diploma course of website developement. \n This website allows users to search for their favourite netflix movies by Title, Year , Country and Director.`,
+      stacks: ["react", "nextjs", "neo4j", "apollo", "vercel", "graphql"],
+      git: "https://github.com/hongchan88/Netflix_Noogle_searchMovie",
+      live: "https://netflix-noogle-search-movie.vercel.app/",
+    },
+    {
       title: "BecomeID",
       link: "https://becomeid.netlify.app/",
       imgUrl:
@@ -161,7 +172,21 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
           url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original-wordmark.svg",
           desc: "NextJS",
         };
+      case "neo4j":
+        return {
+          url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/neo4j/neo4j-original-wordmark.svg",
+          desc: "Neo4j",
+        };
+      case "vercel":
+        return {
+          url: "https://res.cloudinary.com/dwbsxpk82/image/upload/v1639612757/portfolio/prd7rdrrbtqku95c6igm.svg",
+          desc: "Vercel",
+        };
       default:
+        return {
+          url: "#",
+        };
+
       // code block
     }
   };
@@ -237,7 +262,7 @@ const ProjectCard = ({ title, link, imgUrl, number }) => {
           <img
             src={imgUrl}
             alt="portfolio"
-            className="transform hover:scale-125 transition duration-2000 ease-out object-cover h-full w-full"
+            className="transform hover:scale-125 transition duration-2000 ease-out object-contain h-full w-full"
           />
         </div>
         <h1 className="absolute top-10 left-10 text-gray-50 font-bold text-xl bg-red-500 rounded-md px-2">
