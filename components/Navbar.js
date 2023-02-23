@@ -116,7 +116,7 @@ export default function Navbar({ aboutRef, projectRef }) {
                 Hong Seo
               </h1>
               <p className='text-base font-light text-gray-500 dark:text-gray-300'>
-                Software developer
+                Javascript developer
               </p>
             </a>
           </Link>
