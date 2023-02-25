@@ -3,6 +3,16 @@ import React, { useEffect, useRef } from 'react';
 export default function Projects({ setProject }) {
   const projects = [
     {
+      title: 'Image Resizer App',
+      link: 'https://www.keta-help.com',
+      imgUrl:
+        'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677282754/portfolio/ojwrq345s3qrmv4afqt7.png',
+      info: `I built a full-stack web application for resizing images for visa applications using NextJS, Tailwind, and AWS Amplify. The application uses the SendGrid API to send emails to users.`,
+      stacks: ['nextjs', 'tailwind', 'amplify', 'sendgrid'],
+      git: 'https://github.com/hongchan88/k-app',
+      live: 'https://www.keta-help.com',
+    },
+    {
       title: 'Star Wars Movie App',
       link: 'https://star-wars-api-hong.vercel.app/',
       imgUrl:
@@ -202,6 +212,16 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
         return {
           url: 'https://logosandtypes.com/wp-content/uploads/2021/04/Framer-Motion.png',
           desc: 'motion framer',
+        };
+      case 'amplify':
+        return {
+          url: 'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677286540/portfolio/xpshbpdf2rjayr909ewj.svg',
+          desc: 'amplify',
+        };
+      case 'sendgrid':
+        return {
+          url: 'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677286641/portfolio/o8nk0yiaqaztzwz7nj4i.jpg',
+          desc: 'sendgrid',
         };
       default:
         return {

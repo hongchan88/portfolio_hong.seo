@@ -74,7 +74,7 @@ export default function Navbar({ aboutRef, projectRef }) {
           </a>
         </a>
 
-        <Link href='/contact'>
+        <Link legacyBehavior href='/contact'>
           <a
             className={`text-base  ${
               router.asPath === '/contact'
@@ -110,7 +110,7 @@ export default function Navbar({ aboutRef, projectRef }) {
         {/* Logo / Home / Text */}
 
         <div className='flex flex-col'>
-          <Link href='/'>
+          <Link legacyBehavior href='/'>
             <a>
               <h1 className='font-semibold text-xl dark:text-gray-100'>
                 Hong Seo
