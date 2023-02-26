@@ -62,7 +62,7 @@ export default function AboutMe({ setAbout }) {
 
           <div className="col-span-1 md:col-span-2">
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
-              Hello! I'm Hong and  I'm passionate about technology and dedicated to lifelong learning. As a web developer, I'm constantly seeking out new ways to make people's lives easier.
+              Hello! I'm Hong and I'm passionate about technology and dedicated to lifelong learning. As a web developer, I'm constantly seeking out new ways to make people's lives easier.
             </p>
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
             My journey began with a Diploma of Website Development course at TAFE, which provided me with a strong foundation in the basics of becoming a developer.
