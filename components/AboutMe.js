@@ -62,20 +62,21 @@ export default function AboutMe({ setAbout }) {
 
           <div className="col-span-1 md:col-span-2">
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
-              Hello! I'm Hong and I enjoy building things that live on the
-              internet. I believe tech will change the way we live. My personal
-              mission is to develop softwares that could change people's lives.
+              Hello! I'm Hong and I'm passionate about technology and dedicated to lifelong learning. As a web developer, I'm constantly seeking out new ways to make people's lives easier.
             </p>
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
-              I just finished my diploma of website development course in TAFE.
-              It wasn't easy to finish the course while working as a full time.
-              However, I have learned to become a goal-oriented person with a
-              mindset of can-do attitude.
+            My journey began with a Diploma of Website Development course at TAFE, which provided me with a strong foundation in the basics of becoming a developer.
+
+In my current role, I'm a JavaScript developer working on frontend components in ReactJS/NextJs and SCSS modules. As a small team member of the dev team, I've had the opportunity to expand my knowledge of back-end development and encounter many new tasks. My experience working at the airport has taught me to be adaptable and thrive in a fast-paced environment.
+
+I primarily use NextJS and SCSS module to connect with GraphQL API from AWS AppSync. Additionally, I've gained experience in implementing Segment.io API to connect with Amplitude, Google Analytics, Mailchimp, and Klaviyo. I love working with new technologies and exploring new ways to solve complex problems.
+
+
             </p>
             <p className="text-xl text-gray-700 mb-4 dark:text-gray-300 ">
-              I figured out that my skills and personalities are a good fit to
-              become a software developer. Currently, I'm enjoying the process
-              to become an expert. Here are a few technologies I've been taught
+            Currently, I'm diving into object-oriented programming with TypeScript, among other things. I'm a fast learner and creative problem-solver, and I pride myself on my ability to thrive in any environment.
+
+If you're looking for someone who's passionate about using technology to solve real-world problems and who never stops learning, let's connect! Here are a few technologies I've been taught
               myself along the journey :
             </p>
 
