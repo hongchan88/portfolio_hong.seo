@@ -10,7 +10,7 @@ export default function Projects({ setProject }) {
       info: `I built a full-stack web application for resizing images for visa applications using NextJS, Tailwind, and AWS Amplify. The application uses the SendGrid API to send emails to users.`,
       stacks: ['nextjs', 'tailwind', 'amplify', 'sendgrid'],
       git: 'https://github.com/hongchan88/k-app',
-      live: 'https://www.keta-help.com/?from=resume',
+      live: 'https://main.d1ftbi0jo0b5ul.amplifyapp.com/?from=resume',
     },
     {
       title: 'Star Wars Movie App',
