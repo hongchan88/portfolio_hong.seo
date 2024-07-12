@@ -140,7 +140,7 @@ const ProjectInfo = ({ title, info, stacks, git, live }) => {
         };
       case 'tailwind':
         return {
-          url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg',
+          url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg',
           desc: 'Tailwind CSS',
         };
       case 'netflify':
