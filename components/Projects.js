@@ -4,7 +4,7 @@ export default function Projects({ setProject }) {
   const projects = [
     {
       title: 'Image Resizer App',
-      link: 'https://www.keta-help.com/?from=resume',
+      link: 'https://kappimageresize.vercel.app/?from=resume',
       imgUrl:
         'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677282754/portfolio/ojwrq345s3qrmv4afqt7.png',
       info: `I built a full-stack web application for resizing images for visa applications using NextJS, Tailwind, and AWS Amplify. The application uses the SendGrid API to send emails to users.`,
