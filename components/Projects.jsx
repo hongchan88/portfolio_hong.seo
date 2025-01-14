@@ -41,7 +41,7 @@ export default function Projects({ setProject }) {
         'https://res.cloudinary.com/dwbsxpk82/image/upload/v1639613226/portfolio/tqrzdspkhhwyupksruv5.png',
 
       info: `This was my final project from the diploma course of website developement. This website allows users to search for their favourite netflix movies by Title, Year , Country and Director.`,
-      stacks: ['react', 'nextjs', 'neo4j', 'apollo', 'vercel', 'graphql'],
+      stacks: ['nextjs', 'vercel', 'supabase'],
       git: 'https://github.com/hongchan88/Netflix_Noogle_searchMovie',
       live: 'https://netflix-noogle-search-movie.vercel.app/',
     },
