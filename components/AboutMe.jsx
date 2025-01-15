@@ -1,12 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-
-export default function AboutMe({ setAbout }) {
-  const aboutMe = useRef(null);
-  useEffect(() => {
-    setAbout(aboutMe);
-  }, []);
+export default function AboutMe() {
   return (
-    <section ref={aboutMe} id='aboutme' className='bg-white dark:bg-gray-800'>
+    <section id='aboutme' className='bg-white dark:bg-gray-800'>
       <div className='max-w-6xl mx-auto h-48 bg-white dark:bg-gray-800'>
         <h1 className=' text-5xl md:text-9xl font-bold py-20 text-center md:text-left'>
           About Me.
