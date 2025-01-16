@@ -16,7 +16,7 @@ export default function Footer() {
               <a href='https://tailwindcss.com' target='__blank'>
                 <img
                   className='w-8 h-8 mx-2'
-                  src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg'
+                  src='https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg'
                 />
               </a>
               and{' '}

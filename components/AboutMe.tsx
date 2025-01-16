@@ -1,4 +1,7 @@
-export default function AboutMe() {
+import { FC } from 'react';
+import { stackImages } from '../app/data/data';
+
+const AboutMe: FC = () => {
   return (
     <section id='aboutme' className='bg-white dark:bg-gray-800'>
       <div className='max-w-6xl mx-auto h-48 bg-white dark:bg-gray-800'>
@@ -89,87 +92,21 @@ export default function AboutMe() {
               Tech Stack
             </h1>
             <div className='flex flex-row flex-wrap mt-8'>
-              <img
-                title='HTML5'
-                src='https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/html/html.png'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='CSS3'
-                src='https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/css/css.png'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='tailwind'
-                src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='JavaScript'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-                src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg'
-              />
-              <img
-                title='ReacJS'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-                src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg'
-              />
-
-              <img
-                title='TypeScript'
-                src='https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/typescript/typescript.png'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='Express.js'
-                src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original-wordmark.svg'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='Node.js'
-                src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='GraphQL'
-                src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-
-              <img
-                title='Firebase'
-                src='https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/firebase/firebase.png'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='MySQL'
-                src='https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/mysql/mysql.png'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='Next.js'
-                src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original-wordmark.svg'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='jest'
-                src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='Prisma'
-                src='img/prisma.svg'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
-              <img
-                title='Apollo'
-                src='https://www.vectorlogo.zone/logos/apollographql/apollographql-icon.svg'
-                className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
-              />
+              {Object.values(stackImages).map((stack) => {
+                return (
+                  <img
+                    title={stack.desc}
+                    src={stack.url}
+                    className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default AboutMe;
