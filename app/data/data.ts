@@ -4,8 +4,8 @@ export const projectsData = [
     link: 'https://kappimageresize.vercel.app/?from=resume',
     imgUrl:
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677282754/portfolio/ojwrq345s3qrmv4afqt7.png',
-    info: `I built a full-stack web application for resizing images for visa applications using NextJS, Tailwind, and AWS Amplify. The application uses the SendGrid API to send emails to users.`,
-    stacks: ['nextjs', 'tailwind', 'amplify', 'sendgrid'],
+    info: `Developed a feature-rich full-stack application for resizing images, optimized for visa requirements. Utilized Next.js and Tailwind CSS for efficient performance, and integrated SendGrid API for automated email communication.`,
+    stacks: ['nextjs', 'tailwind', 'sendgrid', 'supabase'],
     git: 'https://github.com/hongchan88/k-app',
     live: 'https://kappimageresize.vercel.app/?from=resume',
   },
@@ -15,7 +15,7 @@ export const projectsData = [
     imgUrl:
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1640824416/portfolio/bqevtrmvfqkocbddby0c.png',
 
-    info: `This project was built on Next.Js using public Star wars API. It will pre-render page using static generation as it was the best practice to use when API data does not change often. This will give a fast loading webpage, and SEO efficiency.`,
+    info: `Built a dynamic movie search platform leveraging Next.js and the Star Wars API. Employed static generation to optimize load times and improve SEO performance, ideal for datasets with infrequent updates.`,
     stacks: ['nextjs', 'scss', 'motionframer', 'vercel'],
     git: 'https://github.com/hongchan88/star-wars-api',
     live: 'https://star-wars-api-hong.vercel.app/',
@@ -26,7 +26,7 @@ export const projectsData = [
     imgUrl:
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459643/portfolio/bzrhiuinz3tlqfrovjbg.png',
 
-    info: `This is the project that I started during covid lockdown. I had an idea that this E-commerce platform could be in demand as consumer's behaviour changed because they prefer contactless shopping during pandemic.`,
+    info: `Conceptualized and developed an e-commerce platform inspired by the shift in consumer behavior during the COVID-19 pandemic. Designed a contactless shopping experience with React, Tailwind CSS, and Firebase.`,
     stacks: ['javascript', 'react', 'firebase', 'tailwind', 'netlify'],
     git: 'https://github.com/hongchan88/driveboot',
     live: 'https://boot-drive-thru.netlify.app/',
@@ -37,7 +37,7 @@ export const projectsData = [
     imgUrl:
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1639613226/portfolio/tqrzdspkhhwyupksruv5.png',
 
-    info: `This was my final project from the diploma course of website developement. This website allows users to search for their favourite netflix movies by Title, Year , Country and Director.`,
+    info: `Final project for my diploma in web development. Created a Netflix movie search engine allowing users to search by title, year, country, and director. Built with Next.js and Supabase for a seamless user experience.`,
     stacks: ['nextjs', 'vercel', 'supabase'],
     git: 'https://github.com/hongchan88/Netflix_Noogle_searchMovie',
     live: 'https://netflix-noogle-search-movie.vercel.app/',
@@ -48,7 +48,7 @@ export const projectsData = [
     imgUrl:
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459640/portfolio/imeaazfuvl0v3fnilozb.png',
     live: 'https://becomeid.netlify.app/',
-    info: 'A person is represented by numerous identification such as car plates number , address , location . With this platform, one can easily connect with someone just by searching their identification registered in the platform.',
+    info: `Developed a platform to connect individuals using unique identifiers like car plates or addresses. Built with React, Apollo, Prisma, and GraphQL for robust data handling and queries.`,
     stacks: ['react', 'apollo', 'prisma', 'graphql', 'netflify'],
     git: 'https://github.com/hongchan88/becomeID-backend',
   },
@@ -58,7 +58,7 @@ export const projectsData = [
     imgUrl:
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459646/portfolio/fkdoj7cza7aol9nnpqpq.png',
 
-    info: 'Using MVC architectural pattern was a good coding practice for easy code maintenance. Choosing the same language on front-end and backend can improve developer productivity. JavaScript is everywhere!! 👍',
+    info: `Designed and implemented a RESTful API using Node.js and Express.js, following the MVC pattern for maintainable and scalable architecture. Included Jest for testing and Postman for endpoint validation.`,
     stacks: ['nodejs', 'expressjs', 'jest', 'postman'],
     git: 'https://github.com/hongchan88/Simple_API_ExpressJs',
   },
@@ -68,11 +68,12 @@ export const projectsData = [
     imgUrl:
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459648/portfolio/mb0i9wdcje1nqtxrucwq.png',
 
-    info: 'This Portfolio website',
+    info: `Showcase of my skills and projects, built with React, Next.js, and Tailwind CSS for a modern and responsive design. The website reflects my dedication to detail and creativity.`,
     stacks: ['react', 'nextjs', 'tailwind'],
     git: 'https://github.com/hongchan88/portfolio_hong.seo',
   },
 ];
+
 export const stackImages = {
   javascript: {
     url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',

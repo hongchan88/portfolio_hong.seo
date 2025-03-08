@@ -8,7 +8,6 @@ export default function RootLayout({ children }) {
     <html lang='en'>
       <body className='dark:bg-gray-800 w-full'>
         <ThemeProvider defaultTheme='light' attribute='class'>
-          <Navbar />
           <div className='main-contents'>{children}</div>
           <Footer />
         </ThemeProvider>

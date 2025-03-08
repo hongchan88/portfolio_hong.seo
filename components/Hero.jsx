@@ -1,22 +1,32 @@
-import React from "react";
-import { RoughNotation, RoughNotationGroup } from "react-rough-notation";
-import { RainbowHighlight } from "./RainbowHighlight";
+import React from 'react';
+import { RoughNotation, RoughNotationGroup } from 'react-rough-notation';
+import { RainbowHighlight } from './RainbowHighlight';
+import dynamic from 'next/dynamic';
+import Navbar from './Navbar';
 
+const ModelViewer = dynamic(() => import('./ModelViewer/ModelViewer'), {
+  ssr: false, // Prevents server-side rendering issues
+});
 export default function Hero() {
-  const colors = ["#F59E0B", "#84CC16", "#10B981", "#3B82F6"];
+  const colors = ['#F59E0B', '#84CC16', '#10B981', '#3B82F6'];
   return (
-    <div className="flex flex-row justify-center items-start overflow-hidden">
-      {/* Text container */}
+    <div className='relative w-full '>
+      <div className='absolute top-0 z-20 w-full'>
+        <Navbar />
+      </div>
 
-      <div className="w-full md:w-1/2 mx-auto text-center md:text-left lg:p-20">
+      <div className='flex flex-row justify-center items-start overflow-hidden'>
+        {/* Text container */}
+        <ModelViewer />
+        {/* <div className="w-full md:w-1/2 mx-auto text-center md:text-left lg:p-20">
         <RoughNotationGroup show={true}>
-          <RainbowHighlight color={colors[0]}>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-700 dark:text-gray-200 my-2">
-              I'm passionate about
-            </h1>
-          </RainbowHighlight>
-          <RainbowHighlight color={colors[1]}>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-700 dark:text-gray-200 my-2">
+        <RainbowHighlight color={colors[0]}>
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-700 dark:text-gray-200 my-2">
+        I'm passionate about
+        </h1>
+        </RainbowHighlight>
+        <RainbowHighlight color={colors[1]}>
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-700 dark:text-gray-200 my-2">
               Programming
             </h1>
           </RainbowHighlight>
@@ -31,9 +41,9 @@ export default function Hero() {
             </h1>
           </RainbowHighlight>
         </RoughNotationGroup>
-      </div>
-      {/* Image container */}
-      <div className="hidden lg:block relative w-full md:w-1/2 -mr-40 mt-20">
+      </div> */}
+        {/* Image container */}
+        {/* <div className="hidden lg:block relative w-full md:w-1/2 -mr-40 mt-20">
         <div className="w-3/4 ">
           <img
             alt="img"
@@ -59,6 +69,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
+      </div> */}
       </div>
     </div>
   );
