@@ -10,7 +10,7 @@ const ModelViewer = dynamic(() => import('./ModelViewer/ModelViewer'), {
 export default function Hero() {
   const colors = ['#F59E0B', '#84CC16', '#10B981', '#3B82F6'];
   return (
-    <div className='relative w-full '>
+    <div className='relative w-full  '>
       <div className='absolute top-0 z-20 w-full'>
         <Navbar />
       </div>

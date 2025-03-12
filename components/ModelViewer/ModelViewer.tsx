@@ -16,14 +16,14 @@ export default function ModelViewer() {
   }, []);
 
   // Leva controls for Avatar
-  const { x, y, z, rx, ry, rz } = useControls('Avatar Transform', {
-    x: { value: -2, step: 1 },
-    y: { value: -7, step: 1 },
-    z: { value: 2, step: 1 },
-    rx: { value: 11, step: 1 },
-    ry: { value: 0, step: 1 },
-    rz: { value: 61, step: 1 },
-  });
+  // const { x, y, z, rx, ry, rz } = useControls('Avatar Transform', {
+  //   x: { value: -2, step: 1 },
+  //   y: { value: -7, step: 1 },
+  //   z: { value: 2, step: 1 },
+  //   rx: { value: 11, step: 1 },
+  //   ry: { value: 0, step: 1 },
+  //   rz: { value: 61, step: 1 },
+  // });
 
   if (!isClient) return null;
 
@@ -56,27 +56,25 @@ export default function ModelViewer() {
             <group position={[3, 0, 0]} rotation={[0, 4.6, 0]}>
               <Model url='/models/environment_49.glb' />
               <Avatar
-                position={[x, y, z]}
-                rotation={[rx, ry, rz]}
-                scale={[9, 9, 9]}
+              // position={[x, y, z]}
+              // rotation={[rx, ry, rz]}
+              // scale={[9, 9, 9]}
               />
             </group>
           </TiltedScene>
         </Suspense>
 
-        <axesHelper args={[5]} />
-
         {/* ✅ Environment HDRI */}
         <Environment
           files='/textures/brown_photostudio_02_4k.exr'
-          background={true}
+          background={false}
         />
 
         {/* ✅ OrbitControls (Can be adjusted if needed) */}
         <OrbitControls
-          enableZoom={true}
+          enableZoom={false}
           enablePan={false}
-          enableRotate={true}
+          enableRotate={false}
         />
       </Canvas>
     </div>

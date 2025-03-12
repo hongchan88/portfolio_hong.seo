@@ -12,8 +12,7 @@ export default function Avatar() {
   useEffect(() => {
     const bakedAction = actions['baked_final'];
     const typingAction = actions['typing3'];
-    console.log(typingAction, 'typing action');
-    console.log(bakedAction, 'typing action');
+
     if (bakedAction && typingAction) {
       const mixer = bakedAction.getMixer();
 
