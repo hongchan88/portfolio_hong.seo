@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 export default function Avatar({ currentStage }) {
   const groupRef = useRef();
   const [prevStage, setPrevStage] = useState(null);
+  const isPlayingNextSection = useRef(false);
+  const wireframeApplied = useRef(false);
 
-  const { scene, animations } = useGLTF('/models/avatar28.glb');
+  const { scene, animations } = useGLTF('/models/avatar_33.glb');
   const { actions } = useAnimations(animations, groupRef);
 
   useEffect(() => {
@@ -36,6 +39,15 @@ export default function Avatar({ currentStage }) {
       cleanup = () => mixer.removeEventListener('finished', handleFinish);
     };
 
+    const applyWireframe = () => {
+      scene.traverse((child) => {
+        if (child.isMesh && child.material) {
+          child.material.wireframe = true;
+          child.material.color.set('#ffffff'); // Optional: make lines white
+        }
+      });
+    };
+
     const playNextSectionOnce = () => {
       console.log('Playing NextSection animation FORWARD.');
       bakedAction.stop();
@@ -47,9 +59,13 @@ export default function Avatar({ currentStage }) {
       nextSectionAction.timeScale = 1.5;
       nextSectionAction.play();
 
+      isPlayingNextSection.current = true;
+      wireframeApplied.current = false;
+
       const holdOnLastFrame = () => {
         console.log('NextSection finished. Holding final pose.');
         nextSectionAction.paused = true;
+        isPlayingNextSection.current = false;
       };
 
       mixer.addEventListener('finished', holdOnLastFrame);
@@ -69,6 +85,8 @@ export default function Avatar({ currentStage }) {
       const holdAtStart = () => {
         console.log('Reverse animation finished. Holding at start.');
         nextSectionAction.paused = true;
+        isPlayingNextSection.current = false;
+        wireframeApplied.current = false; // Reset for next time
       };
 
       mixer.addEventListener('finished', holdAtStart);
@@ -80,16 +98,37 @@ export default function Avatar({ currentStage }) {
       playNextSectionInReverse();
     } else if (currentStage === 0) {
       playInitialSequence();
-    } else if (currentStage === 1 && prevStage == 0) {
+    } else if (currentStage === 1 && prevStage === 0) {
       playNextSectionOnce();
-    } else if (currentStage === 1 && prevStage == 2) {
     }
 
-    // Store previous stage
     setPrevStage(currentStage);
-
     return () => cleanup();
-  }, [actions, currentStage]);
+  }, [actions, currentStage, scene]);
+
+  // 🌀 Monitor animation progress every frame
+  useFrame(() => {
+    const nextSectionAction = actions?.['avatarModel'];
+    if (
+      isPlayingNextSection.current &&
+      !wireframeApplied.current &&
+      nextSectionAction
+    ) {
+      const timeRemaining =
+        nextSectionAction.getClip().duration - nextSectionAction.time;
+      const threshold = 0.1; // seconds before end to trigger wireframe
+
+      if (timeRemaining < threshold) {
+        console.log('Applying wireframe near end of animation.');
+        // wireframeApplied.current = true;
+        scene.traverse((child) => {
+          if (child.isMesh && child.material) {
+            // child.material.wireframe = true;
+          }
+        });
+      }
+    }
+  });
 
   return (
     <group ref={groupRef}>
@@ -98,4 +137,4 @@ export default function Avatar({ currentStage }) {
   );
 }
 
-useGLTF.preload('/models/avatar28.glb');
+useGLTF.preload('/models/avatar_33.glb');

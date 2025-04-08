@@ -1,3 +1,4 @@
+'use client';
 import * as THREE from 'three';
 import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
@@ -58,6 +59,19 @@ export function Model({ url }: ModelProps) {
     setTimeout(() => {
       scene.traverse((child) => {
         // Replace 'plane' with the exact name in your GLB
+        if (child.isMesh && child.material.map) {
+          child.material = new THREE.MeshBasicMaterial({
+            map: child.material.map,
+            transparent: true, // if your PNG has transparency
+          });
+        }
+        console.log(child, 'child');
+        if (child.isMesh && child.name === 'Object_8005') {
+          console.log('left object found');
+          child.material.transparent = true;
+          child.material.opacity = 0.5;
+        }
+
         if (child.isMesh && child.name === 'wall') {
           console.log(`Applying baked shadow to: ${child.name}`);
 

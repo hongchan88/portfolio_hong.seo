@@ -1,76 +1,69 @@
 'use client';
-import { useEffect, useState, useRef, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
-import { useControls } from 'leva';
-import * as THREE from 'three';
+import { Environment, OrbitControls } from '@react-three/drei';
 // Import your existing components
 import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
-
+import { useControls } from 'leva';
+import * as THREE from 'three';
 export default function ModelViewer({ currentStage }) {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-
   return (
     <div style={{ width: '100vw', height: '200vh' }}>
-      {/* ✅ First 100vh Section (Light Green) */}
+      {/* ✅ Background Image (behind the canvas) */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          width: '100%',
+          height: '50%',
+          background:
+            'linear-gradient(169deg, rgba(0, 16, 51, 1) 32%, rgba(0, 42, 101, 1) 67%, rgba(2, 95, 173, 1) 100%)',
+
+          zIndex: 1,
+        }}
+      ></div>
+
+      {/* ✅ Canvas Container */}
       <div
         style={{
           width: '100%',
           height: '100%',
-          // backgroundColor: 'rgba(177,204,112,0.2)', // Light green
-          background:
-            'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%, blue 50%)',
+          // background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 10,
+          position: 'relative',
+          zIndex: 10, // 👈 Higher than background image
         }}
       >
-        <Canvas
-          shadows
-          // camera={{ position: [9, 5, 8], fov: 50 }}
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-        >
-          <CameraController />
-          <Suspense fallback={null}>
-            {/* <TiltedScene> */}
-            <group position={[3, 2, 0]} rotation={[0, 4.6, 0]}>
-              <Model url='/models/environment_58.glb' />
+        <Suspense fallback={<LoadingIndicator />}>
+          <Canvas
+            shadows
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <CameraController />
+            <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
+              <Model url='/models/environment_combine_42.glb' />
               <Avatar currentStage={currentStage} />
             </group>
-            {/* </TiltedScene> */}
-          </Suspense>
-
-          <Environment
-            files='/textures/brown_photostudio_02_4k.exr'
-            background={false}
-          />
-
-          <OrbitControls
-            enableZoom={false}
-            enablePan={false}
-            enableRotate={false}
-          />
-        </Canvas>
+            {/* 
+            <Environment
+              files='/textures/brown_photostudio_02_4k.exr'
+              background={false}
+            /> */}
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              enableRotate={false}
+            />
+          </Canvas>
+        </Suspense>
       </div>
-      {/* ✅ Second 100vh Section (Blue)
-      <div
-        style={{
-          width: '100%',
-          height: '100vh',
-          backgroundColor: 'blue',
-        }}
-      ></div> */}
     </div>
   );
 }
@@ -84,7 +77,7 @@ function CameraController() {
     cx: { value: 10, step: 1 },
     cy: { value: 5, step: 1 },
     cz: { value: 14, step: 1 },
-    zoom: { value: 55, min: 10, max: 100, step: 1 }, // Add zoom control here
+    zoom: { value: 70, min: 10, max: 100, step: 1 }, // Add zoom control here
   });
 
   useFrame(() => {
@@ -142,5 +135,13 @@ function TiltedScene({ children }) {
     <group ref={sceneRef} onPointerMove={handlePointerMove}>
       {children}
     </group>
+  );
+}
+function LoadingIndicator() {
+  return (
+    <div className='flex flex-col items-center justify-center h-full text-gray-500 text-sm'>
+      <div className='w-10 h-10 border-4 border-gray-200 border-t-gray-600 rounded-full animate-spin mb-4'></div>
+      <p>Loading model...</p>
+    </div>
   );
 }
