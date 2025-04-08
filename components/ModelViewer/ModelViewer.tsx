@@ -8,75 +8,69 @@ import * as THREE from 'three';
 import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
 
-export default function ModelViewer() {
+export default function ModelViewer({ currentStage }) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Leva controls for Avatar
-  // const { x, y, z, rx, ry, rz } = useControls('Avatar Transform', {
-  //   x: { value: -2, step: 1 },
-  //   y: { value: -7, step: 1 },
-  //   z: { value: 2, step: 1 },
-  //   rx: { value: 11, step: 1 },
-  //   ry: { value: 0, step: 1 },
-  //   rz: { value: 61, step: 1 },
-  // });
-
   if (!isClient) return null;
 
   return (
-    <div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ffffff',
-      }}
-    >
-      <Canvas
-        shadows
-        camera={{ position: [9, 5, 8], fov: 50 }}
+    <div style={{ width: '100vw', height: '200vh' }}>
+      {/* ✅ First 100vh Section (Light Green) */}
+      <div
         style={{
           width: '100%',
           height: '100%',
-          backgroundColor: 'rgba(177,204,112,0.2)',
+          // backgroundColor: 'rgba(177,204,112,0.2)', // Light green
+          background:
+            'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%, blue 50%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10,
         }}
       >
-        {/* ✅ Leva-driven camera */}
-        <CameraController />
-
-        <Suspense fallback={null}>
-          {/* ✅ Group that tilts when mouse moves over the 3D scene */}
-          <TiltedScene>
-            <group position={[3, 0, 0]} rotation={[0, 4.6, 0]}>
-              <Model url='/models/environment_49.glb' />
-              <Avatar
-              // position={[x, y, z]}
-              // rotation={[rx, ry, rz]}
-              // scale={[9, 9, 9]}
-              />
+        <Canvas
+          shadows
+          // camera={{ position: [9, 5, 8], fov: 50 }}
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          <CameraController />
+          <Suspense fallback={null}>
+            {/* <TiltedScene> */}
+            <group position={[3, 2, 0]} rotation={[0, 4.6, 0]}>
+              <Model url='/models/environment_58.glb' />
+              <Avatar currentStage={currentStage} />
             </group>
-          </TiltedScene>
-        </Suspense>
+            {/* </TiltedScene> */}
+          </Suspense>
 
-        {/* ✅ Environment HDRI */}
-        <Environment
-          files='/textures/brown_photostudio_02_4k.exr'
-          background={false}
-        />
+          <Environment
+            files='/textures/brown_photostudio_02_4k.exr'
+            background={false}
+          />
 
-        {/* ✅ OrbitControls (Can be adjusted if needed) */}
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableRotate={false}
-        />
-      </Canvas>
+          <OrbitControls
+            enableZoom={false}
+            enablePan={false}
+            enableRotate={false}
+          />
+        </Canvas>
+      </div>
+      {/* ✅ Second 100vh Section (Blue)
+      <div
+        style={{
+          width: '100%',
+          height: '100vh',
+          backgroundColor: 'blue',
+        }}
+      ></div> */}
     </div>
   );
 }
@@ -84,15 +78,25 @@ export default function ModelViewer() {
 // ✅ Camera Controller (Leva for dynamic movement)
 function CameraController() {
   const { camera } = useThree();
-  const { cx, cy, cz } = useControls('Camera Position', {
-    cx: { value: 9, step: 1 },
+
+  // Destructure zoom (FOV) along with camera position
+  const { cx, cy, cz, zoom } = useControls('Camera Position', {
+    cx: { value: 10, step: 1 },
     cy: { value: 5, step: 1 },
-    cz: { value: 8, step: 1 },
+    cz: { value: 14, step: 1 },
+    zoom: { value: 55, min: 10, max: 100, step: 1 }, // Add zoom control here
   });
 
   useFrame(() => {
     camera.position.set(cx, cy, cz);
     camera.lookAt(0, 0, 0);
+    // console.log('Actual camera position:', camera.position);
+
+    // Update FOV if it changed
+    if (camera.fov !== zoom) {
+      camera.fov = zoom;
+      camera.updateProjectionMatrix();
+    }
   });
 
   return null;

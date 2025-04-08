@@ -78,6 +78,7 @@ const AboutMe: FC = () => {
               {Object.values(stackImages).map((stack) => {
                 return (
                   <img
+                    key={stack.url}
                     title={stack.desc}
                     src={stack.url}
                     className='h-20 w-20 mx-4 my-4 dark:bg-white rounded-lg'

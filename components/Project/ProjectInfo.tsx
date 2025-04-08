@@ -62,6 +62,7 @@ const ProjectInfo = ({ title, info, stacks, git, live }: ProjectInfoProps) => {
               const stackInfo = getStackImg(stack);
               return (
                 <img
+                  key={stack}
                   className='h-14 w-14 mx-4 my-4 dark:bg-white rounded-lg'
                   src={stackInfo.url}
                   title={stackInfo.desc}

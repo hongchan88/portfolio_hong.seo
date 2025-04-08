@@ -40,14 +40,20 @@ export function Model({ url }: ModelProps) {
     // Delay to ensure the scene is fully loaded
     const loader = new THREE.TextureLoader();
     // Replace with your actual baked shadow PNG path
-    const shadowTexture = loader.load('/models/wallShadow9.png', (texture) => {
-      texture.flipY = false; // Fix upside-down issue
-      texture.needsUpdate = true;
-    });
-    const groundShadow = loader.load('/models/groundShadow9.png', (texture) => {
-      texture.flipY = false; // Fix upside-down issue
-      texture.needsUpdate = true;
-    });
+    const shadowTexture = loader.load(
+      '/models/wallShadow10_transBG.png',
+      (texture) => {
+        texture.flipY = false; // Fix upside-down issue
+        texture.needsUpdate = true;
+      }
+    );
+    const groundShadow = loader.load(
+      '/models/floor_shadow_transparentBG.png',
+      (texture) => {
+        texture.flipY = false; // Fix upside-down issue
+        texture.needsUpdate = true;
+      }
+    );
 
     setTimeout(() => {
       scene.traverse((child) => {
@@ -55,15 +61,32 @@ export function Model({ url }: ModelProps) {
         if (child.isMesh && child.name === 'wall') {
           console.log(`Applying baked shadow to: ${child.name}`);
 
-          // Replace the plane's material map with the shadow
-          child.material.map = shadowTexture;
+          child.material = new THREE.MeshStandardMaterial({
+            map: shadowTexture,
+            transparent: true, // Enable transparency
+            opacity: 0.5, // Fully visible texture
+            depthWrite: false, // Prevents z-fighting issues
+          });
+
+          // Boost the shadow contrast and opacity
+          // child.material.color.setRGB(0, 0, 0); // Darken the shadow
+          // child.material.color.multiplyScalar(1); // Increase shadow intensity
+
           child.material.needsUpdate = true;
         }
         if (child.isMesh && child.name === 'ground') {
           console.log(`Applying baked shadow to: ${child.name}`);
+          child.material = new THREE.MeshStandardMaterial({
+            map: groundShadow,
+            transparent: true, // Enable transparency
+            opacity: 0.5, // Fully visible texture
+            depthWrite: false, // Prevents z-fighting issues
+          });
 
-          // Replace the plane's material map with the shadow
-          child.material.map = groundShadow;
+          // Boost the shadow contrast and opacity
+          // child.material.color.setRGB(0, 0, 0); // Darken the shadow
+          // child.material.color.multiplyScalar(1); // Increase shadow intensity
+
           child.material.needsUpdate = true;
         }
       });

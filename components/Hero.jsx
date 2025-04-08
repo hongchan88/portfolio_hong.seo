@@ -1,14 +1,14 @@
+'use client';
 import React from 'react';
-import { RoughNotation, RoughNotationGroup } from 'react-rough-notation';
-import { RainbowHighlight } from './RainbowHighlight';
 import dynamic from 'next/dynamic';
 import Navbar from './Navbar';
 
 const ModelViewer = dynamic(() => import('./ModelViewer/ModelViewer'), {
   ssr: false, // Prevents server-side rendering issues
 });
-export default function Hero() {
+export default function Hero({ currentStage }) {
   const colors = ['#F59E0B', '#84CC16', '#10B981', '#3B82F6'];
+  console.log(currentStage, 'currentStage');
   return (
     <div className='relative w-full  '>
       <div className='absolute top-0 z-20 w-full'>
@@ -17,7 +17,7 @@ export default function Hero() {
 
       <div className='flex flex-row justify-center items-start overflow-hidden'>
         {/* Text container */}
-        <ModelViewer />
+        <ModelViewer currentStage={currentStage} />
         {/* <div className="w-full md:w-1/2 mx-auto text-center md:text-left lg:p-20">
         <RoughNotationGroup show={true}>
         <RainbowHighlight color={colors[0]}>

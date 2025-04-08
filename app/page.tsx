@@ -32,7 +32,7 @@ export default function App() {
     observerRef.current = Observer.create({
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
-      tolerance: 20,
+      tolerance: 100,
       preventDefault: true,
       onDown: () => !animatingRef.current && goPrevStage(),
       onUp: () => !animatingRef.current && goNextStage(),
@@ -102,9 +102,9 @@ export default function App() {
     };
   }, [currentStage]);
 
-  // ----------------------------------
-  // 3) Initialize on mount
-  // ----------------------------------
+  // // ----------------------------------
+  // // 3) Initialize on mount
+  // // ----------------------------------
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger, Observer);
 
@@ -142,20 +142,17 @@ export default function App() {
   // ----------------------------------
   return (
     <main>
-      <div ref={heroAboutmeRef}>
-        {/* Stage 0 => Hero visible */}
-        <section style={{ height: '100vh' }}>
-          <Hero />
-        </section>
+      {/* Stage 0 => Hero visible */}
+      <section ref={heroAboutmeRef} style={{ height: '100%' }}>
+        <Hero currentStage={currentStage} />
+      </section>
 
-        {/* Stage 2 => AboutMe fully visible */}
-        <section style={{ height: '100vh' }}>
-          <AboutMe />
-        </section>
-      </div>
+      <section style={{ height: '100%' }}>
+        <AboutMe />
+      </section>
 
       {/* Normal scrolling content (Projects) */}
-      <section className='projects-section' style={{ minHeight: '100vh' }}>
+      <section className='projects-section' style={{ height: '100%' }}>
         <Projects />
       </section>
     </main>
