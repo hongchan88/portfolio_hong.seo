@@ -48,14 +48,14 @@ export default function ModelViewer({ currentStage }) {
           >
             <CameraController />
             <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
-              <Model url='/models/environment_combine_42.glb' />
+              <Model url='/models/environment_combine_55.glb' />
               <Avatar currentStage={currentStage} />
             </group>
-            {/* 
+
             <Environment
               files='/textures/brown_photostudio_02_4k.exr'
               background={false}
-            /> */}
+            />
             <OrbitControls
               enableZoom={false}
               enablePan={false}

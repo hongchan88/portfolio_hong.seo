@@ -42,14 +42,14 @@ export function Model({ url }: ModelProps) {
     const loader = new THREE.TextureLoader();
     // Replace with your actual baked shadow PNG path
     const shadowTexture = loader.load(
-      '/models/wallShadow10_transBG.png',
+      '/models/wallShadow_transparent6.png',
       (texture) => {
         texture.flipY = false; // Fix upside-down issue
         texture.needsUpdate = true;
       }
     );
     const groundShadow = loader.load(
-      '/models/floor_shadow_transparentBG.png',
+      '/models/groundShadow_transparent3.png',
       (texture) => {
         texture.flipY = false; // Fix upside-down issue
         texture.needsUpdate = true;
@@ -59,18 +59,18 @@ export function Model({ url }: ModelProps) {
     setTimeout(() => {
       scene.traverse((child) => {
         // Replace 'plane' with the exact name in your GLB
-        if (child.isMesh && child.material.map) {
-          child.material = new THREE.MeshBasicMaterial({
-            map: child.material.map,
-            transparent: true, // if your PNG has transparency
-          });
-        }
+        // if (child.isMesh && child.material.map) {
+        //   child.material = new THREE.MeshBasicMaterial({
+        //     map: child.material.map,
+        //     transparent: true, // if your PNG has transparency
+        //   });
+        // }
         console.log(child, 'child');
-        if (child.isMesh && child.name === 'Object_8005') {
-          console.log('left object found');
-          child.material.transparent = true;
-          child.material.opacity = 0.5;
-        }
+        // if (child.isMesh && child.name === 'Object_8005') {
+        //   console.log('left object found');
+        //   child.material.transparent = true;
+        //   child.material.opacity = 0.5;
+        // }
 
         if (child.isMesh && child.name === 'wall') {
           console.log(`Applying baked shadow to: ${child.name}`);
