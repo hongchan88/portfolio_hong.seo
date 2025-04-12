@@ -4,12 +4,14 @@ import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
+import gsap from 'gsap/all';
 
 type ModelProps = {
   url: string;
+  currentStage: number;
 };
 
-export function Model({ url }: ModelProps) {
+export function Model({ url, currentStage }: ModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene, animations, materials } = useGLTF(url);
   const { actions } = useAnimations(animations, modelRef);
@@ -55,56 +57,76 @@ export function Model({ url }: ModelProps) {
         texture.needsUpdate = true;
       }
     );
+    const labWallGround = loader.load(
+      '/models/labwallGround_transparent.png',
+      (texture) => {
+        // texture.flipY = false; // Fix upside-down issue
+        // texture.needsUpdate = true;
+      }
+    );
 
-    setTimeout(() => {
-      scene.traverse((child) => {
-        // Replace 'plane' with the exact name in your GLB
-        // if (child.isMesh && child.material.map) {
-        //   child.material = new THREE.MeshBasicMaterial({
-        //     map: child.material.map,
-        //     transparent: true, // if your PNG has transparency
-        //   });
-        // }
-        console.log(child, 'child');
-        // if (child.isMesh && child.name === 'Object_8005') {
-        //   console.log('left object found');
-        //   child.material.transparent = true;
-        //   child.material.opacity = 0.5;
-        // }
+    scene.traverse((child) => {
+      // Replace 'plane' with the exact name in your GLB
+      // if (child.isMesh && child.material.map) {
+      //   child.material = new THREE.MeshBasicMaterial({
+      //     map: child.material.map,
+      //     transparent: true, // if your PNG has transparency
+      //   });
+      // }
+      console.log(child, 'child');
+      // if (child.isMesh && child.name === 'Object_8005') {
+      //   console.log('left object found');
+      //   child.material.transparent = true;
+      //   child.material.opacity = 0.5;
+      // }
 
-        if (child.isMesh && child.name === 'wall') {
-          console.log(`Applying baked shadow to: ${child.name}`);
+      if (child.isMesh && child.name === 'wall') {
+        console.log(`Applying baked shadow to: ${child.name}`);
 
-          child.material = new THREE.MeshStandardMaterial({
-            map: shadowTexture,
-            transparent: true, // Enable transparency
-            opacity: 0.5, // Fully visible texture
-            depthWrite: false, // Prevents z-fighting issues
-          });
+        child.material = new THREE.MeshStandardMaterial({
+          map: shadowTexture,
+          transparent: true, // Enable transparency
+          opacity: 0.1, // Fully visible texture
+          depthWrite: false, // Prevents z-fighting issues
+        });
 
-          // Boost the shadow contrast and opacity
-          // child.material.color.setRGB(0, 0, 0); // Darken the shadow
-          // child.material.color.multiplyScalar(1); // Increase shadow intensity
+        // Boost the shadow contrast and opacity
+        // child.material.color.setRGB(0, 0, 0); // Darken the shadow
+        // child.material.color.multiplyScalar(1); // Increase shadow intensity
 
-          child.material.needsUpdate = true;
-        }
-        if (child.isMesh && child.name === 'ground') {
-          console.log(`Applying baked shadow to: ${child.name}`);
-          child.material = new THREE.MeshStandardMaterial({
-            map: groundShadow,
-            transparent: true, // Enable transparency
-            opacity: 0.5, // Fully visible texture
-            depthWrite: false, // Prevents z-fighting issues
-          });
+        child.material.needsUpdate = true;
+      }
+      if (child.isMesh && child.name === 'ground') {
+        console.log(`Applying baked shadow to: ${child.name}`);
+        child.material = new THREE.MeshStandardMaterial({
+          map: groundShadow,
+          transparent: true, // Enable transparency
+          opacity: 0.1, // Fully visible texture
+          depthWrite: false, // Prevents z-fighting issues
+        });
 
-          // Boost the shadow contrast and opacity
-          // child.material.color.setRGB(0, 0, 0); // Darken the shadow
-          // child.material.color.multiplyScalar(1); // Increase shadow intensity
+        // Boost the shadow contrast and opacity
+        // child.material.color.setRGB(0, 0, 0); // Darken the shadow
+        // child.material.color.multiplyScalar(1); // Increase shadow intensity
 
-          child.material.needsUpdate = true;
-        }
-      });
-    }, 1500);
+        child.material.needsUpdate = true;
+      }
+      if (child.isMesh && child.name === 'lab_ground_wall') {
+        console.log(`Applying baked shadow to: ${child.name}`);
+        child.material = new THREE.MeshStandardMaterial({
+          map: labWallGround,
+          transparent: true, // Enable transparency
+          opacity: 0.2, // Fully visible texture
+          depthWrite: false, // Prevents z-fighting issues
+        });
+
+        // Boost the shadow contrast and opacity
+        // child.material.color.setRGB(0, 0, 0); // Darken the shadow
+        // child.material.color.multiplyScalar(1); // Increase shadow intensity
+
+        child.material.needsUpdate = true;
+      }
+    });
 
     // Force a re-render if needed
     // gl.render(scene, (gl as any).camera);
@@ -137,43 +159,137 @@ export function Model({ url }: ModelProps) {
   });
 
   // 3) Existing delayed animations
+  // useEffect(() => {
+  //   const environmentAction = actions['Action'];
+  //   const chairAction = actions['Action.005'];
+  //   const carpetAction = actions['Action.004'];
+  //   const tableAction = actions['table'];
+  //   const tableAction2 = actions['tableScale'];
+
+  //   if (currentStage === 0) {
+  //     const chairGroup = scene.getObjectByName('room_obj'); // Now this will work!
+  //     console.log(chairGroup, 'chairGroup');
+  //     gsap.to(chairGroup.scale, {
+  //       x: 1,
+  //       y: 1,
+  //       z: 1,
+  //       duration: 1,
+  //       ease: 'elastic.out(1, 0.3)',
+  //     });
+  //     // const playAction = (action: THREE.AnimationAction | undefined) => {
+  //     //   if (action) {
+  //     //     action.reset().setLoop(THREE.LoopOnce, 1);
+  //     //     action.clampWhenFinished = true;
+  //     //     action.play();
+  //     //   } else {
+  //     //     console.warn('Animation not found.');
+  //     //   }
+  //     // };
+
+  //     // const firstPopAnimation = setTimeout(
+  //     //   () => {
+  //     //     playAction(environmentAction);
+  //     //     playAction(chairAction);
+  //     //     playAction(carpetAction);
+  //     //   },
+  //     //   (10 / fps) * 1000
+  //     // );
+
+  //     // const secondPopAnimation = setTimeout(
+  //     //   () => {
+  //     //     playAction(tableAction);
+  //     //     playAction(tableAction2);
+  //     //   },
+  //     //   (15 / fps) * 1000
+  //     // );
+  //     // return () => {
+  //     //   clearTimeout(firstPopAnimation);
+  //     //   clearTimeout(secondPopAnimation);
+  //     // };
+  //   } else if (currentStage === 1) {
+  //     const chairGroup = scene.getObjectByName('room_obj'); // Now this will work!
+
+  //     gsap.to(chairGroup.scale, {
+  //       x: 0,
+  //       y: 0,
+  //       z: 0,
+  //       duration: 1,
+  //       ease: 'elastic.out(1, 0.3)',
+  //     });
+  //   }
+  // }, [currentStage, actions]);
   useEffect(() => {
-    const environmentAction = actions['Action'];
-    const chairAction = actions['Action.005'];
-    const carpetAction = actions['Action.004'];
-    const tableAction = actions['table'];
+    const roomObjGrop = scene.getObjectByName('room_obj');
+    const wallObjGroup = scene.getObjectByName('wall_obj');
+    const wallShadow = scene.getObjectByName('wall');
 
-    const playAction = (action: THREE.AnimationAction | undefined) => {
-      if (action) {
-        action.reset().setLoop(THREE.LoopOnce, 1);
-        action.clampWhenFinished = true;
-        action.play();
-      } else {
-        console.warn('Animation not found.');
-      }
-    };
+    if (!roomObjGrop || !wallObjGroup || !wallShadow) {
+      console.warn('Groups not found');
+      return;
+    }
 
-    const firstPopAnimation = setTimeout(
-      () => {
-        playAction(environmentAction);
-        playAction(chairAction);
-        playAction(carpetAction);
-      },
-      (10 / fps) * 1000
-    );
+    gsap.killTweensOf([
+      roomObjGrop.scale,
+      wallObjGroup.scale,
+      wallShadow.material,
+    ]);
 
-    const secondPopAnimation = setTimeout(
-      () => {
-        playAction(tableAction);
-      },
-      (15 / fps) * 1000
-    );
+    if (currentStage === 0) {
+      wallShadow.material.transparent = true;
 
-    return () => {
-      clearTimeout(firstPopAnimation);
-      clearTimeout(secondPopAnimation);
-    };
-  }, [actions]);
+      // Animate opacity to 0 with GSAP
+      gsap.to(wallShadow.material, {
+        opacity: 0.1,
+        duration: 1,
+        delay: 2.5,
+        ease: 'power1.inOut',
+        overwrite: 'auto',
+      });
+      gsap.to(roomObjGrop.scale, {
+        x: 1,
+        y: 1,
+        z: 1,
+        duration: 1,
+        ease: 'back.out(1.7)',
+        overwrite: 'auto',
+      });
+
+      gsap.to(wallObjGroup.scale, {
+        x: 1,
+        y: 1,
+        z: 1,
+        duration: 1,
+        delay: 0.2,
+        ease: 'back.out(1.7)',
+        overwrite: 'auto',
+      });
+    } else if (currentStage > 0) {
+      gsap.to(wallShadow.material, {
+        opacity: 0,
+        duration: 2,
+        delay: 0.2,
+        ease: 'power1.inOut',
+        overwrite: 'auto',
+      });
+      gsap.to(roomObjGrop.scale, {
+        x: 0,
+        y: 0,
+        z: 0,
+        duration: 1,
+        ease: 'back.in(1.7)',
+        overwrite: 'auto',
+      });
+      gsap.to(wallObjGroup.scale, {
+        x: 0,
+        y: 0,
+        z: 0,
+        duration: 1,
+        delay: 0.2,
+        ease: 'back.in(1.7)',
+        overwrite: 'auto',
+      });
+    }
+  }, [currentStage, actions]);
 
   return <primitive ref={modelRef} object={scene} dispose={null} />;
 }

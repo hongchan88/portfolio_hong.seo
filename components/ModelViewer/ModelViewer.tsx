@@ -48,7 +48,10 @@ export default function ModelViewer({ currentStage }) {
           >
             <CameraController />
             <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
-              <Model url='/models/environment_combine_55.glb' />
+              <Model
+                url='/models/environment_combine_88.glb'
+                currentStage={currentStage}
+              />
               <Avatar currentStage={currentStage} />
             </group>
 
