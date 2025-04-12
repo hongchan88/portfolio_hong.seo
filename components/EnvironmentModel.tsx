@@ -2,16 +2,19 @@
 import * as THREE from 'three';
 import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
-import { useFrame, useThree } from '@react-three/fiber';
+import { ObjectMap, useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
 import gsap from 'gsap/all';
+import { GLTF } from 'three-stdlib';
 
 type ModelProps = {
   url: string;
   currentStage: number;
+  avartarGLb: GLTF & ObjectMap;
+  isScrollingScreen: boolean;
 };
 
-export function Model({ url, currentStage }: ModelProps) {
+export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene, animations, materials } = useGLTF(url);
   const { actions } = useAnimations(animations, modelRef);
@@ -21,20 +24,20 @@ export function Model({ url, currentStage }: ModelProps) {
   const scrollSpeed = 0.1; // Scroll speed
   const materialName = 'Material.002'; // Example user material name
 
-  // Pre-1100 frame ranges
-  const scrollFrameRanges = [
-    { start: 220, end: 241 },
-    { start: 485, end: 558 },
-    { start: 680, end: 705 },
-    { start: 968, end: 1054 },
-  ];
+  // // Pre-1100 frame ranges
+  // const scrollFrameRanges = [
+  //   { start: 220, end: 241 },
+  //   { start: 485, end: 558 },
+  //   { start: 680, end: 705 },
+  //   { start: 968, end: 1054 },
+  // ];
 
-  // After 1100, repeat intervals every 600 frames
-  const repeatedIntervals = [
-    { start: 80, end: 105 },
-    { start: 368, end: 454 },
-  ];
-  const repeatCycle = 494;
+  // // After 1100, repeat intervals every 600 frames
+  // const repeatedIntervals = [
+  //   { start: 80, end: 105 },
+  //   { start: 368, end: 454 },
+  // ];
+  // const repeatCycle = 494;
 
   // 1) On mount, load & apply baked shadow to plane named "plane"
   useEffect(() => {
@@ -131,32 +134,40 @@ export function Model({ url, currentStage }: ModelProps) {
     // Force a re-render if needed
     // gl.render(scene, (gl as any).camera);
   }, [scene, gl]);
-
-  // 2) Existing frame-based logic for "Material.002"
-  useFrame(({ clock }) => {
-    const time = clock.getElapsedTime();
-    const currentFrame = Math.floor(time * fps);
-    const material = materials[materialName];
-    if (!material?.map) return;
-
-    if (currentFrame <= 1094) {
-      const shouldScroll = scrollFrameRanges.some(
-        ({ start, end }) => currentFrame >= start && currentFrame <= end
-      );
-      if (shouldScroll) {
-        material.map.offset.y += scrollSpeed / fps;
-      }
-    } else {
-      const offset = (currentFrame - 1094) % repeatCycle;
-      const shouldScroll = repeatedIntervals.some(
-        ({ start, end }) => offset >= start && offset <= end
-      );
-      if (shouldScroll) {
+  useFrame(() => {
+    if (isScrollingScreen) {
+      const material = materials[materialName];
+      if (material?.map) {
         material.map.offset.y += scrollSpeed / fps;
       }
     }
-    material.map.needsUpdate = true;
   });
+
+  // 2) Existing frame-based logic for "Material.002"
+  // useFrame(({ clock }) => {
+  //   const time = clock.getElapsedTime();
+  //   const currentFrame = Math.floor(time * fps);
+  //   const material = materials[materialName];
+  //   if (!material?.map) return;
+
+  //   if (currentFrame <= 1094) {
+  //     const shouldScroll = scrollFrameRanges.some(
+  //       ({ start, end }) => currentFrame >= start && currentFrame <= end
+  //     );
+  //     if (shouldScroll) {
+  //       material.map.offset.y += scrollSpeed / fps;
+  //     }
+  //   } else {
+  //     const offset = (currentFrame - 1094) % repeatCycle;
+  //     const shouldScroll = repeatedIntervals.some(
+  //       ({ start, end }) => offset >= start && offset <= end
+  //     );
+  //     if (shouldScroll) {
+  //       material.map.offset.y += scrollSpeed / fps;
+  //     }
+  //   }
+  //   material.map.needsUpdate = true;
+  // });
 
   // 3) Existing delayed animations
   // useEffect(() => {
@@ -241,7 +252,7 @@ export function Model({ url, currentStage }: ModelProps) {
       gsap.to(wallShadow.material, {
         opacity: 0.1,
         duration: 1,
-        delay: 2.5,
+        delay: 1.5,
         ease: 'power1.inOut',
         overwrite: 'auto',
       });

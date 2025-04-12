@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, Suspense, useRef } from 'react';
+import { useState, Suspense, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, OrbitControls } from '@react-three/drei';
 // Import your existing components
@@ -8,6 +8,7 @@ import { Model } from '../EnvironmentModel';
 import { useControls } from 'leva';
 import * as THREE from 'three';
 export default function ModelViewer({ currentStage }) {
+  const [isScrollingScreen, setScrollingScreen] = useState(false);
   return (
     <div style={{ width: '100vw', height: '200vh' }}>
       {/* ✅ Background Image (behind the canvas) */}
@@ -49,10 +50,14 @@ export default function ModelViewer({ currentStage }) {
             <CameraController />
             <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
               <Model
-                url='/models/environment_combine_88.glb'
+                url='/models/environment_combine_89.glb'
                 currentStage={currentStage}
+                isScrollingScreen={isScrollingScreen}
               />
-              <Avatar currentStage={currentStage} />
+              <Avatar
+                currentStage={currentStage}
+                setScrollingScreen={setScrollingScreen}
+              />
             </group>
 
             <Environment

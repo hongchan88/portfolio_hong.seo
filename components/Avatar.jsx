@@ -3,13 +3,13 @@ import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Avatar({ currentStage }) {
+export default function Avatar({ currentStage, setScrollingScreen }) {
   const groupRef = useRef();
   const [prevStage, setPrevStage] = useState(null);
   const isPlayingNextSection = useRef(false);
   const wireframeApplied = useRef(false);
 
-  const { scene, animations } = useGLTF('/models/avatar_33.glb');
+  const { scene, animations } = useGLTF('/models/avatar_36.glb');
   const { actions } = useAnimations(animations, groupRef);
 
   useEffect(() => {
@@ -87,6 +87,7 @@ export default function Avatar({ currentStage }) {
         nextSectionAction.paused = true;
         isPlayingNextSection.current = false;
         wireframeApplied.current = false; // Reset for next time
+        typingAction.play();
       };
 
       mixer.addEventListener('finished', holdAtStart);
@@ -105,10 +106,31 @@ export default function Avatar({ currentStage }) {
     setPrevStage(currentStage);
     return () => cleanup();
   }, [actions, currentStage, scene]);
+  const calculateFrameToTriggerScrolling = () => {
+    const typingAction = actions?.['typing3'];
 
+    if (typingAction && typingAction.isRunning()) {
+      const time = typingAction.time;
+      const fps =
+        typingAction.getClip().tracks[0]?.times?.length /
+          typingAction.getClip().duration || 30;
+
+      const currentFrame = Math.floor(time * fps);
+
+      const isInScrollingRange =
+        (currentFrame >= 25 && currentFrame <= 70) ||
+        (currentFrame >= 287 && currentFrame <= 372) ||
+        (currentFrame >= 475 && currentFrame <= 485);
+
+      setScrollingScreen(isInScrollingRange); // 👈 toggle here
+    } else {
+      setScrollingScreen(false); // ensure it's false if animation stops
+    }
+  };
   // 🌀 Monitor animation progress every frame
   useFrame(() => {
     const nextSectionAction = actions?.['avatarModel'];
+    calculateFrameToTriggerScrolling();
     if (
       isPlayingNextSection.current &&
       !wireframeApplied.current &&
@@ -136,5 +158,3 @@ export default function Avatar({ currentStage }) {
     </group>
   );
 }
-
-useGLTF.preload('/models/avatar_33.glb');
