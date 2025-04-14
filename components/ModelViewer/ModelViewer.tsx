@@ -31,7 +31,7 @@ export default function ModelViewer({ currentStage }) {
         style={{
           width: '100%',
           height: '100%',
-          // background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
+          background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

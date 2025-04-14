@@ -9,9 +9,51 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
   const isPlayingNextSection = useRef(false);
   const wireframeApplied = useRef(false);
 
-  const { scene, animations } = useGLTF('/models/avatar_36.glb');
+  const { scene, animations } = useGLTF('/models/avatar_52.glb');
   const { actions } = useAnimations(animations, groupRef);
 
+  const loader = new THREE.TextureLoader();
+
+  // loader.load('/face/normal.png', (tex) => {
+  //   tex.flipY = false;
+  //   tex.colorSpace = THREE.SRGBColorSpace; // <‑‑ key line
+  //   // tex.encoding = THREE.sRGBEncoding;
+
+  //   const mesh = scene.getObjectByName('Object_3001');
+  //   const mesh2 = scene.getObjectByName('Object_3002');
+
+  //   mesh.material = new THREE.MeshBasicMaterial({
+  //     map: tex,
+  //     // transparent: true,
+  //     // toneMapped: false,
+  //   });
+
+  //   mesh.material.needsUpdate = true;
+  // });
+
+  // useEffect(() => {
+  //   scene.traverse((child) => {
+  //     console.log(child, 'child.name');
+  //     if (child.name === 'Object_1002_1') {
+  //       console.log(child, 'child2222');
+  //     }
+  //   });
+  // }, [scene]);
+  // const changeMixFactorValue = (value) => {
+  //   const mesh = scene.getObjectByName('Object_1002_1');
+  //   console.log(mesh, '👉 material');
+  //   if (!mesh) return;
+
+  //   const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+
+  //   if (mat?.uniforms?.mixFactor) {
+  //     mat.uniforms.mixFactor.value = 1; // e.g., 0.5
+  //     mat.needsUpdate = true;
+  //     console.log('Updated mixFactor:', value);
+  //   } else {
+  //     console.warn('mixFactor uniform not found on material');
+  //   }
+  // };
   useEffect(() => {
     if (!actions || !groupRef.current) return;
 
@@ -50,6 +92,7 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
 
     const playNextSectionOnce = () => {
       console.log('Playing NextSection animation FORWARD.');
+
       bakedAction.stop();
       typingAction.stop();
 
@@ -74,6 +117,7 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
 
     const playNextSectionInReverse = () => {
       console.log('Playing NextSection animation BACKWARD.');
+
       nextSectionAction.stop();
       nextSectionAction.setLoop(THREE.LoopOnce, 1);
       nextSectionAction.clampWhenFinished = true;
@@ -100,6 +144,19 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
     } else if (currentStage === 0) {
       playInitialSequence();
     } else if (currentStage === 1 && prevStage === 0) {
+      loader.load('/face/surprise3.png', (tex) => {
+        tex.flipY = false;
+        tex.colorSpace = THREE.SRGBColorSpace; // <‑‑ key line
+        // tex.encoding = THREE.sRGBEncoding;
+        const mesh = scene.getObjectByName('Object_3001');
+        mesh.material = new THREE.MeshBasicMaterial({
+          map: tex,
+          // transparent: true,
+          // toneMapped: false,
+        });
+
+        mesh.material.needsUpdate = true;
+      });
       playNextSectionOnce();
     }
 
@@ -127,10 +184,53 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
       setScrollingScreen(false); // ensure it's false if animation stops
     }
   };
+  const changeFacePng = () => {
+    const action = actions?.['baked_final'];
+
+    const mesh = scene.getObjectByName('Object_3001');
+    if (!action || !mesh) return;
+
+    const frame = Math.floor(action.time * 30); // assuming 30 FPS
+
+    if (frame >= 41 && frame <= 67) {
+      loader.load('/face/wave7.png', (tex) => {
+        tex.flipY = false;
+        tex.colorSpace = THREE.SRGBColorSpace; // <‑‑ key line
+        // tex.encoding = THREE.sRGBEncoding;
+
+        mesh.material = new THREE.MeshBasicMaterial({
+          map: tex,
+          // transparent: true,
+          // toneMapped: false,
+        });
+
+        mesh.material.needsUpdate = true;
+      });
+    } else {
+      loader.load('/face/normal8.png', (tex) => {
+        tex.flipY = false;
+        tex.colorSpace = THREE.SRGBColorSpace; // <‑‑ key line
+        // tex.encoding = THREE.sRGBEncoding;
+
+        const mesh = scene.getObjectByName('Object_3001');
+
+        mesh.material = new THREE.MeshBasicMaterial({
+          map: tex,
+          // transparent: true,
+          // toneMapped: false,
+        });
+
+        mesh.material.needsUpdate = true;
+      });
+    }
+  };
   // 🌀 Monitor animation progress every frame
   useFrame(() => {
     const nextSectionAction = actions?.['avatarModel'];
-    calculateFrameToTriggerScrolling();
+    if (currentStage === 0) {
+      calculateFrameToTriggerScrolling();
+      changeFacePng();
+    }
     if (
       isPlayingNextSection.current &&
       !wireframeApplied.current &&
@@ -142,10 +242,10 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
 
       if (timeRemaining < threshold) {
         console.log('Applying wireframe near end of animation.');
-        // wireframeApplied.current = true;
+        wireframeApplied.current = true;
         scene.traverse((child) => {
           if (child.isMesh && child.material) {
-            // child.material.wireframe = true;
+            child.material.wireframe = true;
           }
         });
       }
