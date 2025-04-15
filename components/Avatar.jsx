@@ -11,9 +11,18 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
 
   const { scene, animations } = useGLTF('/models/avatar_52.glb');
   const { actions } = useAnimations(animations, groupRef);
+  const defaultBodyMaterial = useRef(null);
+  const originalMaterials = useRef(new Map());
 
+  const blinkStartTime = useRef(null);
+  const isWireframeOn = useRef(false);
   const loader = new THREE.TextureLoader();
 
+  const faceMesh = scene.getObjectByName('Object_3001');
+  console.log(faceMesh, 'faceMesh');
+  const bodyMesh = scene.getObjectByName('Object_3002');
+
+  console.log(bodyMesh, 'bodyMesh');
   // loader.load('/face/normal.png', (tex) => {
   //   tex.flipY = false;
   //   tex.colorSpace = THREE.SRGBColorSpace; // <‑‑ key line
@@ -81,15 +90,6 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
       cleanup = () => mixer.removeEventListener('finished', handleFinish);
     };
 
-    const applyWireframe = () => {
-      scene.traverse((child) => {
-        if (child.isMesh && child.material) {
-          child.material.wireframe = true;
-          child.material.color.set('#ffffff'); // Optional: make lines white
-        }
-      });
-    };
-
     const playNextSectionOnce = () => {
       console.log('Playing NextSection animation FORWARD.');
 
@@ -143,19 +143,19 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
       playNextSectionInReverse();
     } else if (currentStage === 0) {
       playInitialSequence();
+      originalMaterials.current.set('body', bodyMesh.material.clone());
     } else if (currentStage === 1 && prevStage === 0) {
-      loader.load('/face/surprise3.png', (tex) => {
+      loader.load('/face/surprise4.png', (tex) => {
         tex.flipY = false;
         tex.colorSpace = THREE.SRGBColorSpace; // <‑‑ key line
         // tex.encoding = THREE.sRGBEncoding;
-        const mesh = scene.getObjectByName('Object_3001');
-        mesh.material = new THREE.MeshBasicMaterial({
+        faceMesh.material = new THREE.MeshBasicMaterial({
           map: tex,
           // transparent: true,
           // toneMapped: false,
         });
 
-        mesh.material.needsUpdate = true;
+        faceMesh.material.needsUpdate = true;
       });
       playNextSectionOnce();
     }
@@ -187,8 +187,7 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
   const changeFacePng = () => {
     const action = actions?.['baked_final'];
 
-    const mesh = scene.getObjectByName('Object_3001');
-    if (!action || !mesh) return;
+    if (!action || !faceMesh) return;
 
     const frame = Math.floor(action.time * 30); // assuming 30 FPS
 
@@ -198,13 +197,13 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
         tex.colorSpace = THREE.SRGBColorSpace; // <‑‑ key line
         // tex.encoding = THREE.sRGBEncoding;
 
-        mesh.material = new THREE.MeshBasicMaterial({
+        faceMesh.material = new THREE.MeshBasicMaterial({
           map: tex,
           // transparent: true,
           // toneMapped: false,
         });
 
-        mesh.material.needsUpdate = true;
+        faceMesh.material.needsUpdate = true;
       });
     } else {
       loader.load('/face/normal8.png', (tex) => {
@@ -212,43 +211,70 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
         tex.colorSpace = THREE.SRGBColorSpace; // <‑‑ key line
         // tex.encoding = THREE.sRGBEncoding;
 
-        const mesh = scene.getObjectByName('Object_3001');
-
-        mesh.material = new THREE.MeshBasicMaterial({
+        faceMesh.material = new THREE.MeshBasicMaterial({
           map: tex,
           // transparent: true,
           // toneMapped: false,
         });
 
-        mesh.material.needsUpdate = true;
+        faceMesh.material.needsUpdate = true;
       });
     }
   };
   // 🌀 Monitor animation progress every frame
-  useFrame(() => {
-    const nextSectionAction = actions?.['avatarModel'];
+  useFrame(({ clock }) => {
+    const nextSectionAction = actions['avatarModel'];
     if (currentStage === 0) {
       calculateFrameToTriggerScrolling();
       changeFacePng();
     }
-    if (
-      isPlayingNextSection.current &&
-      !wireframeApplied.current &&
-      nextSectionAction
-    ) {
-      const timeRemaining =
-        nextSectionAction.getClip().duration - nextSectionAction.time;
-      const threshold = 0.1; // seconds before end to trigger wireframe
 
-      if (timeRemaining < threshold) {
-        console.log('Applying wireframe near end of animation.');
-        wireframeApplied.current = true;
+    if (currentStage === 1 && !nextSectionAction.isRunning()) {
+      const time = clock.getElapsedTime();
+
+      if (!blinkStartTime.current) {
+        blinkStartTime.current = time;
+      }
+
+      const elapsed = time - blinkStartTime.current;
+
+      const blinkCycle = 2.0; // total cycle duration (e.g., every 2s)
+      const blinkDuration = 0.5; // how long the wireframe stays visible in each cycle
+
+      const cycleTime = elapsed % blinkCycle;
+      const shouldBlink = cycleTime < blinkDuration;
+
+      // Only update if the blink state changes
+      if (shouldBlink !== isWireframeOn.current) {
+        isWireframeOn.current = shouldBlink;
+
         scene.traverse((child) => {
-          if (child.isMesh && child.material) {
-            child.material.wireframe = true;
+          if (child.isMesh) {
+            // if (
+            //   !originalMaterials.current.has(child.uuid) &&
+            //   child.name === 'Object_3002'
+            // ) {
+            //   // Save original material (clone for safety)
+            //   originalMaterials.current.set(child.uuid, child.material.clone());
+            // }
+
+            // Replace with wireframe material
+            child.material = new THREE.MeshBasicMaterial({
+              color: '#ffaa00',
+              wireframe: shouldBlink,
+            });
+            child.material.needsUpdate = true;
           }
         });
       }
+    } else {
+      const mesh = scene.getObjectByName('Object_3002');
+      if (mesh && originalMaterials.current.has('body')) {
+        mesh.material = originalMaterials.current.get('body').clone(); // or reuse if safe
+        mesh.material.needsUpdate = true;
+      }
+
+      blinkStartTime.current = null; // Reset when not in stage 1
     }
   });
 
