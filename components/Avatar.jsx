@@ -205,7 +205,7 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
       const elapsed = time - blinkStartTime.current;
 
       const blinkCycle = 4.0; // total cycle duration (e.g., every 2s)
-      const blinkDuration = 0.1; // how long the wireframe stays visible in each cycle
+      const blinkDuration = 0.3; // how long the wireframe stays visible in each cycle
 
       const cycleTime = elapsed % blinkCycle;
       const flickerToShow = cycleTime < blinkDuration;
