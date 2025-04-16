@@ -9,6 +9,7 @@ import { useControls } from 'leva';
 import * as THREE from 'three';
 export default function ModelViewer({ currentStage }) {
   const [isScrollingScreen, setScrollingScreen] = useState(false);
+  console.log('re-render check');
   return (
     <div style={{ width: '100vw', height: '200vh' }}>
       {/* ✅ Background Image (behind the canvas) */}
@@ -50,7 +51,7 @@ export default function ModelViewer({ currentStage }) {
             <CameraController />
             <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
               <Model
-                url='/models/environment_combine_89.glb'
+                url='/models/environment_combine_93.glb'
                 currentStage={currentStage}
                 isScrollingScreen={isScrollingScreen}
               />

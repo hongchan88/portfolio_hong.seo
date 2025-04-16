@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { Observer } from 'gsap/Observer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -24,20 +25,6 @@ export default function App() {
   // ----------------------------------
   // 1) OBSERVER LOGIC
   // ----------------------------------
-  function initObserver() {
-    gsap.registerPlugin(Observer);
-    // Kill any existing observer
-    observerRef.current?.kill();
-
-    observerRef.current = Observer.create({
-      type: 'wheel,touch,pointer',
-      wheelSpeed: -1,
-      tolerance: 100,
-      preventDefault: true,
-      onDown: () => !animatingRef.current && goPrevStage(),
-      onUp: () => !animatingRef.current && goNextStage(),
-    });
-  }
 
   // Kill the Observer if we don’t want snapping
   function killObserver() {
@@ -69,7 +56,7 @@ export default function App() {
   // ----------------------------------
   // 2) Animate WHEN currentStage changes
   // ----------------------------------
-  useEffect(() => {
+  useGSAP(() => {
     const container = heroAboutmeRef.current;
     if (!container) return;
 
@@ -96,18 +83,27 @@ export default function App() {
         tl.to(container, { yPercent: -100 });
         break;
     }
-
-    return () => {
-      tl.kill();
-    };
   }, [currentStage]);
 
   // // ----------------------------------
   // // 3) Initialize on mount
   // // ----------------------------------
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger, Observer);
+    function initObserver() {
+      gsap.registerPlugin(Observer);
+      // Kill any existing observer
+      observerRef.current?.kill();
 
+      observerRef.current = Observer.create({
+        type: 'wheel,touch,pointer',
+        wheelSpeed: -1,
+        tolerance: 200,
+        preventDefault: true,
+        onDown: () => !animatingRef.current && goPrevStage(),
+        onUp: () => !animatingRef.current && goNextStage(),
+      });
+    }
     // Start the Observer for Hero + AboutMe
     initObserver();
 
@@ -129,12 +125,6 @@ export default function App() {
         },
       },
     });
-
-    // Cleanup on unmount
-    return () => {
-      observerRef.current?.kill();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
   }, []);
 
   // ----------------------------------

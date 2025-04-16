@@ -1,16 +1,16 @@
 'use client';
 import * as THREE from 'three';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { ObjectMap, useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
 import gsap from 'gsap/all';
 import { GLTF } from 'three-stdlib';
+import Bubbles from './Bubble';
 
 type ModelProps = {
   url: string;
   currentStage: number;
-  avartarGLb: GLTF & ObjectMap;
   isScrollingScreen: boolean;
 };
 
@@ -18,26 +18,6 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene, animations, materials } = useGLTF(url);
   const { actions } = useAnimations(animations, modelRef);
-  const { gl } = useThree();
-
-  const fps = 30; // Frames per second
-  const scrollSpeed = 0.1; // Scroll speed
-  const materialName = 'Material.002'; // Example user material name
-
-  // // Pre-1100 frame ranges
-  // const scrollFrameRanges = [
-  //   { start: 220, end: 241 },
-  //   { start: 485, end: 558 },
-  //   { start: 680, end: 705 },
-  //   { start: 968, end: 1054 },
-  // ];
-
-  // // After 1100, repeat intervals every 600 frames
-  // const repeatedIntervals = [
-  //   { start: 80, end: 105 },
-  //   { start: 368, end: 454 },
-  // ];
-  // const repeatCycle = 494;
 
   // 1) On mount, load & apply baked shadow to plane named "plane"
   useEffect(() => {
@@ -69,20 +49,6 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
     );
 
     scene.traverse((child) => {
-      // Replace 'plane' with the exact name in your GLB
-      // if (child.isMesh && child.material.map) {
-      //   child.material = new THREE.MeshBasicMaterial({
-      //     map: child.material.map,
-      //     transparent: true, // if your PNG has transparency
-      //   });
-      // }
-      console.log(child, 'child');
-      // if (child.isMesh && child.name === 'Object_8005') {
-      //   console.log('left object found');
-      //   child.material.transparent = true;
-      //   child.material.opacity = 0.5;
-      // }
-
       if (child.isMesh && child.name === 'wall') {
         console.log(`Applying baked shadow to: ${child.name}`);
 
@@ -133,22 +99,22 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
 
     // Force a re-render if needed
     // gl.render(scene, (gl as any).camera);
-  }, [scene, gl]);
-  useFrame(() => {
-    if (isScrollingScreen) {
-      const material = materials[materialName];
-      if (material?.map) {
-        material.map.offset.y += scrollSpeed / fps;
-      }
-    }
-  });
+  }, [scene]);
+  useEffect(() => {
+    if (!isScrollingScreen) return;
 
-  // 2) Existing frame-based logic for "Material.002"
-  // useFrame(({ clock }) => {
-  //   const time = clock.getElapsedTime();
-  //   const currentFrame = Math.floor(time * fps);
-  //   const material = materials[materialName];
-  //   if (!material?.map) return;
+    const material = materials['Material.002'];
+    if (!material?.map) return;
+
+    // Animate the offset.y value using GSAP
+    gsap.to(material.map.offset, {
+      y: material.map.offset.y + 0.2, // or desired end value
+      duration: 4, // in seconds
+      ease: 'power1.inOut',
+    });
+  }, [isScrollingScreen]);
+
+  console.log(isScrollingScreen, 'isScrollingScreen');
 
   //   if (currentFrame <= 1094) {
   //     const shouldScroll = scrollFrameRanges.some(
@@ -300,9 +266,21 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
         overwrite: 'auto',
       });
     }
-  }, [currentStage, actions]);
+  }, [currentStage]);
 
-  return <primitive ref={modelRef} object={scene} dispose={null} />;
+  return (
+    <>
+      <primitive ref={modelRef} object={scene} dispose={null} />
+      <>
+        {bubblePositions.map((bubble, index) => (
+          <Bubbles
+            key={index}
+            position={[bubble.position.x, bubble.position.y, bubble.position.z]}
+          />
+        ))}
+      </>
+    </>
+  );
 }
 
 export function CameraController() {
@@ -320,3 +298,41 @@ export function CameraController() {
 
   return null;
 }
+
+const bubblePositions = [
+  {
+    position: {
+      x: 4.168744956725958,
+      y: -6.849726303885316,
+      z: -1.747246591705774,
+    },
+  },
+  {
+    position: {
+      x: 4.438973195914258,
+      y: -7.010245075865521,
+      z: -0.8572527277518798,
+    },
+  },
+  {
+    position: {
+      x: 4.859730145419918,
+      y: -6.4298724530674765,
+      z: -0.6849134884143633,
+    },
+  },
+  {
+    position: {
+      x: 3.8687272046964516,
+      y: -6.044663900720722,
+      z: -0.9829454119623455,
+    },
+  },
+  {
+    position: {
+      x: 4.231327699347807,
+      y: -6.442769149945077,
+      z: -1.1091074404467833,
+    },
+  },
+];
