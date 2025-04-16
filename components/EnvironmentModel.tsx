@@ -104,13 +104,16 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
 
   useEffect(() => {
     const material = materials['Material.002'];
-    if (!material?.map) return;
+    console.log(material, 'material');
+    // material.emissive = new THREE.Color(0xffffff);
+    // material.emissiveIntensity = 1;
+    if (!material.emissiveMap.offset) return;
 
     if (!scrollTl.current) {
       // 👇 create timeline once
       scrollTl.current = gsap.timeline({ repeat: -1, paused: true });
 
-      scrollTl.current.to(material.map.offset, {
+      scrollTl.current.to(material.emissiveMap.offset, {
         y: '-=1', // scroll direction/speed
         duration: 10,
         ease: 'none',
