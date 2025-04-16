@@ -100,19 +100,35 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
     // Force a re-render if needed
     // gl.render(scene, (gl as any).camera);
   }, [scene]);
-  useEffect(() => {
-    if (!isScrollingScreen) return;
+  const scrollTl = useRef(null);
 
+  useEffect(() => {
     const material = materials['Material.002'];
     if (!material?.map) return;
 
-    // Animate the offset.y value using GSAP
-    gsap.to(material.map.offset, {
-      y: material.map.offset.y + 0.2, // or desired end value
-      duration: 4, // in seconds
-      ease: 'power1.inOut',
-    });
-  }, [isScrollingScreen]);
+    if (!scrollTl.current) {
+      // 👇 create timeline once
+      scrollTl.current = gsap.timeline({ repeat: -1, paused: true });
+
+      scrollTl.current.to(material.map.offset, {
+        y: '-=1', // scroll direction/speed
+        duration: 10,
+        ease: 'none',
+      });
+    }
+
+    // 👇 control playback without restarting
+    if (isScrollingScreen) {
+      scrollTl.current.resume();
+    } else {
+      scrollTl.current.pause();
+    }
+
+    return () => {
+      // optional cleanup
+      // scrollTl.current?.kill();
+    };
+  }, [isScrollingScreen, materials]);
 
   console.log(isScrollingScreen, 'isScrollingScreen');
 
