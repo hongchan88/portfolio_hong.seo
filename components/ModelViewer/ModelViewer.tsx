@@ -11,7 +11,7 @@ export default function ModelViewer({ currentStage }) {
   const [isScrollingScreen, setScrollingScreen] = useState(false);
   console.log('re-render check');
   return (
-    <div style={{ width: '100vw', height: '200vh' }}>
+    <div style={{ width: '100vw', height: '201vh' }}>
       {/* ✅ Background Image (behind the canvas) */}
       <div
         style={{
@@ -19,7 +19,7 @@ export default function ModelViewer({ currentStage }) {
           bottom: 0,
           left: 0,
           width: '100%',
-          height: '50%',
+          height: `${currentStage === 0 ? '50%' : '51%'}`,
           background:
             'linear-gradient(169deg, rgba(0, 16, 51, 1) 32%, rgba(0, 42, 101, 1) 67%, rgba(2, 95, 173, 1) 100%)',
 

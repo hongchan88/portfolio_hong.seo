@@ -12,7 +12,6 @@ import Projects from '../components/Project/Projects';
 export default function App() {
   const observerRef = useRef<Observer | null>(null);
 
-  // Container with Hero + AboutMe
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
 
   // We'll track our "stage" in state:
@@ -34,12 +33,8 @@ export default function App() {
 
   // Forward stage (Hero -> AboutMe)
   function goNextStage() {
+    // ✅ Set animating lock
     setCurrentStage((prev) => {
-      // If we're at stage 2, kill observer for normal scrolling
-      if (prev >= 2) {
-        killObserver();
-        return 2;
-      }
       return prev + 1;
     });
   }
@@ -77,10 +72,13 @@ export default function App() {
       case 1:
         // "Halfway" – 50% scrolled up
         tl.to(container, { yPercent: -50 });
+        animatingRef.current = false;
+        killObserver();
         break;
       case 2:
         // AboutMe fully visible (Hero at -100%)
-        tl.to(container, { yPercent: -100 });
+        // tl.to(container, { yPercent: -100 });
+
         break;
     }
   }, [currentStage]);
@@ -98,7 +96,7 @@ export default function App() {
       observerRef.current = Observer.create({
         type: 'wheel,touch,pointer',
         wheelSpeed: -1,
-        tolerance: 200,
+        tolerance: 10,
         preventDefault: true,
         onDown: () => !animatingRef.current && goPrevStage(),
         onUp: () => !animatingRef.current && goNextStage(),
@@ -108,24 +106,40 @@ export default function App() {
     initObserver();
 
     // Example ScrollTrigger for Projects
-    gsap.from('.projects-section', {
+    if (
+      !aboutSectionRef.current ||
+      !heroAboutmeRef.current ||
+      !aboutImgRef.current
+    )
+      return;
+
+    const scrollLength = aboutImgRef.current.offsetHeight - window.innerHeight;
+    console.log(window.innerHeight, 'window.innerHeight');
+    console.log(
+      aboutImgRef.current.offsetHeight,
+      'aboutImgRef.current.offsetHeight'
+    );
+    gsap.to(aboutSectionRef.current, {
+      y: -400,
+      ease: 'none',
       scrollTrigger: {
         trigger: heroAboutmeRef.current,
-        start: 'top top',
-        id: 'projects',
-        markers: {
-          indent: 300,
-        },
-        // 4) onLeaveBack: if we scroll back UP from Projects -> AboutMe
-        //    we re-init the Observer & set stage=2 so AboutMe is fully in view.
+        start: '5 top',
+        end: `+=${2000}`,
+        scrub: true,
+        pin: true,
+        pinSpacing: true, // ⬅️ pushes next section down after unpin
+        markers: true,
         onLeaveBack: () => {
-          console.log('We scrolled back up from Projects into About Me!');
-          setCurrentStage(2); // ensure container is at -100% (AboutMe fully shown)
-          initObserver(); // re-enable snapping so user can go from AboutMe -> Hero
+          initObserver();
         },
       },
     });
+
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
+  const aboutSectionRef = useRef(null);
+  const aboutImgRef = useRef(null);
 
   // ----------------------------------
   // 4) Render
@@ -133,8 +147,21 @@ export default function App() {
   return (
     <main>
       {/* Stage 0 => Hero visible */}
-      <section ref={heroAboutmeRef} style={{ height: '100%' }}>
-        <Hero currentStage={currentStage} />
+      <section className='relative h-[200vh]'>
+        <div ref={heroAboutmeRef} className='sticky top-0 h-[200vh]'>
+          <Hero currentStage={currentStage} /> {/* your <Canvas /> */}
+          <div
+            ref={aboutSectionRef}
+            className='absolute top-2/3 left-0 w-[500px] z-20'
+          >
+            <img
+              ref={aboutImgRef}
+              src='/aboutme/aboutme.png'
+              alt='About Me'
+              className='w-auto h-auto'
+            />
+          </div>
+        </div>
       </section>
 
       <section style={{ height: '100%' }}>

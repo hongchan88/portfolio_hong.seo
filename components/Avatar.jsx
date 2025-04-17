@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import Bubble from './Bubble';
 
 export default function Avatar({ currentStage, setScrollingScreen }) {
   const groupRef = useRef();
@@ -209,7 +208,6 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
 
       const cycleTime = elapsed % blinkCycle;
       const flickerToShow = cycleTime < blinkDuration;
-      console.log(flickerFirst.current, 'flickerFirst.current');
 
       // Only update if the blink state changes
       if (!flickerToShow) {
