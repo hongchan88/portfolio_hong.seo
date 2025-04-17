@@ -61,6 +61,9 @@ export default function App() {
       defaults: { duration: 1, ease: 'power1.inOut' },
       onComplete: () => {
         animatingRef.current = false;
+        if (currentStage === 1) {
+          killObserver();
+        }
       },
     });
 
@@ -72,8 +75,7 @@ export default function App() {
       case 1:
         // "Halfway" – 50% scrolled up
         tl.to(container, { yPercent: -50 });
-        animatingRef.current = false;
-        killObserver();
+
         break;
       case 2:
         // AboutMe fully visible (Hero at -100%)
@@ -119,22 +121,56 @@ export default function App() {
       aboutImgRef.current.offsetHeight,
       'aboutImgRef.current.offsetHeight'
     );
-    gsap.to(aboutSectionRef.current, {
-      y: -400,
-      ease: 'none',
+
+    const tl = gsap.timeline({
       scrollTrigger: {
         trigger: heroAboutmeRef.current,
-        start: '5 top',
-        end: `+=${2000}`,
+        start: '10 top',
+        end: `+=${aboutImgRef.current.offsetHeight}`,
         scrub: true,
         pin: true,
         pinSpacing: true, // ⬅️ pushes next section down after unpin
         markers: true,
+
         onLeaveBack: () => {
           initObserver();
         },
       },
     });
+    tl.to(aboutSectionRef.current, {
+      opacity: 1,
+      duration: 0.1, // 👈 fade in fast
+    });
+    tl.to(
+      aboutSectionRef.current,
+      {
+        y: -aboutImgRef.current.offsetHeight,
+        ease: 'none',
+      },
+      '<'
+    );
+    // gsap.fromTo(
+    //   aboutSectionRef.current,
+    //   { opacity: 0 },
+    //   {
+    //     y: -aboutImgRef.current.offsetHeight,
+
+    //     opacity: 1,
+    //     scrollTrigger: {
+    //       trigger: heroAboutmeRef.current,
+    //       start: '10 top',
+    //       end: `+=${aboutImgRef.current.offsetHeight}`,
+    //       scrub: true,
+    //       pin: true,
+    //       pinSpacing: true, // ⬅️ pushes next section down after unpin
+    //       markers: true,
+
+    //       onLeaveBack: () => {
+    //         initObserver();
+    //       },
+    //     },
+    //   }
+    // );
 
     return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
@@ -152,11 +188,11 @@ export default function App() {
           <Hero currentStage={currentStage} /> {/* your <Canvas /> */}
           <div
             ref={aboutSectionRef}
-            className='absolute top-2/3 left-0 w-[500px] z-20'
+            className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0'
           >
             <img
               ref={aboutImgRef}
-              src='/aboutme/aboutme.png'
+              src='/aboutme/aboutme3.png'
               alt='About Me'
               className='w-auto h-auto'
             />
