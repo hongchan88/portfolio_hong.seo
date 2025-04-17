@@ -1,10 +1,6 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Navbar from './Navbar';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
 const ModelViewer = dynamic(() => import('./ModelViewer/ModelViewer'), {
   ssr: false,
 });

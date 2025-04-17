@@ -10,6 +10,7 @@ export default function RootLayout({ children }) {
         <ThemeProvider defaultTheme='light' attribute='class'>
           <div className='main-contents'>{children}</div>
         </ThemeProvider>
+        <Footer />
       </body>
     </html>
   );

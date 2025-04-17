@@ -183,31 +183,40 @@ export default function App() {
   return (
     <main>
       {/* Stage 0 => Hero visible */}
-      <section className='relative h-[200vh]'>
-        <div ref={heroAboutmeRef} className='sticky top-0 h-[200vh]'>
-          <Hero currentStage={currentStage} /> {/* your <Canvas /> */}
-          <div
-            ref={aboutSectionRef}
-            className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0'
-          >
-            <img
-              ref={aboutImgRef}
-              src='/aboutme/aboutme3.png'
-              alt='About Me'
-              className='w-auto h-auto'
-            />
-          </div>
+      <section ref={heroAboutmeRef} className='relative h-[200vh]'>
+        <Hero currentStage={currentStage} /> {/* your <Canvas /> */}
+        <div
+          ref={aboutSectionRef}
+          className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0'
+        >
+          <img
+            ref={aboutImgRef}
+            src='/aboutme/aboutme3.png'
+            alt='About Me'
+            className='w-auto h-auto'
+          />
         </div>
       </section>
 
-      <section style={{ height: '100%' }}>
-        <AboutMe />
-      </section>
-
       {/* Normal scrolling content (Projects) */}
-      <section className='projects-section' style={{ height: '100%' }}>
+      <section
+        className='projects-section'
+        style={{
+          height: '100%',
+          marginTop: '-100vh',
+          background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
+        }}
+      >
         <Projects />
       </section>
+      {/* <section
+        style={{
+          height: '100%',
+          marginTop: '-100vh',
+        }}
+      >
+        <AboutMe />
+      </section> */}
     </main>
   );
 }
