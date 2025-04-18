@@ -1,24 +1,21 @@
+import { useState } from 'react';
 import { getStackImg } from '../../app/utils/getStackImage';
 interface ProjectInfoProps {
-  title: string;
-  info: string;
   stacks: string[];
   git?: string;
   live?: string;
 }
 
-const ProjectInfo = ({ title, info, stacks, git, live }: ProjectInfoProps) => {
+const ProjectInfo = ({ stacks, git, live }: ProjectInfoProps) => {
+  const [hovered, setHovered] = useState<string | null>(null);
   return (
-    <div className='w-full px-5 py-1'>
-      <div className='relative'>
-        <div className='absolute w-full left-0 -top-14'>
-          <div className='flex justify-between mb-5'>
-            <div className='flex'>
-              {' '}
-              <h1 className='text-lg sm:text-4xl font-bold text-black-50'>
-                {title}
-              </h1>
-            </div>
+    <div className='w-full py-1'>
+      <div className='flex flex-col justify-between h-full mt-10'>
+        <div className='flex-col'>
+          <div className='flex justify-between items-center'>
+            <h1 className='bg-red-500 text-xl rounded-md px-2 py-1 inline-block font-bold text-gray-50'>
+              Tech Stack Used
+            </h1>
             <div className='flex '>
               {git && (
                 <a
@@ -46,27 +43,29 @@ const ProjectInfo = ({ title, info, stacks, git, live }: ProjectInfoProps) => {
               )}
             </div>
           </div>
-        </div>
-      </div>
-      <div className='flex flex-col justify-between h-full'>
-        <div className='flex'>
-          <h1 className='text-lg mt-5'>{info}</h1>
-        </div>
-
-        <div className='flex-col'>
-          <h1 className='bg-red-500 text-xl rounded-md px-2 py-1 inline-block font-bold text-gray-50'>
-            Tech Stack Used
-          </h1>
           <div className='flex flex-wrap'>
             {stacks.map((stack) => {
               const stackInfo = getStackImg(stack);
+              const isHovered = hovered === stack;
+
               return (
-                <img
+                <div
                   key={stack}
-                  className='h-14 w-14 mx-4 my-4 dark:bg-white rounded-lg'
-                  src={stackInfo.url}
-                  title={stackInfo.desc}
-                />
+                  className='h-14 w-14 mx-4 my-4 flex items-center justify-center dark:bg-white rounded-lg cursor-pointer'
+                  onMouseEnter={() => setHovered(stack)}
+                  onMouseLeave={() => setHovered(null)}
+                >
+                  {isHovered ? (
+                    <p className='text-sm text-center'>{stackInfo.desc}</p>
+                  ) : (
+                    <img
+                      src={stackInfo.url}
+                      title={stackInfo.desc}
+                      alt={stackInfo.desc}
+                      className='h-full w-full object-contain'
+                    />
+                  )}
+                </div>
               );
             })}
           </div>

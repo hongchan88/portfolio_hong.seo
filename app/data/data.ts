@@ -1,19 +1,70 @@
+import { time } from 'console';
+
 export const projectsData = [
+  // {
+  //   title: 'BecomeID',
+  //   link: 'https://becomeid.netlify.app/',
+  //   imgUrl:
+  //     'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459640/portfolio/imeaazfuvl0v3fnilozb.png',
+  //   live: 'https://becomeid.netlify.app/',
+  //   info: `Developed a platform to connect individuals using unique identifiers like car plates or addresses. Built with React, Apollo, Prisma, and GraphQL for robust data handling and queries.`,
+  //   stacks: ['react', 'apollo', 'prisma', 'graphql', 'netflify'],
+  //   git: 'https://github.com/hongchan88/becomeID-backend',
+  // },
+
   {
-    title: 'Image Resizer App',
+    timelineYear: '2025',
+    description: 'Portfolio website',
+    link: 'https://github.com/hongchan88/portfolio_hong.seo',
+    imgUrl: ['projects/2025-2.png', 'projects/2025-1.png'],
+    live: 'https://portfolio-hong.seo',
+    info: `Showcase of my skills and projects, built with React, Next.js, and Tailwind CSS for a modern and responsive design. The website reflects my dedication to detail and creativity.`,
+    stacks: ['typescript', 'nextjs', 'tailwind', 'blender', '3djs', 'GSAP'],
+    git: 'https://github.com/hongchan88/portfolio_hong.seo',
+  },
+  {
+    timelineYear: '2022-2024',
+    description:
+      'work in startup / leetcode / commits sharing random screen shots from my daily work which does not have any sensitive information. i tried to do leedcode problems and manage to finish some. i pushed this much code in 2022-2024 wow ',
+    imgUrl: [
+      'projects/2024-1.png',
+      'projects/2024-2.png',
+      'projects/2024-3.png',
+      'projects/2024-4.png',
+    ],
+    stacks: [
+      'javascript',
+      'nextjs',
+      'typescript',
+      'scss',
+      'retool',
+      'segment.io',
+      '3djs',
+      'python',
+      'GSAP',
+      'AWS',
+    ],
+    git: 'https://github.com/hongchan88/portfolio_hong.seo',
+    leetcode: 'https://leetcode.com/hongchan88/',
+  },
+  {
+    timelineYear: '2023',
+    description: 'Image Resizer App',
     link: 'https://kappimageresize.vercel.app/?from=resume',
-    imgUrl:
+    imgUrl: [
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677282754/portfolio/ojwrq345s3qrmv4afqt7.png',
+    ],
     info: `Developed a feature-rich full-stack application for resizing images, optimized for visa requirements. Utilized Next.js and Tailwind CSS for efficient performance, and integrated SendGrid API for automated email communication.`,
     stacks: ['nextjs', 'tailwind', 'sendgrid', 'supabase'],
     git: 'https://github.com/hongchan88/k-app',
     live: 'https://kappimageresize.vercel.app/?from=resume',
   },
   {
-    title: 'Star Wars Movie App',
-    link: 'https://star-wars-api-hong.vercel.app/',
-    imgUrl:
+    timelineYear: '2022',
+    description: 'Star Wars Movie App',
+    imgUrl: [
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1640824416/portfolio/bqevtrmvfqkocbddby0c.png',
+    ],
 
     info: `Built a dynamic movie search platform leveraging Next.js and the Star Wars API. Employed static generation to optimize load times and improve SEO performance, ideal for datasets with infrequent updates.`,
     stacks: ['nextjs', 'scss', 'motionframer', 'vercel'],
@@ -21,10 +72,12 @@ export const projectsData = [
     live: 'https://star-wars-api-hong.vercel.app/',
   },
   {
-    title: 'Boot Drive Thru',
+    timelineYear: '2021',
+    description: 'Boot Drive Thru',
     link: 'https://boot-drive-thru.netlify.app/',
-    imgUrl:
+    imgUrl: [
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459643/portfolio/bzrhiuinz3tlqfrovjbg.png',
+    ],
 
     info: `Conceptualized and developed an e-commerce platform inspired by the shift in consumer behavior during the COVID-19 pandemic. Designed a contactless shopping experience with React, Tailwind CSS, and Firebase.`,
     stacks: ['javascript', 'react', 'firebase', 'tailwind', 'netlify'],
@@ -32,10 +85,12 @@ export const projectsData = [
     live: 'https://boot-drive-thru.netlify.app/',
   },
   {
-    title: 'Noogle',
+    timelineYear: '2021',
+    description: 'Noogle',
     link: 'https://netflix-noogle-search-movie.vercel.app/',
-    imgUrl:
+    imgUrl: [
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1639613226/portfolio/tqrzdspkhhwyupksruv5.png',
+    ],
 
     info: `Final project for my diploma in web development. Created a Netflix movie search engine allowing users to search by title, year, country, and director. Built with Next.js and Supabase for a seamless user experience.`,
     stacks: ['nextjs', 'vercel', 'supabase'],
@@ -43,34 +98,16 @@ export const projectsData = [
     live: 'https://netflix-noogle-search-movie.vercel.app/',
   },
   {
-    title: 'BecomeID',
-    link: 'https://becomeid.netlify.app/',
-    imgUrl:
-      'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459640/portfolio/imeaazfuvl0v3fnilozb.png',
-    live: 'https://becomeid.netlify.app/',
-    info: `Developed a platform to connect individuals using unique identifiers like car plates or addresses. Built with React, Apollo, Prisma, and GraphQL for robust data handling and queries.`,
-    stacks: ['react', 'apollo', 'prisma', 'graphql', 'netflify'],
-    git: 'https://github.com/hongchan88/becomeID-backend',
-  },
-  {
+    timelineYear: '2021',
     title: 'Simple API Service',
     link: 'https://github.com/hongchan88/Simple_API_ExpressJs',
-    imgUrl:
+    imgUrl: [
       'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459646/portfolio/fkdoj7cza7aol9nnpqpq.png',
+    ],
 
     info: `Designed and implemented a RESTful API using Node.js and Express.js, following the MVC pattern for maintainable and scalable architecture. Included Jest for testing and Postman for endpoint validation.`,
     stacks: ['nodejs', 'expressjs', 'jest', 'postman'],
     git: 'https://github.com/hongchan88/Simple_API_ExpressJs',
-  },
-  {
-    title: 'Portfolio website',
-    link: 'https://github.com/hongchan88/portfolio_hong.seo',
-    imgUrl:
-      'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459648/portfolio/mb0i9wdcje1nqtxrucwq.png',
-
-    info: `Showcase of my skills and projects, built with React, Next.js, and Tailwind CSS for a modern and responsive design. The website reflects my dedication to detail and creativity.`,
-    stacks: ['react', 'nextjs', 'tailwind'],
-    git: 'https://github.com/hongchan88/portfolio_hong.seo',
   },
 ];
 
@@ -158,6 +195,39 @@ export const stackImages = {
   supabase: {
     url: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg',
     desc: 'supabase',
+  },
+
+  '3djs': {
+    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/threejs/threejs-original.svg',
+    desc: 'Three.js',
+  },
+  AWS: {
+    url: 'https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-ar21.svg',
+    desc: 'Amazon Web Services',
+  },
+  GSAP: {
+    url: '/projects/logo/gsap.svg',
+    desc: 'GreenSock Animation Platform',
+  },
+  blender: {
+    url: 'https://www.vectorlogo.zone/logos/blender/blender-ar21.svg',
+    desc: 'Blender',
+  },
+  python: {
+    url: 'https://cdn.jsdelivr.net/npm/@programming-languages-logos/python@0.0.0/python.svg',
+    desc: 'Python',
+  },
+  retool: {
+    url: 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Retool_logo.svg',
+    desc: 'Retool',
+  },
+  'segment.io': {
+    url: 'https://www.vectorlogo.zone/logos/segment/segment-ar21.svg',
+    desc: 'Segment.io',
+  },
+  typescript: {
+    url: 'https://cdn.jsdelivr.net/npm/programming-languages-logos@0.0.3/src/typescript/typescript.svg',
+    desc: 'TypeScript',
   },
 };
 
