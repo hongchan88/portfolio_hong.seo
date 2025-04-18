@@ -6,13 +6,41 @@ import { Observer } from 'gsap/Observer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Hero from '../components/Hero';
-import AboutMe from '../components/AboutMe';
-import Projects from '../components/Project/Projects';
-import { Timeline } from '../components/Timeline/TimeLine';
 import ProjectInfo from '../components/Project/ProjectInfo';
 import { projectsData } from './data/data';
+import { Timeline } from '../components/Timeline/Timeline';
 
 export default function App() {
+  const projectData = projectsData.map((project) => ({
+    timelineYear: project.timelineYear,
+    title: project.title,
+    git: project.git,
+    live: project.live,
+    content: (
+      <div>
+        <div className='mb-8 text-lg font-normal text-neutral-800 md:text-lg dark:text-neutral-200'>
+          {project.description}
+        </div>
+        <div className='grid grid-cols-2 gap-4'>
+          {project.imgUrl.map((project) => (
+            <img
+              key={project}
+              src={project}
+              alt='startup template'
+              width={500}
+              height={500}
+              className='h-full w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] md:h-full lg:h-full'
+            />
+          ))}
+        </div>
+        <ProjectInfo
+          stacks={project.stacks}
+          live={project.live}
+          git={project.git}
+        />
+      </div>
+    ),
+  }));
   const observerRef = useRef<Observer | null>(null);
 
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
@@ -224,30 +252,3 @@ export default function App() {
     </main>
   );
 }
-const projectData = projectsData.map((project) => ({
-  title: project.timelineYear,
-  content: (
-    <div>
-      <p className='mb-8 text-xs font-normal text-neutral-800 md:text-sm dark:text-neutral-200'>
-        {project.description}
-      </p>
-      <div className='grid grid-cols-2 gap-4'>
-        {project.imgUrl.map((project) => (
-          <img
-            key={project}
-            src={project}
-            alt='startup template'
-            width={500}
-            height={500}
-            className='h-full w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] md:h-full lg:h-full'
-          />
-        ))}
-      </div>
-      <ProjectInfo
-        stacks={project.stacks}
-        live={project.live}
-        git={project.git}
-      />
-    </div>
-  ),
-}));
