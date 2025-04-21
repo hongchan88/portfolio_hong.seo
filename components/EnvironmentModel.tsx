@@ -225,8 +225,8 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
     }
     if (
       wallShadow instanceof THREE.Mesh &&
-      wallObjGroup instanceof THREE.Group &&
-      roomObjGrop instanceof THREE.Group
+      wallObjGroup instanceof THREE.Object3D &&
+      roomObjGrop instanceof THREE.Object3D
     ) {
       gsap.killTweensOf([
         roomObjGrop.scale,
