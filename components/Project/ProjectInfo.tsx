@@ -6,7 +6,7 @@ interface ProjectInfoProps {
   live?: string;
 }
 
-const ProjectInfo = ({ stacks, git, live }: ProjectInfoProps) => {
+const ProjectInfo = ({ stacks }: ProjectInfoProps) => {
   const [hovered, setHovered] = useState<string | null>(null);
   return (
     <div className='w-full py-1'>
@@ -16,32 +16,6 @@ const ProjectInfo = ({ stacks, git, live }: ProjectInfoProps) => {
             <h1 className='bg-red-500 text-xl rounded-md px-2 py-1 inline-block font-bold text-gray-50'>
               Tech Stack Used
             </h1>
-            <div className='flex '>
-              {git && (
-                <a
-                  href={git}
-                  target={'_blank'}
-                  className='dark:bg-yellow-50 rounded-lg mx-1'
-                >
-                  <img
-                    className='h-10 w-10 mx-4 '
-                    src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg'
-                  />
-                </a>
-              )}
-              {live && (
-                <a
-                  href={live}
-                  target={'_blank'}
-                  className='dark:bg-yellow-50 rounded-lg'
-                >
-                  <img
-                    className='h-10 w-10 mx-4 '
-                    src='https://img.icons8.com/pastel-glyph/64/000000/external-link--v1.png'
-                  />
-                </a>
-              )}
-            </div>
           </div>
           <div className='flex flex-wrap'>
             {stacks.map((stack) => {

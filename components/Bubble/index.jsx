@@ -1,6 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
 import gsap from 'gsap';
 
 function SingleBubble({ position }) {
@@ -40,9 +38,6 @@ function SingleBubble({ position }) {
 export default function Bubbles({ count = 2, position }) {
   console.log(position, 'position');
   const bubbles = Array.from({ length: count }, (_, i) => {
-    const x = (Math.random() - 0.5) * 4;
-    const y = Math.random() * 10;
-    const z = (Math.random() - 0.5) * 4;
     return <SingleBubble key={i} position={position} />;
   });
 

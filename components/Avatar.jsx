@@ -12,7 +12,6 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
 
   const { scene, animations } = useGLTF('/models/avatar_52.glb');
   const { actions } = useAnimations(animations, groupRef);
-  const flickerFirst = useRef(null);
   const originalMaterials = useRef(new Map());
 
   const blinkStartTime = useRef(null);

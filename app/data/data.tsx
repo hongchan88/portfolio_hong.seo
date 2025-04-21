@@ -53,6 +53,34 @@ export const projectsData: Project[] = [
     git: 'https://github.com/hongchan88/portfolio_hong.seo',
   },
   {
+    timelineYear: '2025',
+    title: 'Craftify',
+    imgUrl: ['projects/craftify-2.png', 'projects/craftify-1.png'],
+    live: 'https://portfolio-hong.seo',
+    description: (
+      <div>
+        <h3 className='font-semibold mb-1'>Personal Portfolio Website</h3>
+        <ul className='list-disc list-inside ml-4 space-y-1'>
+          <li>Showcases personal projects and technical skills</li>
+          <li>
+            Built with <strong>Next.js</strong>, <strong>TypeScript</strong>,
+            and <strong>Tailwind CSS</strong> for a responsive design
+          </li>
+          <li>
+            Integrated <strong>3D animation</strong> using{' '}
+            <strong>Blender</strong> and <strong>GSAP</strong> for impressive
+            visual effects
+          </li>
+          <li>
+            Focused on delivering an engaging and interactive user experience
+          </li>
+        </ul>
+      </div>
+    ),
+    stacks: ['typescript', 'nextjs', 'tailwind', 'blender', '3djs', 'GSAP'],
+    git: 'https://github.com/hongchan88/portfolio_hong.seo',
+  },
+  {
     title: 'Life as a startup dev ',
     timelineYear: '2022-current',
     description: (
@@ -141,10 +169,10 @@ export const projectsData: Project[] = [
       </div>
     ),
     imgUrl: [
+      'projects/2024-4.png',
+      'projects/2024-3.png',
       'projects/2024-1.png',
       'projects/2024-2.png',
-      'projects/2024-3.png',
-      'projects/2024-4.png',
       'projects/commit-1.png',
       'projects/leetcode-1.png',
     ],

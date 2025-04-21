@@ -1,11 +1,10 @@
 'use client';
 import * as THREE from 'three';
-import React, { useRef, useEffect, useState } from 'react';
-import { useGLTF, useAnimations } from '@react-three/drei';
-import { ObjectMap, useFrame, useThree } from '@react-three/fiber';
+import React, { useRef, useEffect } from 'react';
+import { useGLTF } from '@react-three/drei';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
 import gsap from 'gsap/all';
-import { GLTF } from 'three-stdlib';
 import Bubbles from './Bubble';
 
 type ModelProps = {
@@ -16,8 +15,7 @@ type ModelProps = {
 
 export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
   const modelRef = useRef<THREE.Group>(null);
-  const { scene, animations, materials } = useGLTF(url);
-  const { actions } = useAnimations(animations, modelRef);
+  const { scene, materials } = useGLTF(url);
 
   // 1) On mount, load & apply baked shadow to plane named "plane"
   useEffect(() => {
@@ -41,59 +39,61 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
       }
     );
     const labWallGround = loader.load(
-      '/models/labwallGround_transparent.png',
-      (texture) => {
-        // texture.flipY = false; // Fix upside-down issue
-        // texture.needsUpdate = true;
-      }
+      '/models/labwallGround_transparent.png'
+      // (texture) => {
+      //   // texture.flipY = false; // Fix upside-down issue
+      //   // texture.needsUpdate = true;
+      // }
     );
 
     scene.traverse((child) => {
-      if (child.isMesh && child.name === 'wall') {
-        console.log(`Applying baked shadow to: ${child.name}`);
+      if (child instanceof THREE.Mesh) {
+        if (child.isMesh && child.name === 'wall') {
+          console.log(`Applying baked shadow to: ${child.name}`);
 
-        child.material = new THREE.MeshStandardMaterial({
-          map: shadowTexture,
-          transparent: true, // Enable transparency
-          opacity: 0.1, // Fully visible texture
-          depthWrite: false, // Prevents z-fighting issues
-        });
+          child.material = new THREE.MeshStandardMaterial({
+            map: shadowTexture,
+            transparent: true, // Enable transparency
+            opacity: 0.1, // Fully visible texture
+            depthWrite: false, // Prevents z-fighting issues
+          });
 
-        // Boost the shadow contrast and opacity
-        // child.material.color.setRGB(0, 0, 0); // Darken the shadow
-        // child.material.color.multiplyScalar(1); // Increase shadow intensity
+          // Boost the shadow contrast and opacity
+          // child.material.color.setRGB(0, 0, 0); // Darken the shadow
+          // child.material.color.multiplyScalar(1); // Increase shadow intensity
 
-        child.material.needsUpdate = true;
-      }
-      if (child.isMesh && child.name === 'ground') {
-        console.log(`Applying baked shadow to: ${child.name}`);
-        child.material = new THREE.MeshStandardMaterial({
-          map: groundShadow,
-          transparent: true, // Enable transparency
-          opacity: 0.1, // Fully visible texture
-          depthWrite: false, // Prevents z-fighting issues
-        });
+          child.material.needsUpdate = true;
+        }
+        if (child.isMesh && child.name === 'ground') {
+          console.log(`Applying baked shadow to: ${child.name}`);
+          child.material = new THREE.MeshStandardMaterial({
+            map: groundShadow,
+            transparent: true, // Enable transparency
+            opacity: 0.1, // Fully visible texture
+            depthWrite: false, // Prevents z-fighting issues
+          });
 
-        // Boost the shadow contrast and opacity
-        // child.material.color.setRGB(0, 0, 0); // Darken the shadow
-        // child.material.color.multiplyScalar(1); // Increase shadow intensity
+          // Boost the shadow contrast and opacity
+          // child.material.color.setRGB(0, 0, 0); // Darken the shadow
+          // child.material.color.multiplyScalar(1); // Increase shadow intensity
 
-        child.material.needsUpdate = true;
-      }
-      if (child.isMesh && child.name === 'lab_ground_wall') {
-        console.log(`Applying baked shadow to: ${child.name}`);
-        child.material = new THREE.MeshStandardMaterial({
-          map: labWallGround,
-          transparent: true, // Enable transparency
-          opacity: 0.2, // Fully visible texture
-          depthWrite: false, // Prevents z-fighting issues
-        });
+          child.material.needsUpdate = true;
+        }
+        if (child.isMesh && child.name === 'lab_ground_wall') {
+          console.log(`Applying baked shadow to: ${child.name}`);
+          child.material = new THREE.MeshStandardMaterial({
+            map: labWallGround,
+            transparent: true, // Enable transparency
+            opacity: 0.2, // Fully visible texture
+            depthWrite: false, // Prevents z-fighting issues
+          });
 
-        // Boost the shadow contrast and opacity
-        // child.material.color.setRGB(0, 0, 0); // Darken the shadow
-        // child.material.color.multiplyScalar(1); // Increase shadow intensity
+          // Boost the shadow contrast and opacity
+          // child.material.color.setRGB(0, 0, 0); // Darken the shadow
+          // child.material.color.multiplyScalar(1); // Increase shadow intensity
 
-        child.material.needsUpdate = true;
+          child.material.needsUpdate = true;
+        }
       }
     });
 
@@ -104,33 +104,34 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
 
   useEffect(() => {
     const material = materials['Material.002'];
-    console.log(material, 'material');
-    // material.emissive = new THREE.Color(0xffffff);
-    // material.emissiveIntensity = 1;
-    if (!material.emissiveMap.offset) return;
+    if (material instanceof THREE.MeshStandardMaterial) {
+      // material.emissive = new THREE.Color(0xffffff);
+      // material.emissiveIntensity = 1;
+      if (!material.emissiveMap.offset) return;
 
-    if (!scrollTl.current) {
-      // 👇 create timeline once
-      scrollTl.current = gsap.timeline({ repeat: -1, paused: true });
+      if (!scrollTl.current) {
+        // 👇 create timeline once
+        scrollTl.current = gsap.timeline({ repeat: -1, paused: true });
 
-      scrollTl.current.to(material.emissiveMap.offset, {
-        y: '-=1', // scroll direction/speed
-        duration: 10,
-        ease: 'none',
-      });
+        scrollTl.current.to(material.emissiveMap.offset, {
+          y: '-=1', // scroll direction/speed
+          duration: 10,
+          ease: 'none',
+        });
+      }
+
+      // 👇 control playback without restarting
+      if (isScrollingScreen) {
+        scrollTl.current.resume();
+      } else {
+        scrollTl.current.pause();
+      }
+
+      return () => {
+        // optional cleanup
+        // scrollTl.current?.kill();
+      };
     }
-
-    // 👇 control playback without restarting
-    if (isScrollingScreen) {
-      scrollTl.current.resume();
-    } else {
-      scrollTl.current.pause();
-    }
-
-    return () => {
-      // optional cleanup
-      // scrollTl.current?.kill();
-    };
   }, [isScrollingScreen, materials]);
 
   console.log(isScrollingScreen, 'isScrollingScreen');
@@ -218,72 +219,76 @@ export function Model({ url, currentStage, isScrollingScreen }: ModelProps) {
     const roomObjGrop = scene.getObjectByName('room_obj');
     const wallObjGroup = scene.getObjectByName('wall_obj');
     const wallShadow = scene.getObjectByName('wall');
-
     if (!roomObjGrop || !wallObjGroup || !wallShadow) {
       console.warn('Groups not found');
       return;
     }
+    if (
+      wallShadow instanceof THREE.Mesh &&
+      wallObjGroup instanceof THREE.Group &&
+      roomObjGrop instanceof THREE.Group
+    ) {
+      gsap.killTweensOf([
+        roomObjGrop.scale,
+        wallObjGroup.scale,
+        wallShadow.material,
+      ]);
 
-    gsap.killTweensOf([
-      roomObjGrop.scale,
-      wallObjGroup.scale,
-      wallShadow.material,
-    ]);
+      if (currentStage === 0) {
+        wallShadow.material.transparent = true;
 
-    if (currentStage === 0) {
-      wallShadow.material.transparent = true;
+        // Animate opacity to 0 with GSAP
+        gsap.to(wallShadow.material, {
+          opacity: 0.1,
+          duration: 1,
+          delay: 1.5,
+          ease: 'power1.inOut',
+          overwrite: 'auto',
+        });
+        gsap.to(roomObjGrop.scale, {
+          x: 1,
+          y: 1,
+          z: 1,
+          duration: 1,
+          ease: 'back.out(1.7)',
+          overwrite: 'auto',
+        });
 
-      // Animate opacity to 0 with GSAP
-      gsap.to(wallShadow.material, {
-        opacity: 0.1,
-        duration: 1,
-        delay: 1.5,
-        ease: 'power1.inOut',
-        overwrite: 'auto',
-      });
-      gsap.to(roomObjGrop.scale, {
-        x: 1,
-        y: 1,
-        z: 1,
-        duration: 1,
-        ease: 'back.out(1.7)',
-        overwrite: 'auto',
-      });
-
-      gsap.to(wallObjGroup.scale, {
-        x: 1,
-        y: 1,
-        z: 1,
-        duration: 1,
-        delay: 0.2,
-        ease: 'back.out(1.7)',
-        overwrite: 'auto',
-      });
-    } else if (currentStage > 0) {
-      gsap.to(wallShadow.material, {
-        opacity: 0,
-        duration: 2,
-        delay: 0.2,
-        ease: 'power1.inOut',
-        overwrite: 'auto',
-      });
-      gsap.to(roomObjGrop.scale, {
-        x: 0,
-        y: 0,
-        z: 0,
-        duration: 1,
-        ease: 'back.in(1.7)',
-        overwrite: 'auto',
-      });
-      gsap.to(wallObjGroup.scale, {
-        x: 0,
-        y: 0,
-        z: 0,
-        duration: 1,
-        delay: 0.2,
-        ease: 'back.in(1.7)',
-        overwrite: 'auto',
-      });
+        gsap.to(wallObjGroup.scale, {
+          x: 1,
+          y: 1,
+          z: 1,
+          duration: 1,
+          delay: 0.2,
+          ease: 'back.out(1.7)',
+          overwrite: 'auto',
+        });
+      } else if (currentStage > 0) {
+        gsap.to(wallShadow.material, {
+          opacity: 0,
+          duration: 2,
+          delay: 0.2,
+          ease: 'power1.inOut',
+          overwrite: 'auto',
+        });
+        gsap.to(roomObjGrop.scale, {
+          x: 0,
+          y: 0,
+          z: 0,
+          duration: 1,
+          ease: 'back.in(1.7)',
+          overwrite: 'auto',
+        });
+        gsap.to(wallObjGroup.scale, {
+          x: 0,
+          y: 0,
+          z: 0,
+          duration: 1,
+          delay: 0.2,
+          ease: 'back.in(1.7)',
+          overwrite: 'auto',
+        });
+      }
     }
   }, [currentStage]);
 

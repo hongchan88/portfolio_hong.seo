@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Observer } from 'gsap/Observer';
@@ -145,13 +145,6 @@ export default function App() {
       !aboutImgRef.current
     )
       return;
-
-    const scrollLength = aboutImgRef.current.offsetHeight - window.innerHeight;
-    console.log(window.innerHeight, 'window.innerHeight');
-    console.log(
-      aboutImgRef.current.offsetHeight,
-      'aboutImgRef.current.offsetHeight'
-    );
 
     const tl = gsap.timeline({
       scrollTrigger: {

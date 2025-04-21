@@ -1,7 +1,7 @@
 'use client';
-import { useState, Suspense, useRef } from 'react';
+import { useState, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, OrbitControls } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 // Import your existing components
 import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
@@ -93,11 +93,12 @@ function CameraController() {
     camera.position.set(cx, cy, cz);
     camera.lookAt(0, 0, 0);
     // console.log('Actual camera position:', camera.position);
-
-    // Update FOV if it changed
-    if (camera.fov !== zoom) {
-      camera.fov = zoom;
-      camera.updateProjectionMatrix();
+    if (camera instanceof THREE.PerspectiveCamera) {
+      // Update FOV if it changed
+      if (camera.fov !== zoom) {
+        camera.fov = zoom;
+        camera.updateProjectionMatrix();
+      }
     }
   });
 
@@ -105,47 +106,47 @@ function CameraController() {
 }
 
 // ✅ Tilt the Entire 3D Scene When Moving Mouse Over It
-function TiltedScene({ children }) {
-  const sceneRef = useRef(null);
-  const { viewport } = useThree();
+// function TiltedScene({ children }) {
+//   const sceneRef = useRef(null);
+//   const { viewport } = useThree();
 
-  // Store target rotation (this updates instantly)
-  const targetRotation = useRef({ x: 0, y: 0 });
+//   // Store target rotation (this updates instantly)
+//   const targetRotation = useRef({ x: 0, y: 0 });
 
-  const handlePointerMove = (event) => {
-    if (!sceneRef.current) return;
+//   const handlePointerMove = (event) => {
+//     if (!sceneRef.current) return;
 
-    // Convert mouse position to small range (-0.5 to 0.5)
-    const mouseX = (event.pointer.x / viewport.width) * 20; // Smaller movement range
-    const mouseY = (event.pointer.y / viewport.height) * 20;
+//     // Convert mouse position to small range (-0.5 to 0.5)
+//     const mouseX = (event.pointer.x / viewport.width) * 20; // Smaller movement range
+//     const mouseY = (event.pointer.y / viewport.height) * 20;
 
-    // Set target rotation instead of changing instantly
-    targetRotation.current.x = mouseY * 0.5;
-    targetRotation.current.y = mouseX * 0.5;
-  };
+//     // Set target rotation instead of changing instantly
+//     targetRotation.current.x = mouseY * 0.5;
+//     targetRotation.current.y = mouseX * 0.5;
+//   };
 
-  useFrame(() => {
-    if (!sceneRef.current) return;
+//   useFrame(() => {
+//     if (!sceneRef.current) return;
 
-    // Smoothly interpolate towards the target rotation
-    sceneRef.current.position.x = THREE.MathUtils.lerp(
-      sceneRef.current.position.x,
-      targetRotation.current.x,
-      0.02 // Lower value makes movement slower
-    );
-    sceneRef.current.position.y = THREE.MathUtils.lerp(
-      sceneRef.current.position.y,
-      targetRotation.current.y,
-      0.02
-    );
-  });
+//     // Smoothly interpolate towards the target rotation
+//     sceneRef.current.position.x = THREE.MathUtils.lerp(
+//       sceneRef.current.position.x,
+//       targetRotation.current.x,
+//       0.02 // Lower value makes movement slower
+//     );
+//     sceneRef.current.position.y = THREE.MathUtils.lerp(
+//       sceneRef.current.position.y,
+//       targetRotation.current.y,
+//       0.02
+//     );
+//   });
 
-  return (
-    <group ref={sceneRef} onPointerMove={handlePointerMove}>
-      {children}
-    </group>
-  );
-}
+//   return (
+//     <group ref={sceneRef} onPointerMove={handlePointerMove}>
+//       {children}
+//     </group>
+//   );
+// }
 function LoadingIndicator() {
   return (
     <div className='flex flex-col items-center justify-center h-full text-gray-500 text-sm'>
