@@ -5,7 +5,11 @@ import { useGLTF, useAnimations, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function Avatar({ currentStage, setScrollingScreen }) {
+export default function Avatar({
+  currentStage,
+  setScrollingScreen,
+  isPlaying,
+}) {
   const groupRef = useRef();
   const [prevStage, setPrevStage] = useState(null);
   const isPlayingNextSection = useRef(false);
@@ -102,7 +106,7 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
     // Stage transitions
     if (prevStage === 1 && currentStage === 0) {
       playNextSectionInReverse();
-    } else if (currentStage === 0) {
+    } else if (currentStage === 0 && isPlaying === true) {
       playInitialSequence();
       originalMaterials.current.set('body', bodyMesh.material.clone());
       originalMaterials.current.set('face', faceMesh.material.clone());
@@ -115,7 +119,7 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
     setPrevStage(currentStage);
 
     return () => cleanupFns.forEach((fn) => fn());
-  }, [currentStage]);
+  }, [currentStage, isPlaying]);
 
   const calculateFrameToTriggerScrolling = () => {
     const typingAction = actions?.['typing3'];
@@ -159,7 +163,7 @@ export default function Avatar({ currentStage, setScrollingScreen }) {
   useFrame(({ clock }) => {
     const nextSectionAction = actions['avatarModel'];
 
-    if (currentStage === 0) {
+    if (currentStage === 0 && isPlaying === true) {
       calculateFrameToTriggerScrolling();
       changeFacePng();
       hasFlickered.current = false;

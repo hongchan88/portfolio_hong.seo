@@ -1,7 +1,7 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, useProgress } from '@react-three/drei';
 // Import your existing components
 import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
@@ -9,71 +9,85 @@ import { useControls } from 'leva';
 import * as THREE from 'three';
 export default function ModelViewer({ currentStage }) {
   const [isScrollingScreen, setScrollingScreen] = useState(false);
-  console.log('re-render check');
+  const [canPlay, setCanPlay] = useState(false);
+  const { active, progress } = useProgress();
+
+  useEffect(() => {
+    if (!active && progress === 100) {
+      const timeout = setTimeout(() => setCanPlay(true), 1000); // wait 1s after loading
+      return () => clearTimeout(timeout);
+    }
+  }, [active, progress]);
   return (
-    <div style={{ width: '100vw', height: '201vh' }}>
-      {/* ✅ Background Image (behind the canvas) */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          height: `${currentStage === 0 ? '50%' : '51%'}`,
-          background:
-            'linear-gradient(169deg, rgba(0, 16, 51, 1) 32%, rgba(0, 42, 101, 1) 67%, rgba(2, 95, 173, 1) 100%)',
+    <>
+      <div style={{ width: '100vw', height: '201vh' }}>
+        {/* ✅ Background Image (behind the canvas) */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            height: `${currentStage === 0 ? '50%' : '51%'}`,
+            background:
+              'linear-gradient(169deg, rgba(0, 16, 51, 1) 32%, rgba(0, 42, 101, 1) 67%, rgba(2, 95, 173, 1) 100%)',
 
-          zIndex: 1,
-        }}
-      ></div>
+            zIndex: 1,
+          }}
+        ></div>
 
-      {/* ✅ Canvas Container */}
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
-          zIndex: 10, // 👈 Higher than background image
-        }}
-      >
-        <Suspense fallback={<LoadingIndicator />}>
-          <Canvas
-            shadows
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-          >
-            <CameraController />
-            <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
-              <Model
-                url='/models/environment_combine_104.glb'
-                currentStage={currentStage}
-                isScrollingScreen={isScrollingScreen}
-              />
-              <Avatar
-                currentStage={currentStage}
-                setScrollingScreen={setScrollingScreen}
-              />
-            </group>
-
-            {/* <Environment
+        {/* ✅ Canvas Container */}
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            zIndex: 10, // 👈 Higher than background image
+          }}
+        >
+          <Suspense fallback={null}>
+            <Canvas
+              className={`${
+                !canPlay ? 'invisible opacity-0' : 'opacity-100'
+              } transition-opacity duration-700`}
+              shadows
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <CameraController />
+              <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
+                <Model
+                  url='/models/environment_combine_104.glb'
+                  currentStage={currentStage}
+                  isScrollingScreen={isScrollingScreen}
+                  isPlaying={canPlay}
+                />
+                <Avatar
+                  currentStage={currentStage}
+                  setScrollingScreen={setScrollingScreen}
+                  isPlaying={canPlay}
+                />
+              </group>
+              {/* <Environment
               files='/textures/brown_photostudio_02_4k.exr'
               background={false}
-            /> */}
-            <OrbitControls
-              enableZoom={false}
-              enablePan={false}
-              enableRotate={false}
-            />
-          </Canvas>
-        </Suspense>
+              /> */}
+              <OrbitControls
+                enableZoom={false}
+                enablePan={false}
+                enableRotate={false}
+              />
+            </Canvas>
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -149,9 +163,9 @@ function CameraController() {
 // }
 function LoadingIndicator() {
   return (
-    <div className='flex flex-col items-center justify-center h-full text-gray-500 text-sm'>
-      <div className='w-10 h-10 border-4 border-gray-200 border-t-gray-600 rounded-full animate-spin mb-4'></div>
-      <p>Loading model...</p>
+    <div className='fixed top-0 left-0 w-full h-full z-50 bg-red-500'>
+      {/* <div className='w-10 h-10 border-4 border-gray-200 border-t-gray-600 rounded-full animate-spin mb-4'></div>
+      <p>Loading model...</p> */}
     </div>
   );
 }
