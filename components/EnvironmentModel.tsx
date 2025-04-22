@@ -99,6 +99,7 @@ export function Model({
     const roomObj = scene.getObjectByName('room_obj');
     const wallObj = scene.getObjectByName('wall_obj');
     const wallShadow = scene.getObjectByName('wall') as THREE.Mesh;
+    const groundShadow = scene.getObjectByName('ground') as THREE.Mesh;
 
     if (!roomObj || !wallObj || !wallShadow?.material) {
       console.warn('Missing objects for GSAP transition');
@@ -146,6 +147,11 @@ export function Model({
         }
       );
     } else {
+      gsap.to(groundShadow.material, {
+        opacity: 0,
+        duration: 0.2,
+        ease: 'power1.inOut',
+      });
       gsap.to(wallShadow.material, {
         opacity: 0,
         duration: 2,
