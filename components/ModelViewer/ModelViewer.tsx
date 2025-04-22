@@ -12,7 +12,7 @@ export default function ModelViewer({ currentStage, isPlaying }) {
 
   return (
     <>
-      <div style={{ width: '100vw', height: '201vh' }}>
+      <div style={{ width: '100vw', height: '202vh' }}>
         {/* ✅ Background Image (behind the canvas) */}
         <div
           style={{
@@ -20,10 +20,21 @@ export default function ModelViewer({ currentStage, isPlaying }) {
             bottom: 0,
             left: 0,
             width: '100%',
-            height: `${currentStage === 0 ? '50%' : '51%'}`,
+            height: `${currentStage === 0 ? '50%' : '52%'}`,
             background:
-              'linear-gradient(169deg, rgba(0, 16, 51, 1) 32%, rgba(0, 42, 101, 1) 67%, rgba(2, 95, 173, 1) 100%)',
+              'linear-gradient(140deg, rgba(19, 43, 101, 1) 50%, rgba(24, 75, 146, 1) 78%, rgba(39, 93, 137, 1) 99%)',
 
+            zIndex: 1,
+          }}
+        ></div>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            top: 0,
+            width: '100%',
+            height: `${currentStage === 0 ? '50%' : '48%'}`,
+            background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
             zIndex: 1,
           }}
         ></div>
@@ -33,7 +44,7 @@ export default function ModelViewer({ currentStage, isPlaying }) {
           style={{
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
+
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -55,7 +66,7 @@ export default function ModelViewer({ currentStage, isPlaying }) {
               <CameraController />
               <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
                 <Model
-                  url='/models/environment_combine_104.glb'
+                  url='/models/environment_combine_108.glb'
                   currentStage={currentStage}
                   isScrollingScreen={isScrollingScreen}
                   isPlaying={isPlaying}
