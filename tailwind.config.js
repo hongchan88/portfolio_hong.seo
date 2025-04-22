@@ -4,6 +4,10 @@ module.exports = {
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
+      fontFamily: {
+        mono: ['var(--font-space-mono)', 'monospace'],
+        rubik: ['var(--font-rubik)', 'rubik'],
+      },
       colors: {
         blueGradient:
           'linear-gradient(169deg, rgba(0, 16, 51, 1) 32%, #002a65 67%, rgba(2, 95, 173, 1) 100%)',

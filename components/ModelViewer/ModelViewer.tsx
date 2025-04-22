@@ -7,17 +7,9 @@ import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
 import { useControls } from 'leva';
 import * as THREE from 'three';
-export default function ModelViewer({ currentStage }) {
+export default function ModelViewer({ currentStage, isPlaying }) {
   const [isScrollingScreen, setScrollingScreen] = useState(false);
-  const [canPlay, setCanPlay] = useState(false);
-  const { active, progress } = useProgress();
 
-  useEffect(() => {
-    if (!active && progress === 100) {
-      const timeout = setTimeout(() => setCanPlay(true), 1000); // wait 1s after loading
-      return () => clearTimeout(timeout);
-    }
-  }, [active, progress]);
   return (
     <>
       <div style={{ width: '100vw', height: '201vh' }}>
@@ -52,7 +44,7 @@ export default function ModelViewer({ currentStage }) {
           <Suspense fallback={null}>
             <Canvas
               className={`${
-                !canPlay ? 'invisible opacity-0' : 'opacity-100'
+                !isPlaying ? 'invisible opacity-0' : 'opacity-100'
               } transition-opacity duration-700`}
               shadows
               style={{
@@ -66,12 +58,12 @@ export default function ModelViewer({ currentStage }) {
                   url='/models/environment_combine_104.glb'
                   currentStage={currentStage}
                   isScrollingScreen={isScrollingScreen}
-                  isPlaying={canPlay}
+                  isPlaying={isPlaying}
                 />
                 <Avatar
                   currentStage={currentStage}
                   setScrollingScreen={setScrollingScreen}
-                  isPlaying={canPlay}
+                  isPlaying={isPlaying}
                 />
               </group>
               {/* <Environment

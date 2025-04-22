@@ -50,35 +50,38 @@ export const projectsData: Project[] = [
       </div>
     ),
     stacks: ['typescript', 'nextjs', 'tailwind', 'blender', '3djs', 'GSAP'],
-    git: 'https://github.com/hongchan88/portfolio_hong.seo',
   },
   {
     timelineYear: '2025',
     title: 'Craftify',
-    imgUrl: ['projects/craftify-2.png', 'projects/craftify-1.png'],
-    live: 'https://portfolio-hong.seo',
+    imgUrl: ['projects/craftify-1.png', 'projects/craftify-2.png'],
+    live: 'https://pdf-creator-tool-kit.vercel.app/',
     description: (
       <div>
-        <h3 className='font-semibold mb-1'>Personal Portfolio Website</h3>
+        <h3 className='font-semibold mb-1'>
+          Customizable PDF Workflow Platform
+        </h3>
         <ul className='list-disc list-inside ml-4 space-y-1'>
-          <li>Showcases personal projects and technical skills</li>
           <li>
             Built with <strong>Next.js</strong>, <strong>TypeScript</strong>,
-            and <strong>Tailwind CSS</strong> for a responsive design
+            and <strong>Tailwind CSS</strong>
           </li>
           <li>
-            Integrated <strong>3D animation</strong> using{' '}
-            <strong>Blender</strong> and <strong>GSAP</strong> for impressive
-            visual effects
+            streamlines PDF customization and export for business documents
           </li>
           <li>
-            Focused on delivering an engaging and interactive user experience
+            Supports custom inputs such as company names, contract durations,
+            logos, and certifications
           </li>
+          <li>
+            Enables fast, client-specific personalization of reusable templates
+          </li>
+          <li>Delivers instant export of professional, ready-to-use PDFs</li>
         </ul>
       </div>
     ),
-    stacks: ['typescript', 'nextjs', 'tailwind', 'blender', '3djs', 'GSAP'],
-    git: 'https://github.com/hongchan88/portfolio_hong.seo',
+    stacks: ['typescript', 'nextjs', 'tailwind'],
+    git: 'https://github.com/hongchan88/pdf-creator-tool-kit',
   },
   {
     title: 'Life as a startup dev ',

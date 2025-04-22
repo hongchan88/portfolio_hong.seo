@@ -1,46 +1,15 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Observer } from 'gsap/Observer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Hero from '../components/Hero';
-import ProjectInfo from '../components/Project/ProjectInfo';
-import { projectsData } from './data/data';
 import { Timeline } from '../components/Timeline/Timeline';
-
+import LoadingOverlay from '../components/LoadingComponent';
+import { useProgress } from '@react-three/drei';
 export default function App() {
-  const projectData = projectsData.map((project) => ({
-    timelineYear: project.timelineYear,
-    title: project.title,
-    git: project.git,
-    live: project.live,
-    content: (
-      <div>
-        <div className='mb-8 text-lg font-normal text-neutral-800 md:text-lg dark:text-neutral-200'>
-          {project.description}
-        </div>
-        <div className='grid grid-cols-2 gap-4'>
-          {project.imgUrl.map((project) => (
-            <img
-              key={project}
-              src={project}
-              alt='startup template'
-              width={500}
-              height={500}
-              className='h-full w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] md:h-full lg:h-full'
-            />
-          ))}
-        </div>
-        <ProjectInfo
-          stacks={project.stacks}
-          live={project.live}
-          git={project.git}
-        />
-      </div>
-    ),
-  }));
   const observerRef = useRef<Observer | null>(null);
 
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
@@ -48,7 +17,14 @@ export default function App() {
   // We'll track our "stage" in state:
   // 0 = Hero visible, 1 = half, 2 = AboutMe fully up
   const [currentStage, setCurrentStage] = useState(0);
-
+  const [canPlay, setCanPlay] = useState(false);
+  const { active, progress } = useProgress();
+  useEffect(() => {
+    if (!active && progress === 100) {
+      const timeout = setTimeout(() => setCanPlay(true), 1000); // wait 1s after loading
+      return () => clearTimeout(timeout);
+    }
+  }, [active, progress]);
   // For preventing repeated animations if user scrolls quickly
   const animatingRef = useRef(false);
 
@@ -83,6 +59,8 @@ export default function App() {
   // 2) Animate WHEN currentStage changes
   // ----------------------------------
   useGSAP(() => {
+    if (!canPlay) return null;
+
     const container = heroAboutmeRef.current;
     if (!container) return;
 
@@ -114,12 +92,14 @@ export default function App() {
 
         break;
     }
-  }, [currentStage]);
+  }, [currentStage, canPlay]);
 
   // // ----------------------------------
   // // 3) Initialize on mount
   // // ----------------------------------
   useGSAP(() => {
+    if (!canPlay) return null;
+
     gsap.registerPlugin(ScrollTrigger, Observer);
     function initObserver() {
       gsap.registerPlugin(Observer);
@@ -173,68 +153,63 @@ export default function App() {
       },
       '<'
     );
-    // gsap.fromTo(
-    //   aboutSectionRef.current,
-    //   { opacity: 0 },
-    //   {
-    //     y: -aboutImgRef.current.offsetHeight,
-
-    //     opacity: 1,
-    //     scrollTrigger: {
-    //       trigger: heroAboutmeRef.current,
-    //       start: '10 top',
-    //       end: `+=${aboutImgRef.current.offsetHeight}`,
-    //       scrub: true,
-    //       pin: true,
-    //       pinSpacing: true, // ⬅️ pushes next section down after unpin
-    //       markers: true,
-
-    //       onLeaveBack: () => {
-    //         initObserver();
-    //       },
-    //     },
-    //   }
-    // );
 
     return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, []);
+  }, [canPlay]);
   const aboutSectionRef = useRef(null);
   const aboutImgRef = useRef(null);
 
   // ----------------------------------
   // 4) Render
   // ----------------------------------
-  return (
-    <main>
-      {/* Stage 0 => Hero visible */}
-      <section ref={heroAboutmeRef} className='relative h-[200vh]'>
-        <Hero currentStage={currentStage} /> {/* your <Canvas /> */}
-        <div
-          ref={aboutSectionRef}
-          className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0'
-        >
-          <img
-            ref={aboutImgRef}
-            src='/aboutme/aboutme3.png'
-            alt='About Me'
-            className='w-auto h-auto'
-          />
-        </div>
-      </section>
+  useEffect(() => {
+    if (!canPlay) {
+      document.body.style.overflow = 'hidden'; // 🚫 disable scroll
+    } else {
+      document.body.style.overflow = '';
+    }
 
-      {/* Normal scrolling content (Projects) */}
-      <section
-        className='projects-section'
-        style={{
-          height: '100%',
-          marginTop: '-100vh',
-          background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
-        }}
+    return () => {
+      document.body.style.overflow = ''; // cleanup on unmount
+    };
+  }, [canPlay]);
+  return (
+    <>
+      <LoadingOverlay />
+
+      <main
+        className={`${!canPlay ? 'opacity-0 overflow-hidden h-screen' : ''}`}
       >
-        {/* <Projects /> */}
-        <Timeline data={projectData} />
-      </section>
-      {/* <section
+        {/* Stage 0 => Hero visible */}
+        <section ref={heroAboutmeRef} className='relative h-[200vh]'>
+          <Hero currentStage={currentStage} isPlaying={canPlay} />{' '}
+          {/* your <Canvas /> */}
+          <div
+            ref={aboutSectionRef}
+            className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0'
+          >
+            <img
+              ref={aboutImgRef}
+              src='/aboutme/aboutme3.png'
+              alt='About Me'
+              className='w-auto h-auto'
+            />
+          </div>
+        </section>
+
+        {/* Normal scrolling content (Projects) */}
+        <section
+          className='projects-section'
+          style={{
+            height: '100%',
+            marginTop: '-100vh',
+            background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
+          }}
+        >
+          {/* <Projects /> */}
+          <Timeline />
+        </section>
+        {/* <section
         style={{
           height: '100%',
           marginTop: '-100vh',
@@ -242,6 +217,7 @@ export default function App() {
       >
         <AboutMe />
       </section> */}
-    </main>
+      </main>
+    </>
   );
 }
