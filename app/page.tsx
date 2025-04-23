@@ -12,11 +12,15 @@ import { useProgress } from '@react-three/drei';
 import { useCameraStore } from './store/cameraStore';
 import { useSettingStore } from './store/settingStore';
 import { useControls } from 'leva';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+
 export default function App() {
+  gsap.registerPlugin(ScrollToPlugin);
   const observerRef = useRef<Observer | null>(null);
 
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
   const rightDrawerRef = useRef<HTMLDivElement>(null);
+  const workRef = useRef<HTMLDivElement>(null);
 
   // We'll track our "stage" in state:
   // 0 = Hero visible, 1 = half, 2 = AboutMe fully up
@@ -35,6 +39,31 @@ export default function App() {
     cz: { value: 14, step: 1 },
     zoom: { value: 70, min: 10, max: 100, step: 1 }, // Add zoom control here
   });
+  useEffect(() => {
+    const tl = gsap.timeline({
+      defaults: { duration: 1, ease: 'power1.inOut' },
+      onComplete: () => {
+        animatingRef.current = false;
+        if (currentStage === 1) {
+          killObserver();
+        }
+      },
+    });
+    if (rightDrawerToggle) {
+      tl.to(rightDrawerRef.current, {
+        right: 0,
+        delay: 0.3,
+        ease: 'power1.in',
+      });
+    } else {
+      tl.to(rightDrawerRef.current, {
+        right: -320,
+        delay: 0.3,
+        ease: 'power1.in',
+      });
+    }
+  }, [rightDrawerToggle]);
+
   useEffect(() => {
     updateCameraPostion([cx, cy, cz]);
     updateZoom(zoom);
@@ -99,18 +128,13 @@ export default function App() {
     switch (currentStage) {
       case 0:
         // Hero fully visible
-        if (rightDrawerToggle) {
-          tl.to(rightDrawerRef.current, {
-            right: 0,
-            delay: 0.3,
-            ease: 'power1.in',
-          });
-        }
+
         tl.to(container, { yPercent: 0 });
         break;
       case 1:
-        // "Halfway" – 50% scrolled up
         tl.to(container, { yPercent: -50 });
+
+        // "Halfway" – 50% scrolled up
 
         break;
       case 2:
@@ -228,6 +252,43 @@ export default function App() {
       document.body.style.overflow = ''; // cleanup on unmount
     };
   }, [readyToPlay]);
+
+  const playBubbleCover = () => {
+    const wrapper = document.getElementById('bubbleOverlayWrapper');
+    const circle = document.getElementById('bubbleCircle');
+
+    if (!wrapper || !circle) return;
+
+    const tl = gsap.timeline();
+
+    // Show wrapper
+    tl.set(wrapper, { opacity: 1, pointerEvents: 'auto' });
+
+    // Expand the circle to cover the whole screen
+    tl.to(circle, {
+      duration: 1.3,
+      attr: {
+        r: 180, // large enough to cover the screen from bottom-left
+      },
+      ease: 'power2.out',
+    });
+
+    // Optional pause or do something here (e.g. loading...)
+
+    // Shrink the circle back
+    tl.to(circle, {
+      duration: 0.9,
+      attr: {
+        r: 0,
+      },
+      ease: 'power2.in',
+      delay: 0.4,
+    });
+
+    // Hide wrapper again
+    tl.set(wrapper, { opacity: 0, pointerEvents: 'none' });
+  };
+
   return (
     <>
       {!readyToPlay && <LoadingOverlay />}
@@ -260,11 +321,51 @@ export default function App() {
           </div>
         </div>
         <div
-          onClick={() => setCameraDefault()}
           ref={rightDrawerRef}
           className='absolute top-0 -right-80 h-full w-80 bg-white z-10'
         >
-          test
+          <div className='w-full h-full flex justify-center items-center'>
+            <ul className='font-mono font-bold text-2xl flex flex-col gap-10'>
+              <li
+                onClick={() => {
+                  playBubbleCover();
+                  setRightDrawerToggle(false);
+                  setCameraDefault();
+                  setCurrentStage(1);
+                  gsap.to(window, {
+                    duration: 1,
+                    scrollTo: {
+                      y: window.scrollY + 200,
+                    },
+                    ease: 'power2.out',
+                  });
+                }}
+                className='cursor-pointer'
+              >
+                About me
+              </li>
+              <li
+                onClick={() => {
+                  playBubbleCover();
+                  setRightDrawerToggle(false);
+                  setCameraDefault();
+                  setCurrentStage(1);
+                  const scrollAmount = window.innerHeight * 2; // 200vh
+                  gsap.to(window, {
+                    duration: 1,
+                    scrollTo: {
+                      y: window.scrollY + scrollAmount + 200,
+                    },
+                    ease: 'power2.out',
+                  });
+                }}
+                className='cursor-pointer'
+              >
+                Work
+              </li>
+              <li className='cursor-pointer'>Contact me</li>
+            </ul>
+          </div>
         </div>
         <section ref={heroAboutmeRef} className='relative h-[200vh]'>
           <Hero currentStage={currentStage} readyToPlay={readyToPlay} />{' '}
@@ -284,6 +385,7 @@ export default function App() {
 
         {/* Normal scrolling content (Projects) */}
         <section
+          ref={workRef}
           className='projects-section'
           style={{
             height: '100%',

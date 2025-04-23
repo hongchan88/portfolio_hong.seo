@@ -27,6 +27,27 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className='dark:bg-gray-800 w-full'>
+        {/* Add to your layout, at the root */}
+        <div
+          id='bubbleOverlayWrapper'
+          className='fixed inset-0 z-[9999] pointer-events-none opacity-0'
+        >
+          <svg
+            id='bubbleOverlay'
+            className='w-full h-full'
+            viewBox='0 0 100 100'
+            preserveAspectRatio='none'
+          >
+            <circle
+              id='bubbleCircle'
+              cx='0'
+              cy='100'
+              r='0'
+              fill='#b1cc70' /* Tailwind yellow-400 */
+            />
+          </svg>
+        </div>
+
         <ThemeProvider defaultTheme='light' attribute='class'>
           <ScrollRestoration />
           <div className='main-contents'>{children}</div>
