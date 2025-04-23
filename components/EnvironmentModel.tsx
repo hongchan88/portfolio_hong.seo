@@ -121,6 +121,16 @@ export function Model({
           ease: 'power1.inOut',
         }
       );
+      gsap.fromTo(
+        groundShadow.material,
+        { opacity: 0 },
+        {
+          opacity: 0.1,
+          duration: 1,
+          delay: 1.2,
+          ease: 'power1.inOut',
+        }
+      );
 
       gsap.fromTo(
         roomObj.scale,
