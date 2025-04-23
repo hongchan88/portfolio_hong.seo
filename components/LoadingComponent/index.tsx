@@ -45,7 +45,7 @@ export default function LoadingOverlay() {
   if (!visible) return null;
 
   return (
-    <div className='fixed inset-0 top-[33vh] z-[9999] flex flex-col items-center justify-start bg-greenYellowGradient text-white'>
+    <div className='fixed inset-0 h-full w-full bg-greenYellowGradient z-[9999] flex flex-col items-center justify-center text-white pointer-events-none'>
       <div
         ref={imageRefWrapper}
         className='relative w-56 h-56 mb-4 overflow-hidden x'

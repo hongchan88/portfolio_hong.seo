@@ -1,5 +1,5 @@
 'use client';
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useProgress } from '@react-three/drei';
 // Import your existing components
@@ -7,6 +7,7 @@ import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
 import { useControls } from 'leva';
 import * as THREE from 'three';
+import TiltedScene from '../TiltScene/TiltedScene';
 export default function ModelViewer({ currentStage, isPlaying }) {
   const [isScrollingScreen, setScrollingScreen] = useState(false);
 
@@ -63,29 +64,31 @@ export default function ModelViewer({ currentStage, isPlaying }) {
                 height: '100%',
               }}
             >
-              <CameraController />
-              <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
-                <Model
-                  url='/models/environment_combine_108.glb'
-                  currentStage={currentStage}
-                  isScrollingScreen={isScrollingScreen}
-                  isPlaying={isPlaying}
-                />
-                <Avatar
-                  currentStage={currentStage}
-                  setScrollingScreen={setScrollingScreen}
-                  isPlaying={isPlaying}
-                />
-              </group>
-              {/* <Environment
+              <TiltedScene>
+                <CameraController />
+                <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
+                  <Model
+                    url='/models/environment_combine_108.glb'
+                    currentStage={currentStage}
+                    isScrollingScreen={isScrollingScreen}
+                    isPlaying={isPlaying}
+                  />
+                  <Avatar
+                    currentStage={currentStage}
+                    setScrollingScreen={setScrollingScreen}
+                    isPlaying={isPlaying}
+                  />
+                </group>
+                {/* <Environment
               files='/textures/brown_photostudio_02_4k.exr'
               background={false}
               /> */}
-              <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                enableRotate={false}
-              />
+                <OrbitControls
+                  enableZoom={false}
+                  enablePan={false}
+                  enableRotate={false}
+                />
+              </TiltedScene>
             </Canvas>
           </Suspense>
         </div>
@@ -123,52 +126,3 @@ function CameraController() {
 }
 
 // ✅ Tilt the Entire 3D Scene When Moving Mouse Over It
-// function TiltedScene({ children }) {
-//   const sceneRef = useRef(null);
-//   const { viewport } = useThree();
-
-//   // Store target rotation (this updates instantly)
-//   const targetRotation = useRef({ x: 0, y: 0 });
-
-//   const handlePointerMove = (event) => {
-//     if (!sceneRef.current) return;
-
-//     // Convert mouse position to small range (-0.5 to 0.5)
-//     const mouseX = (event.pointer.x / viewport.width) * 20; // Smaller movement range
-//     const mouseY = (event.pointer.y / viewport.height) * 20;
-
-//     // Set target rotation instead of changing instantly
-//     targetRotation.current.x = mouseY * 0.5;
-//     targetRotation.current.y = mouseX * 0.5;
-//   };
-
-//   useFrame(() => {
-//     if (!sceneRef.current) return;
-
-//     // Smoothly interpolate towards the target rotation
-//     sceneRef.current.position.x = THREE.MathUtils.lerp(
-//       sceneRef.current.position.x,
-//       targetRotation.current.x,
-//       0.02 // Lower value makes movement slower
-//     );
-//     sceneRef.current.position.y = THREE.MathUtils.lerp(
-//       sceneRef.current.position.y,
-//       targetRotation.current.y,
-//       0.02
-//     );
-//   });
-
-//   return (
-//     <group ref={sceneRef} onPointerMove={handlePointerMove}>
-//       {children}
-//     </group>
-//   );
-// }
-function LoadingIndicator() {
-  return (
-    <div className='fixed top-0 left-0 w-full h-full z-50 bg-red-500'>
-      {/* <div className='w-10 h-10 border-4 border-gray-200 border-t-gray-600 rounded-full animate-spin mb-4'></div>
-      <p>Loading model...</p> */}
-    </div>
-  );
-}

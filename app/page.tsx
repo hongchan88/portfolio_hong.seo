@@ -175,7 +175,7 @@ export default function App() {
   }, [canPlay]);
   return (
     <>
-      <LoadingOverlay />
+      {!canPlay && <LoadingOverlay />}
 
       <main
         className={`${!canPlay ? 'opacity-0 overflow-hidden h-screen' : ''}`}
@@ -186,7 +186,7 @@ export default function App() {
           {/* your <Canvas /> */}
           <div
             ref={aboutSectionRef}
-            className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0'
+            className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0 pointer-events-none'
           >
             <img
               ref={aboutImgRef}

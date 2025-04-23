@@ -8,7 +8,7 @@ module.exports = {
         mono: ['var(--font-space-mono)', 'monospace'],
         rubik: ['var(--font-rubik)', 'rubik'],
       },
-      colors: {
+      backgroundImage: {
         blueGradient:
           'linear-gradient(169deg, rgba(0, 16, 51, 1) 32%, #002a65 67%, rgba(2, 95, 173, 1) 100%)',
         greenYellowGradient:
