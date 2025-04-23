@@ -13,6 +13,10 @@ import { useCameraStore } from './store/cameraStore';
 import { useSettingStore } from './store/settingStore';
 import { useControls } from 'leva';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import { IoMenu } from 'react-icons/io5';
+import { RxCross2 } from 'react-icons/rx';
+import { HiOutlineSpeakerXMark } from 'react-icons/hi2';
+import { HiOutlineSpeakerWave } from 'react-icons/hi2';
 
 export default function App() {
   gsap.registerPlugin(ScrollToPlugin);
@@ -25,7 +29,7 @@ export default function App() {
   // We'll track our "stage" in state:
   // 0 = Hero visible, 1 = half, 2 = AboutMe fully up
   const [currentStage, setCurrentStage] = useState(0);
-
+  const [audioToggle, setAudioToggle] = useState(false);
   const [readyToPlay, setreadyToPlay] = useState(false);
   const { active, progress } = useProgress();
   const updateCameraPostion = useCameraStore((s) => s.setCamPos);
@@ -304,23 +308,50 @@ export default function App() {
         }`}
       >
         {/* Stage 0 => Hero visible */}
-        <div className='fixed top-0 w-full  z-10 '>
+        <div className='absolute top-0 w-full z-30'>
           <div className='flex w-full justify-between p-10'>
             <div className='w-12 h-12'>
               <img src='./loading/loading2.png' />
             </div>
-            <div className='flex'>
-              <div>sound</div>
+            <div className='flex gap-5  '>
+              <div
+                className=' cursor-pointer'
+                onClick={() => {
+                  setAudioToggle((prev) => !prev);
+                }}
+              >
+                <div
+                  className={`w-10 h-10 ${
+                    audioToggle ? 'bg-yellow-500' : 'bg-gray-500'
+                  } rounded-lg flex justify-center items-center`}
+                >
+                  {audioToggle ? (
+                    <HiOutlineSpeakerWave className='text-white text-4xl' />
+                  ) : (
+                    <HiOutlineSpeakerXMark className='text-white text-4xl' />
+                  )}
+                </div>
+              </div>
               <div
                 className=' cursor-pointer'
                 onClick={() => {
                   // updateCameraPostion([23, 5, 4]);
-                  updateCameraPostion([-28, 6, 7]);
-                  updateZoom(24);
-                  setRightDrawerToggle(true);
+                  if (rightDrawerToggle) {
+                    closeDrawer();
+                  } else {
+                    updateCameraPostion([-28, 6, 7]);
+                    updateZoom(24);
+                    setRightDrawerToggle(true);
+                  }
                 }}
               >
-                menu
+                <div className='w-10 h-10 bg-yellow-500 rounded-lg flex justify-center items-center'>
+                  {!rightDrawerToggle ? (
+                    <IoMenu className='text-white text-4xl' />
+                  ) : (
+                    <RxCross2 className='text-white text-4xl' />
+                  )}
+                </div>
               </div>
             </div>
           </div>
