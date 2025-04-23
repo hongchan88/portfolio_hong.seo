@@ -20,7 +20,7 @@ export default function App() {
 
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
   const rightDrawerRef = useRef<HTMLDivElement>(null);
-  const workRef = useRef<HTMLDivElement>(null);
+  const leftText = useRef<HTMLDivElement>(null);
 
   // We'll track our "stage" in state:
   // 0 = Hero visible, 1 = half, 2 = AboutMe fully up
@@ -52,15 +52,20 @@ export default function App() {
     if (rightDrawerToggle) {
       tl.to(rightDrawerRef.current, {
         right: 0,
-        delay: 0.3,
         ease: 'power1.in',
-      });
+      }).to(
+        leftText.current,
+        {
+          left: '-50%',
+          ease: 'power1.in',
+        },
+        '<'
+      );
     } else {
       tl.to(rightDrawerRef.current, {
         right: -320,
-        delay: 0.3,
         ease: 'power1.in',
-      });
+      }).to(leftText.current, { left: '5%' }, '<');
     }
   }, [rightDrawerToggle]);
 
@@ -367,9 +372,24 @@ export default function App() {
             </ul>
           </div>
         </div>
+
         <section ref={heroAboutmeRef} className='relative h-[200vh]'>
           <Hero currentStage={currentStage} readyToPlay={readyToPlay} />{' '}
           {/* your <Canvas /> */}
+          <div
+            ref={leftText}
+            className='absolute  font-bold top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'
+          >
+            <div className='flex flex-col gap-5'>
+              <p className='font-rubik font-bold text-5xl leading-relaxed'>
+                Hey,
+                <br /> My name is Hong.
+              </p>
+              <p className='font-mono  text-gray-600 text-xl '>
+                I love building things with software
+              </p>
+            </div>
+          </div>
           <div
             ref={aboutSectionRef}
             className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0 pointer-events-none'
@@ -385,7 +405,6 @@ export default function App() {
 
         {/* Normal scrolling content (Projects) */}
         <section
-          ref={workRef}
           className='projects-section'
           style={{
             height: '100%',
