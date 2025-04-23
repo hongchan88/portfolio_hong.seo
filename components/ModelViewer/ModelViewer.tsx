@@ -1,5 +1,5 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useProgress } from '@react-three/drei';
 // Import your existing components
@@ -8,8 +8,12 @@ import { Model } from '../EnvironmentModel';
 import { useControls } from 'leva';
 import * as THREE from 'three';
 import TiltedScene from '../TiltScene/TiltedScene';
-export default function ModelViewer({ currentStage, isPlaying }) {
+import CameraController from '../CameraController/CameraController';
+import { useCameraStore } from '../../app/store/cameraStore';
+export default function ModelViewer({ currentStage, readyToPlay }) {
   const [isScrollingScreen, setScrollingScreen] = useState(false);
+  const { camPos, zoom } = useCameraStore();
+  const isFirstHeroSection: boolean = currentStage === 0 || currentStage === -1;
 
   return (
     <>
@@ -21,7 +25,7 @@ export default function ModelViewer({ currentStage, isPlaying }) {
             bottom: 0,
             left: 0,
             width: '100%',
-            height: `${currentStage === 0 ? '50%' : '52%'}`,
+            height: `${isFirstHeroSection ? '50%' : '52%'}`,
             background:
               'linear-gradient(140deg, rgba(19, 43, 101, 1) 50%, rgba(24, 75, 146, 1) 78%, rgba(39, 93, 137, 1) 99%)',
 
@@ -34,7 +38,7 @@ export default function ModelViewer({ currentStage, isPlaying }) {
             bottom: 0,
             top: 0,
             width: '100%',
-            height: `${currentStage === 0 ? '50%' : '48%'}`,
+            height: `${isFirstHeroSection ? '50%' : '48%'}`,
             background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
             zIndex: 1,
           }}
@@ -56,7 +60,7 @@ export default function ModelViewer({ currentStage, isPlaying }) {
           <Suspense fallback={null}>
             <Canvas
               className={`${
-                !isPlaying ? 'invisible opacity-0' : 'opacity-100'
+                !readyToPlay ? 'invisible opacity-0' : 'opacity-100'
               } transition-opacity duration-700`}
               shadows
               style={{
@@ -65,18 +69,19 @@ export default function ModelViewer({ currentStage, isPlaying }) {
               }}
             >
               <TiltedScene>
-                <CameraController />
+                <CameraController cameraPos={camPos} zoom={zoom} />
                 <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
+                  {/* <group position={[23, 5, 4]} rotation={[0, 33, 0]}> */}
                   <Model
                     url='/models/environment_combine_108.glb'
                     currentStage={currentStage}
                     isScrollingScreen={isScrollingScreen}
-                    isPlaying={isPlaying}
+                    readyToPlay={readyToPlay}
                   />
                   <Avatar
                     currentStage={currentStage}
                     setScrollingScreen={setScrollingScreen}
-                    isPlaying={isPlaying}
+                    readyToPlay={readyToPlay}
                   />
                 </group>
                 {/* <Environment
@@ -95,34 +100,6 @@ export default function ModelViewer({ currentStage, isPlaying }) {
       </div>
     </>
   );
-}
-
-// ✅ Camera Controller (Leva for dynamic movement)
-function CameraController() {
-  const { camera } = useThree();
-
-  // Destructure zoom (FOV) along with camera position
-  const { cx, cy, cz, zoom } = useControls('Camera Position', {
-    cx: { value: 10, step: 1 },
-    cy: { value: 5, step: 1 },
-    cz: { value: 14, step: 1 },
-    zoom: { value: 70, min: 10, max: 100, step: 1 }, // Add zoom control here
-  });
-
-  useFrame(() => {
-    camera.position.set(cx, cy, cz);
-    camera.lookAt(0, 0, 0);
-    // console.log('Actual camera position:', camera.position);
-    if (camera instanceof THREE.PerspectiveCamera) {
-      // Update FOV if it changed
-      if (camera.fov !== zoom) {
-        camera.fov = zoom;
-        camera.updateProjectionMatrix();
-      }
-    }
-  });
-
-  return null;
 }
 
 // ✅ Tilt the Entire 3D Scene When Moving Mouse Over It

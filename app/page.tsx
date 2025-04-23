@@ -9,19 +9,39 @@ import Hero from '../components/Hero';
 import { Timeline } from '../components/Timeline/Timeline';
 import LoadingOverlay from '../components/LoadingComponent';
 import { useProgress } from '@react-three/drei';
+import { useCameraStore } from './store/cameraStore';
+import { useSettingStore } from './store/settingStore';
+import { useControls } from 'leva';
 export default function App() {
   const observerRef = useRef<Observer | null>(null);
 
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
+  const rightDrawerRef = useRef<HTMLDivElement>(null);
 
   // We'll track our "stage" in state:
   // 0 = Hero visible, 1 = half, 2 = AboutMe fully up
   const [currentStage, setCurrentStage] = useState(0);
-  const [canPlay, setCanPlay] = useState(false);
+
+  const [readyToPlay, setreadyToPlay] = useState(false);
   const { active, progress } = useProgress();
+  const updateCameraPostion = useCameraStore((s) => s.setCamPos);
+  const updateZoom = useCameraStore((s) => s.setZoom);
+  const setCameraDefault = useCameraStore((s) => s.setDefault);
+  const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
+  const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
+  const { cx, cy, cz, zoom } = useControls('Camera Position', {
+    cx: { value: 10, step: 1 },
+    cy: { value: 5, step: 1 },
+    cz: { value: 14, step: 1 },
+    zoom: { value: 70, min: 10, max: 100, step: 1 }, // Add zoom control here
+  });
+  useEffect(() => {
+    updateCameraPostion([cx, cy, cz]);
+    updateZoom(zoom);
+  }, [cx, cy, cz, zoom]);
   useEffect(() => {
     if (!active && progress === 100) {
-      const timeout = setTimeout(() => setCanPlay(true), 1000); // wait 1s after loading
+      const timeout = setTimeout(() => setreadyToPlay(true), 1000); // wait 1s after loading
       return () => clearTimeout(timeout);
     }
   }, [active, progress]);
@@ -59,7 +79,7 @@ export default function App() {
   // 2) Animate WHEN currentStage changes
   // ----------------------------------
   useGSAP(() => {
-    if (!canPlay) return null;
+    if (!readyToPlay) return null;
 
     const container = heroAboutmeRef.current;
     if (!container) return;
@@ -79,6 +99,13 @@ export default function App() {
     switch (currentStage) {
       case 0:
         // Hero fully visible
+        if (rightDrawerToggle) {
+          tl.to(rightDrawerRef.current, {
+            right: 0,
+            delay: 0.3,
+            ease: 'power1.in',
+          });
+        }
         tl.to(container, { yPercent: 0 });
         break;
       case 1:
@@ -92,39 +119,69 @@ export default function App() {
 
         break;
     }
-  }, [currentStage, canPlay]);
+  }, [currentStage, readyToPlay, rightDrawerToggle]);
 
   // // ----------------------------------
   // // 3) Initialize on mount
   // // ----------------------------------
+
+  const closeDrawer = () => {
+    setCameraDefault();
+    gsap.to(rightDrawerRef.current, {
+      right: -320,
+      delay: 0.1,
+      ease: 'power1.in',
+    });
+    setRightDrawerToggle(false);
+  };
+
+  const initObserver = () => {
+    gsap.registerPlugin(Observer); // ✅ Only register Observer here
+    observerRef.current?.kill(); // ✅ Clean previous observer
+
+    observerRef.current = Observer.create({
+      type: 'wheel,touch,pointer',
+      wheelSpeed: -1,
+      tolerance: 10,
+      preventDefault: true,
+      onDown: () => {
+        if (rightDrawerToggle) {
+          closeDrawer();
+        } else if (!animatingRef.current) {
+          goPrevStage();
+        }
+      },
+      onUp: () => {
+        if (rightDrawerToggle) {
+          closeDrawer();
+        } else if (!animatingRef.current) {
+          goNextStage();
+        }
+      },
+    });
+  };
+
+  // ✅ Handles Observer init and cleanup
   useGSAP(() => {
-    if (!canPlay) return null;
+    if (!readyToPlay) return;
 
-    gsap.registerPlugin(ScrollTrigger, Observer);
-    function initObserver() {
-      gsap.registerPlugin(Observer);
-      // Kill any existing observer
-      observerRef.current?.kill();
-
-      observerRef.current = Observer.create({
-        type: 'wheel,touch,pointer',
-        wheelSpeed: -1,
-        tolerance: 10,
-        preventDefault: true,
-        onDown: () => !animatingRef.current && goPrevStage(),
-        onUp: () => !animatingRef.current && goNextStage(),
-      });
-    }
-    // Start the Observer for Hero + AboutMe
     initObserver();
 
-    // Example ScrollTrigger for Projects
+    return () => {
+      observerRef.current?.kill(); // ✅ Important cleanup
+    };
+  }, [readyToPlay, rightDrawerToggle]);
+
+  // ✅ Handles ScrollTrigger animation
+  useGSAP(() => {
     if (
       !aboutSectionRef.current ||
       !heroAboutmeRef.current ||
       !aboutImgRef.current
     )
       return;
+
+    gsap.registerPlugin(ScrollTrigger); // ✅ Only registered where it's needed
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -133,17 +190,17 @@ export default function App() {
         end: `+=${aboutImgRef.current.offsetHeight}`,
         scrub: true,
         pin: true,
-        pinSpacing: true, // ⬅️ pushes next section down after unpin
-        markers: true,
-
+        pinSpacing: true,
+        markers: process.env.NODE_ENV === 'development', // ✅ Debug only
         onLeaveBack: () => {
-          initObserver();
+          initObserver(); // ✅ Re-init observer when scrolling back up
         },
       },
     });
+
     tl.to(aboutSectionRef.current, {
       opacity: 1,
-      duration: 0.1, // 👈 fade in fast
+      duration: 0.1,
     });
     tl.to(
       aboutSectionRef.current,
@@ -153,9 +210,7 @@ export default function App() {
       },
       '<'
     );
-
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, [canPlay]);
+  });
   const aboutSectionRef = useRef(null);
   const aboutImgRef = useRef(null);
 
@@ -163,7 +218,7 @@ export default function App() {
   // 4) Render
   // ----------------------------------
   useEffect(() => {
-    if (!canPlay) {
+    if (!readyToPlay) {
       document.body.style.overflow = 'hidden'; // 🚫 disable scroll
     } else {
       document.body.style.overflow = '';
@@ -172,17 +227,47 @@ export default function App() {
     return () => {
       document.body.style.overflow = ''; // cleanup on unmount
     };
-  }, [canPlay]);
+  }, [readyToPlay]);
   return (
     <>
-      {!canPlay && <LoadingOverlay />}
+      {!readyToPlay && <LoadingOverlay />}
 
       <main
-        className={`${!canPlay ? 'opacity-0 overflow-hidden h-screen' : ''}`}
+        className={`${
+          !readyToPlay ? 'opacity-0 overflow-hidden h-screen relative' : ''
+        }`}
       >
         {/* Stage 0 => Hero visible */}
+        <div className='fixed top-0 w-full  z-10 '>
+          <div className='flex w-full justify-between p-10'>
+            <div className='w-12 h-12'>
+              <img src='./loading/loading2.png' />
+            </div>
+            <div className='flex'>
+              <div>sound</div>
+              <div
+                className=' cursor-pointer'
+                onClick={() => {
+                  // updateCameraPostion([23, 5, 4]);
+                  updateCameraPostion([-28, 6, 7]);
+                  updateZoom(24);
+                  setRightDrawerToggle(true);
+                }}
+              >
+                menu
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          onClick={() => setCameraDefault()}
+          ref={rightDrawerRef}
+          className='absolute top-0 -right-80 h-full w-80 bg-white z-10'
+        >
+          test
+        </div>
         <section ref={heroAboutmeRef} className='relative h-[200vh]'>
-          <Hero currentStage={currentStage} isPlaying={canPlay} />{' '}
+          <Hero currentStage={currentStage} readyToPlay={readyToPlay} />{' '}
           {/* your <Canvas /> */}
           <div
             ref={aboutSectionRef}

@@ -4,11 +4,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useGLTF, useAnimations, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSettingStore } from '../app/store/settingStore';
 
 export default function Avatar({
   currentStage,
   setScrollingScreen,
-  isPlaying,
+  readyToPlay,
 }) {
   const groupRef = useRef();
   const [prevStage, setPrevStage] = useState(null);
@@ -20,7 +21,7 @@ export default function Avatar({
   // Load GLTF
   const { scene, animations } = useGLTF('/models/avatar_52.glb');
   const { actions } = useAnimations(animations, groupRef);
-
+  const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
   // Load face textures only once
   const [normalFace, waveFace, surpriseFace] = useTexture([
     '/face/normal8.png',
@@ -40,7 +41,6 @@ export default function Avatar({
 
   useEffect(() => {
     if (!actions || !groupRef.current) return;
-
     const bakedAction = actions['baked_final'];
     const typingAction = actions['typing3'];
     const nextSectionAction = actions['avatarModel'];
@@ -106,7 +106,7 @@ export default function Avatar({
     // Stage transitions
     if (prevStage === 1 && currentStage === 0) {
       playNextSectionInReverse();
-    } else if (currentStage === 0 && isPlaying === true) {
+    } else if (currentStage === 0 && readyToPlay === true) {
       playInitialSequence();
       originalMaterials.current.set('body', bodyMesh.material.clone());
       originalMaterials.current.set('face', faceMesh.material.clone());
@@ -119,7 +119,7 @@ export default function Avatar({
     setPrevStage(currentStage);
 
     return () => cleanupFns.forEach((fn) => fn());
-  }, [currentStage, isPlaying]);
+  }, [currentStage, readyToPlay]);
 
   const calculateFrameToTriggerScrolling = () => {
     const typingAction = actions?.['typing3'];
@@ -163,7 +163,7 @@ export default function Avatar({
   useFrame(({ clock }) => {
     const nextSectionAction = actions['avatarModel'];
 
-    if (currentStage === 0 && isPlaying === true) {
+    if (currentStage === 0 && readyToPlay === true) {
       calculateFrameToTriggerScrolling();
       changeFacePng();
       hasFlickered.current = false;

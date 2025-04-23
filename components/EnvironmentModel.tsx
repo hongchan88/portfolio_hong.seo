@@ -9,14 +9,14 @@ type ModelProps = {
   url: string;
   currentStage: number;
   isScrollingScreen: boolean;
-  isPlaying: boolean;
+  readyToPlay: boolean;
 };
 
 export function Model({
   url,
   currentStage,
   isScrollingScreen,
-  isPlaying,
+  readyToPlay,
 }: ModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene, materials } = useGLTF(url);
@@ -107,7 +107,7 @@ export function Model({
     }
 
     gsap.killTweensOf([roomObj.scale, wallObj.scale, wallShadow.material]);
-    if (isPlaying === false) return;
+    if (!readyToPlay) return;
     if (currentStage === 0) {
       wallShadow.material.transparent = true;
 
@@ -156,7 +156,7 @@ export function Model({
           ease: 'back.out(1.7)',
         }
       );
-    } else {
+    } else if (currentStage === 1) {
       gsap.to(groundShadow.material, {
         opacity: 0,
         duration: 0.2,
@@ -186,7 +186,7 @@ export function Model({
         ease: 'back.in(1.7)',
       });
     }
-  }, [currentStage, isPlaying]);
+  }, [currentStage, readyToPlay]);
 
   return (
     <>

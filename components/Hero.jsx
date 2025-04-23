@@ -4,7 +4,7 @@ const ModelViewer = dynamic(() => import('./ModelViewer/ModelViewer'), {
   ssr: false,
 });
 
-export default function Hero({ currentStage, isPlaying }) {
+export default function Hero({ currentStage, readyToPlay }) {
   return (
     <>
       <div className='relative w-full'>
@@ -20,7 +20,7 @@ export default function Hero({ currentStage, isPlaying }) {
           </div>
         </div>
         <div className='flex flex-row justify-center items-start overflow-hidden'>
-          <ModelViewer currentStage={currentStage} isPlaying={isPlaying} />
+          <ModelViewer currentStage={currentStage} readyToPlay={readyToPlay} />
         </div>
       </div>
     </>
