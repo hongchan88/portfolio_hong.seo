@@ -7,18 +7,17 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import Hero from '../components/Hero';
 import { Timeline } from '../components/Timeline/Timeline';
-import LoadingOverlay from '../components/LoadingComponent';
+import LoadingOverlay from '../components/LoadingOverlay';
 import { useProgress } from '@react-three/drei';
 import { useCameraStore } from './store/cameraStore';
 import { useSettingStore } from './store/settingStore';
 import { useControls } from 'leva';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-import { IoMenu } from 'react-icons/io5';
-import { RxCross2 } from 'react-icons/rx';
-import { HiOutlineSpeakerXMark } from 'react-icons/hi2';
-import { HiOutlineSpeakerWave } from 'react-icons/hi2';
-import { useAudioStore } from './store/audioStore';
 
+import { useAudioStore } from './store/audioStore';
+import NavBar from '../components/NavBar';
+import AudioGroup from '../components/AudioGroup/AudioGroup';
+import RightDrawer from '../components/RightDrawer';
 export default function App() {
   gsap.registerPlugin(ScrollToPlugin);
   const observerRef = useRef<Observer | null>(null);
@@ -32,29 +31,25 @@ export default function App() {
   const stage2Bubble = useRef<HTMLAudioElement>(null);
   const stage2BGLab = useRef<HTMLAudioElement>(null);
   const stageTo1 = useRef<HTMLAudioElement>(null);
-  const clickMenu = useRef<HTMLAudioElement>(null);
   const clickAudio = useRef<HTMLAudioElement>(null);
-  // const typingAudio = useRef<HTMLAudioElement>(null);
-  // const scrollAudio = useRef<HTMLAudioElement>(null);
 
-  // We'll track our "stage" in state:
-  // 0 = Hero visible, 1 = half, 2 = AboutMe fully up
   const [currentStage, setCurrentStage] = useState(0);
+  const [readyToPlay, setreadyToPlay] = useState(false);
+  const { active, progress } = useProgress();
   const audioToggle = useAudioStore((s) => s.audioToggleState);
-  const toggleAudio = useAudioStore((s) => s.toggleAudio);
   const scrollAudio = useAudioStore((s) => s.scrollAudio);
   const typingAudio = useAudioStore((s) => s.typingAudio);
+  const clickMenu = useAudioStore((s) => s.clickMenuAudio);
   const isTypingRunning = useSettingStore((s) => s.isTypingRunning);
   const isScrolling = useSettingStore((s) => s.isScrolling);
-  const [readyToPlay, setreadyToPlay] = useState(false);
   const audioToggleRef = useRef(audioToggle);
 
-  const { active, progress } = useProgress();
   const updateCameraPostion = useCameraStore((s) => s.setCamPos);
   const updateZoom = useCameraStore((s) => s.setZoom);
   const setCameraDefault = useCameraStore((s) => s.setDefault);
   const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
   const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
+
   const { cx, cy, cz, zoom } = useControls('Camera Position', {
     cx: { value: 10, step: 1 },
     cy: { value: 5, step: 1 },
@@ -194,7 +189,7 @@ export default function App() {
 
   const closeDrawer = () => {
     if (audioToggleRef.current) {
-      clickMenu.current.play();
+      clickMenu.play();
     }
     setCameraDefault();
     gsap.to(rightDrawerRef.current, {
@@ -302,41 +297,6 @@ export default function App() {
     };
   }, [readyToPlay]);
 
-  const playBubbleCover = () => {
-    const wrapper = document.getElementById('bubbleOverlayWrapper');
-    const circle = document.getElementById('bubbleCircle');
-
-    if (!wrapper || !circle) return;
-
-    const tl = gsap.timeline();
-
-    // Show wrapper
-    tl.set(wrapper, { opacity: 1, pointerEvents: 'auto' });
-
-    // Expand the circle to cover the whole screen
-    tl.to(circle, {
-      duration: 1.3,
-      attr: {
-        r: 180, // large enough to cover the screen from bottom-left
-      },
-      ease: 'power2.out',
-    });
-
-    // Optional pause or do something here (e.g. loading...)
-
-    // Shrink the circle back
-    tl.to(circle, {
-      duration: 0.9,
-      attr: {
-        r: 0,
-      },
-      ease: 'power2.in',
-      delay: 0.4,
-    });
-
-    // Hide wrapper again
-    tl.set(wrapper, { opacity: 0, pointerEvents: 'none' });
-  };
   useEffect(() => {
     if (!audioToggle) {
       stage1BG.current.pause();
@@ -390,137 +350,27 @@ export default function App() {
   return (
     <>
       {!readyToPlay && <LoadingOverlay />}
-      <audio ref={stage1BG} loop autoPlay src='/sounds/lazy_sunday.mp3' />
-      <audio ref={stage1Menu} src='/sounds/woosh.mp3' />
-      <audio ref={stage2Start} src='/sounds/transition.mp3' />
-      <audio ref={stage2Bubble} src='/sounds/bubble.mp3' />
-      <audio ref={stage2BGLab} loop autoPlay src='/sounds/lab_bg.mp3' />
-      <audio ref={stageTo1} src='/sounds/splash.mp3' />
-      <audio ref={clickMenu} src='/sounds/menu.wav' />
-      <audio ref={clickAudio} src='/sounds/click.mp3' />
-
-      {/* <audio ref={typingAudio} src='/sounds/typing.mp3' />
-      <audio ref={scrollAudio} src='/sounds/scroll.mp3' /> */}
-
-      <audio
-        ref={(el) => {
-          if (el) useAudioStore.getState().setAudioRef(el, 'typingAudio');
+      <AudioGroup
+        refs={{
+          stage1BG,
+          stage1Menu,
+          stage2Start,
+          stage2Bubble,
+          stage2BGLab,
+          stageTo1,
+          clickAudio,
         }}
-        src='/sounds/typing4.mp3'
-      />
-      <audio
-        ref={(el) => {
-          if (el) useAudioStore.getState().setAudioRef(el, 'scrollAudio');
-        }}
-        src='/sounds/scrolling2.mp3'
       />
       <main
         className={`${
           !readyToPlay ? 'opacity-0 overflow-hidden h-screen relative' : ''
         }`}
       >
-        {/* Stage 0 => Hero visible */}
-        <div className='absolute top-0 w-full z-30'>
-          <div className='flex w-full justify-between p-10'>
-            <div className='w-12 h-12'>
-              <img src='./loading/loading2.png' />
-            </div>
-            <div className='flex gap-5  '>
-              <div
-                className=' cursor-pointer'
-                title='Music from #Uppbeat (free for Creators!):
-https://uppbeat.io/t/hybridas/lazy-sunday
-License code: 6IRKHLAO88BY9C1L'
-                onClick={() => {
-                  toggleAudio();
-                }}
-              >
-                <div
-                  className={`w-10 h-10 ${
-                    audioToggle ? 'bg-yellow-500' : 'bg-gray-500'
-                  } rounded-lg flex justify-center items-center`}
-                >
-                  {audioToggle ? (
-                    <HiOutlineSpeakerWave className='text-white text-4xl' />
-                  ) : (
-                    <HiOutlineSpeakerXMark className='text-white text-4xl' />
-                  )}
-                </div>
-              </div>
-              <div
-                className=' cursor-pointer'
-                onClick={() => {
-                  // updateCameraPostion([23, 5, 4]);
-                  if (rightDrawerToggle) {
-                    closeDrawer();
-                  } else {
-                    updateCameraPostion([-28, 6, 7]);
-                    updateZoom(24);
-                    setRightDrawerToggle(true);
-                  }
-                  if (audioToggle) {
-                    clickMenu.current.play();
-                  }
-                }}
-              >
-                <div className='w-10 h-10 bg-yellow-500 rounded-lg flex justify-center items-center'>
-                  {!rightDrawerToggle ? (
-                    <IoMenu className='text-white text-4xl' />
-                  ) : (
-                    <RxCross2 className='text-white text-4xl' />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          ref={rightDrawerRef}
-          className='absolute top-0 -right-80 h-full w-80 bg-white z-10'
-        >
-          <div className='w-full h-full flex justify-center items-center'>
-            <ul className='font-mono font-bold text-2xl flex flex-col gap-10'>
-              <li
-                onClick={() => {
-                  playBubbleCover();
-                  setRightDrawerToggle(false);
-                  setCameraDefault();
-                  setCurrentStage(1);
-                  gsap.to(window, {
-                    duration: 1,
-                    scrollTo: {
-                      y: window.scrollY + 200,
-                    },
-                    ease: 'power2.out',
-                  });
-                }}
-                className='cursor-pointer'
-              >
-                About me
-              </li>
-              <li
-                onClick={() => {
-                  playBubbleCover();
-                  setRightDrawerToggle(false);
-                  setCameraDefault();
-                  setCurrentStage(1);
-                  const scrollAmount = window.innerHeight * 2; // 200vh
-                  gsap.to(window, {
-                    duration: 1,
-                    scrollTo: {
-                      y: window.scrollY + scrollAmount + 200,
-                    },
-                    ease: 'power2.out',
-                  });
-                }}
-                className='cursor-pointer'
-              >
-                Work
-              </li>
-              <li className='cursor-pointer'>Contact me</li>
-            </ul>
-          </div>
-        </div>
+        <NavBar closeDrawer={closeDrawer} currentStage={currentStage} />
+        <RightDrawer
+          rightDrawerRef={rightDrawerRef}
+          setCurrentStage={setCurrentStage}
+        />
 
         <section ref={heroAboutmeRef} className='relative h-[200vh]'>
           <Hero currentStage={currentStage} readyToPlay={readyToPlay} />{' '}
