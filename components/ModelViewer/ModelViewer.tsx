@@ -1,17 +1,14 @@
 'use client';
-import { useState, Suspense, useEffect } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useProgress } from '@react-three/drei';
+import { Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 // Import your existing components
 import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
-import { useControls } from 'leva';
-import * as THREE from 'three';
 import TiltedScene from '../TiltScene/TiltedScene';
 import CameraController from '../CameraController/CameraController';
 import { useCameraStore } from '../../app/store/cameraStore';
 export default function ModelViewer({ currentStage, readyToPlay }) {
-  const [isScrollingScreen, setScrollingScreen] = useState(false);
   const { camPos, zoom } = useCameraStore();
   const isFirstHeroSection: boolean = currentStage === 0 || currentStage === -1;
 
@@ -75,12 +72,10 @@ export default function ModelViewer({ currentStage, readyToPlay }) {
                   <Model
                     url='/models/environment_combine_108.glb'
                     currentStage={currentStage}
-                    isScrollingScreen={isScrollingScreen}
                     readyToPlay={readyToPlay}
                   />
                   <Avatar
                     currentStage={currentStage}
-                    setScrollingScreen={setScrollingScreen}
                     readyToPlay={readyToPlay}
                   />
                 </group>

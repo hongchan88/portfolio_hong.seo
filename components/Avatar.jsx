@@ -6,22 +6,17 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useSettingStore } from '../app/store/settingStore';
 
-export default function Avatar({
-  currentStage,
-  setScrollingScreen,
-  readyToPlay,
-}) {
+export default function Avatar({ currentStage, readyToPlay }) {
   const groupRef = useRef();
   const [prevStage, setPrevStage] = useState(null);
   const isPlayingNextSection = useRef(false);
-  const wireframeApplied = useRef(false);
   const hasFlickered = useRef(false);
   const blinkStartTime = useRef(null);
-
+  const setIsScrolling = useSettingStore((s) => s.setIsScrolling);
+  const setIsTypingRunning = useSettingStore((s) => s.setIsTypingRunning);
   // Load GLTF
   const { scene, animations } = useGLTF('/models/avatar_52.glb');
   const { actions } = useAnimations(animations, groupRef);
-  const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
   // Load face textures only once
   const [normalFace, waveFace, surpriseFace] = useTexture([
     '/face/normal8.png',
@@ -38,7 +33,9 @@ export default function Avatar({
   const faceMesh = scene.getObjectByName('Object_3001');
   const bodyMesh = scene.getObjectByName('Object_3002');
   const originalMaterials = useRef(new Map());
-
+  useEffect(() => {
+    setIsTypingRunning(actions['typing3'].isRunning());
+  }, [actions['typing3']?.isRunning()]);
   useEffect(() => {
     if (!actions || !groupRef.current) return;
     const bakedAction = actions['baked_final'];
@@ -133,9 +130,9 @@ export default function Avatar({
         (currentFrame >= 25 && currentFrame <= 70) ||
         (currentFrame >= 287 && currentFrame <= 372) ||
         (currentFrame >= 475 && currentFrame <= 485);
-      setScrollingScreen(isInRange);
+      setIsScrolling(isInRange);
     } else {
-      setScrollingScreen(false);
+      setIsScrolling(false);
     }
   };
 

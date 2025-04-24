@@ -17,6 +17,7 @@ import { IoMenu } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { HiOutlineSpeakerXMark } from 'react-icons/hi2';
 import { HiOutlineSpeakerWave } from 'react-icons/hi2';
+import { useAudioStore } from './store/audioStore';
 
 export default function App() {
   gsap.registerPlugin(ScrollToPlugin);
@@ -25,12 +26,29 @@ export default function App() {
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
   const rightDrawerRef = useRef<HTMLDivElement>(null);
   const leftText = useRef<HTMLDivElement>(null);
+  const stage1BG = useRef<HTMLAudioElement>(null);
+  const stage1Menu = useRef<HTMLAudioElement>(null);
+  const stage2Start = useRef<HTMLAudioElement>(null);
+  const stage2Bubble = useRef<HTMLAudioElement>(null);
+  const stage2BGLab = useRef<HTMLAudioElement>(null);
+  const stageTo1 = useRef<HTMLAudioElement>(null);
+  const clickMenu = useRef<HTMLAudioElement>(null);
+  const clickAudio = useRef<HTMLAudioElement>(null);
+  // const typingAudio = useRef<HTMLAudioElement>(null);
+  // const scrollAudio = useRef<HTMLAudioElement>(null);
 
   // We'll track our "stage" in state:
   // 0 = Hero visible, 1 = half, 2 = AboutMe fully up
   const [currentStage, setCurrentStage] = useState(0);
-  const [audioToggle, setAudioToggle] = useState(false);
+  const audioToggle = useAudioStore((s) => s.audioToggleState);
+  const toggleAudio = useAudioStore((s) => s.toggleAudio);
+  const scrollAudio = useAudioStore((s) => s.scrollAudio);
+  const typingAudio = useAudioStore((s) => s.typingAudio);
+  const isTypingRunning = useSettingStore((s) => s.isTypingRunning);
+  const isScrolling = useSettingStore((s) => s.isScrolling);
   const [readyToPlay, setreadyToPlay] = useState(false);
+  const audioToggleRef = useRef(audioToggle);
+
   const { active, progress } = useProgress();
   const updateCameraPostion = useCameraStore((s) => s.setCamPos);
   const updateZoom = useCameraStore((s) => s.setZoom);
@@ -43,6 +61,10 @@ export default function App() {
     cz: { value: 14, step: 1 },
     zoom: { value: 70, min: 10, max: 100, step: 1 }, // Add zoom control here
   });
+
+  useEffect(() => {
+    audioToggleRef.current = audioToggle;
+  }, [audioToggle]);
   useEffect(() => {
     const tl = gsap.timeline({
       defaults: { duration: 1, ease: 'power1.inOut' },
@@ -108,6 +130,7 @@ export default function App() {
   function goPrevStage() {
     setCurrentStage((prev) => {
       // Can't go lower than 0
+
       if (prev <= 0) return 0;
       return prev - 1;
     });
@@ -139,9 +162,20 @@ export default function App() {
         // Hero fully visible
 
         tl.to(container, { yPercent: 0 });
+        stage2BGLab.current.pause();
+        stage2Bubble.current.pause();
+        if (audioToggle) {
+          stage1BG.current.play();
+        }
         break;
       case 1:
         tl.to(container, { yPercent: -50 });
+        stage1BG.current.pause();
+        if (audioToggle) {
+          stage2Start.current.play();
+          stage2BGLab.current.play();
+          stage2Bubble.current.play();
+        }
 
         // "Halfway" – 50% scrolled up
 
@@ -152,13 +186,16 @@ export default function App() {
 
         break;
     }
-  }, [currentStage, readyToPlay, rightDrawerToggle]);
+  }, [currentStage, readyToPlay, rightDrawerToggle, audioToggle]);
 
   // // ----------------------------------
   // // 3) Initialize on mount
   // // ----------------------------------
 
   const closeDrawer = () => {
+    if (audioToggleRef.current) {
+      clickMenu.current.play();
+    }
     setCameraDefault();
     gsap.to(rightDrawerRef.current, {
       right: -320,
@@ -181,6 +218,9 @@ export default function App() {
         if (rightDrawerToggle) {
           closeDrawer();
         } else if (!animatingRef.current) {
+          if (audioToggleRef.current) {
+            stageTo1.current.play();
+          }
           goPrevStage();
         }
       },
@@ -297,11 +337,83 @@ export default function App() {
     // Hide wrapper again
     tl.set(wrapper, { opacity: 0, pointerEvents: 'none' });
   };
+  useEffect(() => {
+    if (!audioToggle) {
+      stage1BG.current.pause();
+    } else {
+    }
+  }, [audioToggle]);
+  function toggleAudioFunc({
+    playTargets,
+    pauseTargets,
+  }: {
+    playTargets: HTMLAudioElement[] | HTMLAudioElement;
+    pauseTargets: HTMLAudioElement[] | HTMLAudioElement;
+  }) {
+    const playList = Array.isArray(playTargets) ? playTargets : [playTargets];
+    const pauseList = Array.isArray(pauseTargets)
+      ? pauseTargets
+      : [pauseTargets];
 
+    pauseList.forEach((audio) => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+
+    playList.forEach((audio) => {
+      if (audio.paused) {
+        audio.currentTime = 0;
+        audio.play().catch((e) => console.warn('Play blocked:', e));
+      }
+    });
+  }
+  useEffect(() => {
+    if (!typingAudio || !scrollAudio || !clickAudio) return;
+
+    if (audioToggle && currentStage === 0 && isTypingRunning) {
+      if (isScrolling) {
+        toggleAudioFunc({
+          playTargets: [scrollAudio, clickAudio.current],
+          pauseTargets: [typingAudio],
+        });
+      } else {
+        toggleAudioFunc({
+          playTargets: typingAudio,
+          pauseTargets: [scrollAudio],
+        });
+      }
+    } else {
+      typingAudio.pause();
+      scrollAudio.pause();
+    }
+  }, [isScrolling, audioToggle, currentStage]);
   return (
     <>
       {!readyToPlay && <LoadingOverlay />}
+      <audio ref={stage1BG} loop autoPlay src='/sounds/lazy_sunday.mp3' />
+      <audio ref={stage1Menu} src='/sounds/woosh.mp3' />
+      <audio ref={stage2Start} src='/sounds/transition.mp3' />
+      <audio ref={stage2Bubble} src='/sounds/bubble.mp3' />
+      <audio ref={stage2BGLab} loop autoPlay src='/sounds/lab_bg.mp3' />
+      <audio ref={stageTo1} src='/sounds/splash.mp3' />
+      <audio ref={clickMenu} src='/sounds/menu.wav' />
+      <audio ref={clickAudio} src='/sounds/click.mp3' />
 
+      {/* <audio ref={typingAudio} src='/sounds/typing.mp3' />
+      <audio ref={scrollAudio} src='/sounds/scroll.mp3' /> */}
+
+      <audio
+        ref={(el) => {
+          if (el) useAudioStore.getState().setAudioRef(el, 'typingAudio');
+        }}
+        src='/sounds/typing4.mp3'
+      />
+      <audio
+        ref={(el) => {
+          if (el) useAudioStore.getState().setAudioRef(el, 'scrollAudio');
+        }}
+        src='/sounds/scrolling2.mp3'
+      />
       <main
         className={`${
           !readyToPlay ? 'opacity-0 overflow-hidden h-screen relative' : ''
@@ -316,8 +428,11 @@ export default function App() {
             <div className='flex gap-5  '>
               <div
                 className=' cursor-pointer'
+                title='Music from #Uppbeat (free for Creators!):
+https://uppbeat.io/t/hybridas/lazy-sunday
+License code: 6IRKHLAO88BY9C1L'
                 onClick={() => {
-                  setAudioToggle((prev) => !prev);
+                  toggleAudio();
                 }}
               >
                 <div
@@ -342,6 +457,9 @@ export default function App() {
                     updateCameraPostion([-28, 6, 7]);
                     updateZoom(24);
                     setRightDrawerToggle(true);
+                  }
+                  if (audioToggle) {
+                    clickMenu.current.play();
                   }
                 }}
               >

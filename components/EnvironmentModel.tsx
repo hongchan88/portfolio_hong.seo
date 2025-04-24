@@ -4,23 +4,18 @@ import React, { useRef, useEffect } from 'react';
 import { useGLTF, useTexture } from '@react-three/drei';
 import gsap from 'gsap';
 import Bubbles from './Bubble';
+import { useSettingStore } from '../app/store/settingStore';
 
 type ModelProps = {
   url: string;
   currentStage: number;
-  isScrollingScreen: boolean;
   readyToPlay: boolean;
 };
 
-export function Model({
-  url,
-  currentStage,
-  isScrollingScreen,
-  readyToPlay,
-}: ModelProps) {
+export function Model({ url, currentStage, readyToPlay }: ModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene, materials } = useGLTF(url);
-
+  const isScrolling = useSettingStore((s) => s.isScrolling);
   // ✅ Load textures once using useTexture
   const [wallShadowTex, groundShadowTex, labWallGroundTex] = useTexture([
     '/models/wallShadow_transparent6.png',
@@ -87,13 +82,13 @@ export function Model({
       });
     }
 
-    isScrollingScreen ? scrollTl.current.resume() : scrollTl.current.pause();
+    isScrolling ? scrollTl.current.resume() : scrollTl.current.pause();
 
     return () => {
       // Optional cleanup
       // scrollTl.current?.kill();
     };
-  }, [isScrollingScreen, materials]);
+  }, [isScrolling, materials]);
 
   useEffect(() => {
     const roomObj = scene.getObjectByName('room_obj');
