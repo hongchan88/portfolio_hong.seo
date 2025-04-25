@@ -36,7 +36,6 @@ function SingleBubble({ position }) {
 }
 
 export default function Bubbles({ count = 2, position }) {
-  console.log(position, 'position');
   const bubbles = Array.from({ length: count }, (_, i) => {
     return <SingleBubble key={i} position={position} />;
   });

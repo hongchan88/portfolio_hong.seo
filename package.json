@@ -4,7 +4,9 @@
     "dev": "next dev -p 8000",
     "build": "next build",
     "start": "next start",
-    "prepare": "husky"
+    "prepare": "husky",
+    "clean": "rm -rf .next",
+    "dev:clean": "yarn clean && yarn dev"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

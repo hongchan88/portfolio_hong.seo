@@ -18,6 +18,7 @@ import { useAudioStore } from './store/audioStore';
 import NavBar from '../components/NavBar';
 import AudioGroup from '../components/AudioGroup/AudioGroup';
 import RightDrawer from '../components/RightDrawer';
+import { useCameraControls } from './hooks/useCameraControls';
 export default function App() {
   gsap.registerPlugin(ScrollToPlugin);
   const observerRef = useRef<Observer | null>(null);
@@ -32,8 +33,8 @@ export default function App() {
   const stage2BGLab = useRef<HTMLAudioElement>(null);
   const stageTo1 = useRef<HTMLAudioElement>(null);
   const clickAudio = useRef<HTMLAudioElement>(null);
-
-  const [currentStage, setCurrentStage] = useState(0);
+  const { currentStage, setCurrentStage } = useSettingStore();
+  // const [currentStage, setCurrentStage] = useState(0);
   const [readyToPlay, setreadyToPlay] = useState(false);
   const { active, progress } = useProgress();
   const audioToggle = useAudioStore((s) => s.audioToggleState);
@@ -44,19 +45,10 @@ export default function App() {
   const isScrolling = useSettingStore((s) => s.isScrolling);
   const audioToggleRef = useRef(audioToggle);
 
-  const updateCameraPostion = useCameraStore((s) => s.setCamPos);
-  const updateZoom = useCameraStore((s) => s.setZoom);
   const setCameraDefault = useCameraStore((s) => s.setDefault);
   const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
   const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
-
-  const { cx, cy, cz, zoom } = useControls('Camera Position', {
-    cx: { value: 10, step: 1 },
-    cy: { value: 5, step: 1 },
-    cz: { value: 14, step: 1 },
-    zoom: { value: 70, min: 10, max: 100, step: 1 }, // Add zoom control here
-  });
-
+  useCameraControls();
   useEffect(() => {
     audioToggleRef.current = audioToggle;
   }, [audioToggle]);
@@ -90,10 +82,6 @@ export default function App() {
     }
   }, [rightDrawerToggle]);
 
-  useEffect(() => {
-    updateCameraPostion([cx, cy, cz]);
-    updateZoom(zoom);
-  }, [cx, cy, cz, zoom]);
   useEffect(() => {
     if (!active && progress === 100) {
       const timeout = setTimeout(() => setreadyToPlay(true), 1000); // wait 1s after loading
@@ -372,7 +360,10 @@ export default function App() {
           setCurrentStage={setCurrentStage}
         />
 
-        <section ref={heroAboutmeRef} className='relative h-[200vh]'>
+        <section
+          ref={heroAboutmeRef}
+          className='relative h-[200vh] overflow-hidden'
+        >
           <Hero currentStage={currentStage} readyToPlay={readyToPlay} />{' '}
           {/* your <Canvas /> */}
           <div

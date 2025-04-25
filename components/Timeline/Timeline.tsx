@@ -47,7 +47,6 @@ export const Timeline = () => {
   const ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
-  console.log(data, 'data');
   useEffect(() => {
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect();
