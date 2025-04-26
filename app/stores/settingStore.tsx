@@ -7,6 +7,8 @@ type SettingState = {
   isLoadingDone: boolean;
   currentStage: number;
   isTypingRunning: boolean;
+  amountOfScrollingInStage2: number;
+  setAmountOfScrollingInStage2: (value: number) => void;
   setRightDrawerToggle: (value: boolean) => void;
   setIsScrolling: (value: boolean) => void;
   setIsTypingRunning: (value: boolean) => void;
@@ -20,6 +22,9 @@ export const useSettingStore = create<SettingState>((set, get) => ({
   isScrolling: false,
   isLoadingDone: false,
   isTypingRunning: false,
+  amountOfScrollingInStage2: 0,
+  setAmountOfScrollingInStage2: (value) =>
+    set({ amountOfScrollingInStage2: value }),
   setIsLoadingDone: (boolean) => set({ isLoadingDone: boolean }),
   setRightDrawerToggle: (value) => set({ rightDrawerToggle: value }),
   setIsScrolling: (value) => set({ isScrolling: value }),

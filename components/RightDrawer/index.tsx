@@ -9,7 +9,8 @@ interface indexProps {
 }
 
 const RightDrawer: FC<indexProps> = ({ rightDrawerRef, setCurrentStage }) => {
-  const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
+  const { setRightDrawerToggle, currentStage, amountOfScrollingInStage2 } =
+    useSettingStore();
   const setCameraDefault = useCameraStore((s) => s.setDefault);
 
   const playBubbleCover = () => {
@@ -54,24 +55,62 @@ const RightDrawer: FC<indexProps> = ({ rightDrawerRef, setCurrentStage }) => {
     >
       <div className='w-full h-full flex justify-center items-center'>
         <ul className='font-mono font-bold text-2xl flex flex-col gap-10'>
-          <li
-            onClick={() => {
-              playBubbleCover();
-              setRightDrawerToggle(false);
-              setCameraDefault();
-              setCurrentStage(1);
-              gsap.to(window, {
-                duration: 1,
-                scrollTo: {
-                  y: window.scrollY + 200,
-                },
-                ease: 'power2.out',
-              });
-            }}
-            className='cursor-pointer'
-          >
-            About me
-          </li>
+          {currentStage === 0 ? (
+            <li className='cursor-pointer '>
+              <div className='flex items-center gap-5'>
+                <div className='w-2 h-2 bg-red-500 rounded-full'></div>
+
+                <p className='text-gray-500 '>Main</p>
+              </div>
+            </li>
+          ) : (
+            <li
+              onClick={() => {
+                playBubbleCover();
+                setRightDrawerToggle(false);
+                setCameraDefault();
+                setCurrentStage(0);
+                gsap.to(window, {
+                  duration: 1,
+                  scrollTo: {
+                    y: 0,
+                  },
+                  ease: 'power2.out',
+                });
+              }}
+              className='cursor-pointer'
+            >
+              Main
+            </li>
+          )}
+          {currentStage === 1 ? (
+            <li className='cursor-pointer '>
+              <div className='flex items-center gap-5'>
+                <div className='w-2 h-2 bg-red-500 rounded-full'></div>
+
+                <p className='text-gray-500 '>About me</p>
+              </div>
+            </li>
+          ) : (
+            <li
+              onClick={() => {
+                playBubbleCover();
+                setRightDrawerToggle(false);
+                setCameraDefault();
+                setCurrentStage(1);
+                gsap.to(window, {
+                  duration: 1,
+                  scrollTo: {
+                    y: window.scrollY + 200,
+                  },
+                  ease: 'power2.out',
+                });
+              }}
+              className='cursor-pointer'
+            >
+              About me
+            </li>
+          )}
           <li
             onClick={() => {
               playBubbleCover();
@@ -82,7 +121,14 @@ const RightDrawer: FC<indexProps> = ({ rightDrawerRef, setCurrentStage }) => {
               gsap.to(window, {
                 duration: 1,
                 scrollTo: {
-                  y: window.scrollY + scrollAmount + 200,
+                  y: `${
+                    currentStage === 0
+                      ? window.scrollY + scrollAmount + 300
+                      : scrollAmount +
+                        window.scrollY +
+                        300 -
+                        amountOfScrollingInStage2
+                  }`,
                 },
                 ease: 'power2.out',
               });

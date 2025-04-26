@@ -19,6 +19,8 @@ import AudioGroup from '../components/AudioGroup/AudioGroup';
 import RightDrawer from '../components/RightDrawer';
 import { useCameraControls } from './hooks/useCameraControls';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { ContainerTextFlip } from '../components/ContainerTextFlip';
+import Projects from '../components/Projects';
 export default function App() {
   gsap.registerPlugin(ScrollToPlugin);
   const observerRef = useRef<Observer | null>(null);
@@ -48,6 +50,7 @@ export default function App() {
     isScrolling,
     rightDrawerToggle,
     setRightDrawerToggle,
+    setAmountOfScrollingInStage2,
   } = useSettingStore();
 
   // const [currentStage, setCurrentStage] = useState(0);
@@ -56,9 +59,10 @@ export default function App() {
 
   const audioToggleRef = useRef(audioToggleState);
   const rightDrawerToggleRef = useRef(rightDrawerToggle);
+  const isNavBarHiddenRef = useRef(isNavBarHidden);
 
   const setCameraDefault = useCameraStore((s) => s.setDefault);
-  useCameraControls();
+  // useCameraControls();
 
   useEffect(() => {
     audioToggleRef.current = audioToggleState;
@@ -67,6 +71,10 @@ export default function App() {
   useEffect(() => {
     rightDrawerToggleRef.current = rightDrawerToggle;
   }, [rightDrawerToggle]);
+
+  useEffect(() => {
+    isNavBarHiddenRef.current = isNavBarHidden;
+  }, [isNavBarHidden]);
   useEffect(() => {
     if (isTypingRunning) {
       setIsNavBarHideen(false);
@@ -236,7 +244,7 @@ export default function App() {
         }
       },
       onDown: () => {
-        if (rightDrawerToggleRef.current) return;
+        if (rightDrawerToggleRef.current || isNavBarHiddenRef.current) return;
         if (!animatingRef.current) {
           if (audioToggleRef.current) {
             stageTo1?.play();
@@ -245,7 +253,7 @@ export default function App() {
         }
       },
       onUp: () => {
-        if (rightDrawerToggleRef.current) return;
+        if (rightDrawerToggleRef.current || isNavBarHiddenRef.current) return;
         if (!animatingRef.current) {
           goNextStage();
         }
@@ -287,11 +295,13 @@ export default function App() {
         pin: true,
         pinSpacing: true,
         markers: process.env.NODE_ENV === 'development', // ✅ Debug only
-        onUpdate: () => {
+        onUpdate: (self) => {
           if (rightDrawerToggleRef.current) {
             console.log('hidden');
             closeDrawer();
           }
+          const value = self.scroll();
+          setAmountOfScrollingInStage2(value);
         },
         onLeave: () => {
           setIsNavBarHideen(true);
@@ -435,9 +445,6 @@ export default function App() {
                 Hey,
                 <br /> My name is Hong.
               </p>
-              <p className='font-mono  text-gray-600 text-xl '>
-                I love building things with software
-              </p>
             </div>
           </div>
           <div
@@ -454,17 +461,9 @@ export default function App() {
         </section>
 
         {/* Normal scrolling content (Projects) */}
-        <section
-          className='projects-section'
-          style={{
-            height: '100%',
-            marginTop: '-100vh',
-            background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
-          }}
-        >
-          {/* <Projects /> */}
-          <Timeline />
-        </section>
+        <Projects />
+        {/* <Projects /> */}
+
         {/* <section
         style={{
           height: '100%',

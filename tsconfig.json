@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "paths": { "@store/*": ["app/stores/*"] },
+    "paths": { "@store/*": ["./app/stores/*"], "@utils/*": ["./app/utils/*"] },
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
