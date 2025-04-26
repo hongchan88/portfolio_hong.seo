@@ -18,6 +18,7 @@ import NavBar from '../components/NavBar';
 import AudioGroup from '../components/AudioGroup/AudioGroup';
 import RightDrawer from '../components/RightDrawer';
 import { useCameraControls } from './hooks/useCameraControls';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 export default function App() {
   gsap.registerPlugin(ScrollToPlugin);
   const observerRef = useRef<Observer | null>(null);
@@ -33,14 +34,10 @@ export default function App() {
     useAudioStore();
   const clickAudio = audioRefs['clickAudio'];
   const stage1BG = audioRefs['stage1BG'];
-  const stage1Menu = audioRefs['stage1Menu'];
-  const stage2Start = audioRefs['stage2Start'];
-  const stage2Bubble = audioRefs['stage2Bubble'];
-  const stage2BGLab = audioRefs['stage2BGLab'];
+
   const stageTo1 = audioRefs['stageTo1'];
   const typingAudio = audioRefs['typingAudio'];
   const scrollAudio = audioRefs['scrollAudio'];
-  const clickMenu = audioRefs['clickMenuAudio'];
 
   const {
     currentStage,
@@ -401,6 +398,21 @@ export default function App() {
           !isLoadingDone ? 'opacity-0 overflow-hidden h-screen relative' : ''
         }`}
       >
+        {!isNavBarHidden ? (
+          <div className='fixed bottom-0 z-50 flex justify-center items-center pointer-events-none animate-bounce '>
+            <DotLottieReact
+              // src='https://lottie.host/33d9972a-5ef1-46bc-af9c-94aa2c58392a/T31TJwnUh0.lottie'
+              src={
+                currentStage === 0
+                  ? './lottieAnimation/scroll_animation_black.json'
+                  : './lottieAnimation/scroll_animation_white.json'
+              }
+              loop
+              autoplay
+              style={{ width: '100px', height: 'auto', aspectRatio: '1' }}
+            />
+          </div>
+        ) : null}
         {!isNavBarHidden ? (
           <NavBar closeDrawer={closeDrawer} currentStage={currentStage} />
         ) : null}
