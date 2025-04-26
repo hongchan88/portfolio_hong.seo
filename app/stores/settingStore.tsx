@@ -4,21 +4,25 @@ import { create } from 'zustand';
 type SettingState = {
   rightDrawerToggle: boolean;
   isScrolling: boolean;
+  isLoadingDone: boolean;
+  currentStage: number;
+  isTypingRunning: boolean;
   setRightDrawerToggle: (value: boolean) => void;
   setIsScrolling: (value: boolean) => void;
-  isTypingRunning: boolean;
   setIsTypingRunning: (value: boolean) => void;
-  currentStage: number;
   setCurrentStage: (value: number | ((prev: number) => number)) => void;
+  setIsLoadingDone: (boolean: boolean) => void;
 };
 
 export const useSettingStore = create<SettingState>((set, get) => ({
   currentStage: 0,
   rightDrawerToggle: false,
   isScrolling: false,
+  isLoadingDone: false,
+  isTypingRunning: false,
+  setIsLoadingDone: (boolean) => set({ isLoadingDone: boolean }),
   setRightDrawerToggle: (value) => set({ rightDrawerToggle: value }),
   setIsScrolling: (value) => set({ isScrolling: value }),
-  isTypingRunning: false,
   setIsTypingRunning: (value) => set({ isTypingRunning: value }),
   setCurrentStage: (updater) => {
     if (typeof updater === 'function') {

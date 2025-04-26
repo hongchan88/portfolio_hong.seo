@@ -1,10 +1,10 @@
 import { FC } from 'react';
-import { useAudioStore } from '../../app/store/audioStore';
+import { useAudioStore } from '../../app/stores/audioStore';
 import { HiOutlineSpeakerWave, HiOutlineSpeakerXMark } from 'react-icons/hi2';
-import { useSettingStore } from '../../app/store/settingStore';
+import { useSettingStore } from '../../app/stores/settingStore';
 import { IoMenu } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
-import { useCameraStore } from '../../app/store/cameraStore';
+import { useCameraStore } from '../../app/stores/cameraStore';
 
 interface indexProps {
   closeDrawer: () => void;
@@ -12,16 +12,15 @@ interface indexProps {
 }
 
 const NavBar: FC<indexProps> = ({ closeDrawer, currentStage }) => {
-  const toggleAudio = useAudioStore((s) => s.toggleAudio);
-  const audioToggleState = useAudioStore((s) => s.audioToggleState);
+  const { toggleAudio, audioToggleState, audioRefs, playAudioForStage } =
+    useAudioStore();
   const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
   const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
   const setFirstMenuCamera = useCameraStore((s) => s.setFirstMenuCameraPos);
   const setSecondMenuCamera = useCameraStore((s) => s.setSecondMenuCameraPos);
-  const clickMenu = useAudioStore((s) => s.clickMenuAudio);
 
   return (
-    <div className='absolute top-0 w-full z-30'>
+    <div className='fixed top-0 w-full z-30'>
       <div className='flex w-full justify-between p-10'>
         <div className='w-12 h-12'>
           <img src='./loading/loading2.png' />
@@ -62,7 +61,7 @@ License code: 6IRKHLAO88BY9C1L'
                 }
               }
               if (audioToggleState) {
-                clickMenu.play();
+                audioRefs['clickMenuAudio'].play();
               }
             }}
           >

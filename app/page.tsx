@@ -9,12 +9,11 @@ import Hero from '../components/Hero';
 import { Timeline } from '../components/Timeline/Timeline';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { useProgress } from '@react-three/drei';
-import { useCameraStore } from './store/cameraStore';
-import { useSettingStore } from './store/settingStore';
-import { useControls } from 'leva';
+import { useCameraStore } from './stores/cameraStore';
+import { useSettingStore } from './stores/settingStore';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
-import { useAudioStore } from './store/audioStore';
+import { useAudioStore } from './stores/audioStore';
 import NavBar from '../components/NavBar';
 import AudioGroup from '../components/AudioGroup/AudioGroup';
 import RightDrawer from '../components/RightDrawer';
@@ -25,71 +24,107 @@ export default function App() {
 
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
   const rightDrawerRef = useRef<HTMLDivElement>(null);
+  const aboutSectionRef = useRef(null);
+  const aboutImgRef = useRef(null);
   const leftText = useRef<HTMLDivElement>(null);
-  const stage1BG = useRef<HTMLAudioElement>(null);
-  const stage1Menu = useRef<HTMLAudioElement>(null);
-  const stage2Start = useRef<HTMLAudioElement>(null);
-  const stage2Bubble = useRef<HTMLAudioElement>(null);
-  const stage2BGLab = useRef<HTMLAudioElement>(null);
-  const stageTo1 = useRef<HTMLAudioElement>(null);
-  const clickAudio = useRef<HTMLAudioElement>(null);
-  const { currentStage, setCurrentStage } = useSettingStore();
+  const animatingRef = useRef(false);
+
+  const { audioRefs, audioToggleState, playAudioForStage, pauseAuido } =
+    useAudioStore();
+  const clickAudio = audioRefs['clickAudio'];
+  const stage1BG = audioRefs['stage1BG'];
+  const stage1Menu = audioRefs['stage1Menu'];
+  const stage2Start = audioRefs['stage2Start'];
+  const stage2Bubble = audioRefs['stage2Bubble'];
+  const stage2BGLab = audioRefs['stage2BGLab'];
+  const stageTo1 = audioRefs['stageTo1'];
+  const typingAudio = audioRefs['typingAudio'];
+  const scrollAudio = audioRefs['scrollAudio'];
+  const clickMenu = audioRefs['clickMenuAudio'];
+
+  const {
+    currentStage,
+    setCurrentStage,
+    isLoadingDone,
+    setIsLoadingDone,
+    isTypingRunning,
+    isScrolling,
+    rightDrawerToggle,
+    setRightDrawerToggle,
+  } = useSettingStore();
+
   // const [currentStage, setCurrentStage] = useState(0);
-  const [readyToPlay, setreadyToPlay] = useState(false);
   const { active, progress } = useProgress();
-  const audioToggle = useAudioStore((s) => s.audioToggleState);
-  const scrollAudio = useAudioStore((s) => s.scrollAudio);
-  const typingAudio = useAudioStore((s) => s.typingAudio);
-  const clickMenu = useAudioStore((s) => s.clickMenuAudio);
-  const isTypingRunning = useSettingStore((s) => s.isTypingRunning);
-  const isScrolling = useSettingStore((s) => s.isScrolling);
-  const audioToggleRef = useRef(audioToggle);
+  const [isNavBarHidden, setIsNavBarHideen] = useState(true);
+
+  const audioToggleRef = useRef(audioToggleState);
+  const rightDrawerToggleRef = useRef(rightDrawerToggle);
 
   const setCameraDefault = useCameraStore((s) => s.setDefault);
-  const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
-  const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
   useCameraControls();
+
   useEffect(() => {
-    audioToggleRef.current = audioToggle;
-  }, [audioToggle]);
+    audioToggleRef.current = audioToggleState;
+    playAudioForStage();
+  }, [audioToggleState]);
   useEffect(() => {
-    const tl = gsap.timeline({
-      defaults: { duration: 1, ease: 'power1.inOut' },
-      onComplete: () => {
-        animatingRef.current = false;
-        if (currentStage === 1) {
-          killObserver();
-        }
-      },
-    });
-    if (rightDrawerToggle) {
-      tl.to(rightDrawerRef.current, {
-        right: 0,
-        ease: 'power1.in',
-      }).to(
-        leftText.current,
-        {
-          left: '-50%',
-          ease: 'power1.in',
-        },
-        '<'
-      );
-    } else {
-      tl.to(rightDrawerRef.current, {
-        right: -320,
-        ease: 'power1.in',
-      }).to(leftText.current, { left: '5%' }, '<');
-    }
+    rightDrawerToggleRef.current = rightDrawerToggle;
   }, [rightDrawerToggle]);
+  useEffect(() => {
+    if (isTypingRunning) {
+      setIsNavBarHideen(false);
+    }
+  }, [isTypingRunning]);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        defaults: { duration: 1, ease: 'power1.inOut' },
+        onComplete: () => {
+          animatingRef.current = false;
+        },
+      });
+
+      if (currentStage === 0 && rightDrawerToggle) {
+        tl.to(rightDrawerRef.current, { right: 0 }).to(
+          leftText.current,
+          { left: '-50%' },
+          '<'
+        );
+      } else if (currentStage === 0) {
+        tl.to(rightDrawerRef.current, { right: -320 }).to(
+          leftText.current,
+          { left: '5%' },
+          '<'
+        );
+      }
+
+      if (currentStage === 1 && rightDrawerToggle) {
+        tl.to(rightDrawerRef.current, { right: 0 }).to(
+          aboutSectionRef.current,
+          { left: '-50%' },
+          '<'
+        );
+      } else if (currentStage === 1) {
+        tl.to(rightDrawerRef.current, { right: -320 }).to(
+          aboutSectionRef.current,
+          { left: '0' },
+          '<'
+        );
+      }
+    },
+    {
+      dependencies: [currentStage, rightDrawerToggle],
+    }
+  );
 
   useEffect(() => {
     if (!active && progress === 100) {
-      const timeout = setTimeout(() => setreadyToPlay(true), 1000); // wait 1s after loading
+      const timeout = setTimeout(() => setIsLoadingDone(true), 1000); // wait 1s after loading
       return () => clearTimeout(timeout);
     }
   }, [active, progress]);
   // For preventing repeated animations if user scrolls quickly
-  const animatingRef = useRef(false);
 
   // ----------------------------------
   // 1) OBSERVER LOGIC
@@ -122,54 +157,50 @@ export default function App() {
   // ----------------------------------
   // 2) Animate WHEN currentStage changes
   // ----------------------------------
-  useGSAP(() => {
-    if (!readyToPlay) return null;
+  useGSAP(
+    () => {
+      if (!isLoadingDone) return null;
 
-    const container = heroAboutmeRef.current;
-    if (!container) return;
+      const container = heroAboutmeRef.current;
+      if (!container) return;
 
-    animatingRef.current = true;
+      animatingRef.current = true;
 
-    const tl = gsap.timeline({
-      defaults: { duration: 1, ease: 'power1.inOut' },
-      onComplete: () => {
-        animatingRef.current = false;
-        if (currentStage === 1) {
-          killObserver();
-        }
-      },
-    });
+      const tl = gsap.timeline({
+        defaults: { duration: 1, ease: 'power1.inOut' },
+        onComplete: () => {
+          animatingRef.current = false;
+          if (currentStage === 1) {
+            killObserver();
+          }
+        },
+      });
 
-    switch (currentStage) {
-      case 0:
-        // Hero fully visible
+      switch (currentStage) {
+        case 0:
+          // Hero fully visible
 
-        tl.to(container, { yPercent: 0 });
-        stage2BGLab.current.pause();
-        stage2Bubble.current.pause();
-        if (audioToggle) {
-          stage1BG.current.play();
-        }
-        break;
-      case 1:
-        tl.to(container, { yPercent: -50 });
-        stage1BG.current.pause();
-        if (audioToggle) {
-          stage2Start.current.play();
-          stage2BGLab.current.play();
-          stage2Bubble.current.play();
-        }
+          tl.to(container, { yPercent: 0 });
+          console.log(audioToggleRef.current, 'audio toggle');
+          playAudioForStage();
 
-        // "Halfway" – 50% scrolled up
+          break;
+        case 1:
+          tl.to(container, { yPercent: -50 });
+          playAudioForStage();
 
-        break;
-      case 2:
-        // AboutMe fully visible (Hero at -100%)
-        // tl.to(container, { yPercent: -100 });
+          // "Halfway" – 50% scrolled up
 
-        break;
-    }
-  }, [currentStage, readyToPlay, rightDrawerToggle, audioToggle]);
+          break;
+        case 2:
+          // AboutMe fully visible (Hero at -100%)
+          // tl.to(container, { yPercent: -100 });
+
+          break;
+      }
+    },
+    { dependencies: [currentStage, isLoadingDone] }
+  );
 
   // // ----------------------------------
   // // 3) Initialize on mount
@@ -177,15 +208,19 @@ export default function App() {
 
   const closeDrawer = () => {
     if (audioToggleRef.current) {
-      clickMenu.play();
+      audioRefs?.['clickMenuAudio']?.play();
     }
     setCameraDefault();
     gsap.to(rightDrawerRef.current, {
       right: -320,
       delay: 0.1,
       ease: 'power1.in',
+      onComplete: () => {
+        animatingRef.current = false;
+      },
     });
     setRightDrawerToggle(false);
+    rightDrawerToggleRef.current = false;
   };
 
   const initObserver = () => {
@@ -195,22 +230,26 @@ export default function App() {
     observerRef.current = Observer.create({
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
-      tolerance: 10,
+      tolerance: 100,
       preventDefault: true,
-      onDown: () => {
-        if (rightDrawerToggle) {
+      onClick: () => {
+        if (rightDrawerToggleRef.current) {
+          animatingRef.current = true;
           closeDrawer();
-        } else if (!animatingRef.current) {
+        }
+      },
+      onDown: () => {
+        if (rightDrawerToggleRef.current) return;
+        if (!animatingRef.current) {
           if (audioToggleRef.current) {
-            stageTo1.current.play();
+            stageTo1?.play();
           }
           goPrevStage();
         }
       },
       onUp: () => {
-        if (rightDrawerToggle) {
-          closeDrawer();
-        } else if (!animatingRef.current) {
+        if (rightDrawerToggleRef.current) return;
+        if (!animatingRef.current) {
           goNextStage();
         }
       },
@@ -218,15 +257,18 @@ export default function App() {
   };
 
   // ✅ Handles Observer init and cleanup
-  useGSAP(() => {
-    if (!readyToPlay) return;
+  useGSAP(
+    () => {
+      if (!isLoadingDone) return;
 
-    initObserver();
+      initObserver();
 
-    return () => {
-      observerRef.current?.kill(); // ✅ Important cleanup
-    };
-  }, [readyToPlay, rightDrawerToggle]);
+      return () => {
+        observerRef.current?.kill(); // ✅ Important cleanup
+      };
+    },
+    { dependencies: [isLoadingDone] }
+  );
 
   // ✅ Handles ScrollTrigger animation
   useGSAP(() => {
@@ -248,6 +290,22 @@ export default function App() {
         pin: true,
         pinSpacing: true,
         markers: process.env.NODE_ENV === 'development', // ✅ Debug only
+        onUpdate: () => {
+          if (rightDrawerToggleRef.current) {
+            console.log('hidden');
+            closeDrawer();
+          }
+        },
+        onLeave: () => {
+          setIsNavBarHideen(true);
+          pauseAuido('stage2BGLab');
+          // audioRefs['stage2BGLab']?.pause();
+        },
+        onEnterBack: () => {
+          setIsNavBarHideen(false);
+          playAudioForStage();
+        },
+
         onLeaveBack: () => {
           initObserver(); // ✅ Re-init observer when scrolling back up
         },
@@ -267,14 +325,12 @@ export default function App() {
       '<'
     );
   });
-  const aboutSectionRef = useRef(null);
-  const aboutImgRef = useRef(null);
 
   // ----------------------------------
   // 4) Render
   // ----------------------------------
   useEffect(() => {
-    if (!readyToPlay) {
+    if (!isLoadingDone) {
       document.body.style.overflow = 'hidden'; // 🚫 disable scroll
     } else {
       document.body.style.overflow = '';
@@ -283,14 +339,15 @@ export default function App() {
     return () => {
       document.body.style.overflow = ''; // cleanup on unmount
     };
-  }, [readyToPlay]);
+  }, [isLoadingDone]);
 
   useEffect(() => {
-    if (!audioToggle) {
-      stage1BG.current.pause();
+    if (!audioToggleRef.current) {
+      stage1BG?.pause();
     } else {
     }
-  }, [audioToggle]);
+  }, [audioToggleRef.current]);
+
   function toggleAudioFunc({
     playTargets,
     pauseTargets,
@@ -304,24 +361,24 @@ export default function App() {
       : [pauseTargets];
 
     pauseList.forEach((audio) => {
-      audio.pause();
+      audio?.pause();
       audio.currentTime = 0;
     });
 
     playList.forEach((audio) => {
       if (audio.paused) {
         audio.currentTime = 0;
-        audio.play().catch((e) => console.warn('Play blocked:', e));
+        audio?.play().catch((e) => console.warn('Play blocked:', e));
       }
     });
   }
   useEffect(() => {
     if (!typingAudio || !scrollAudio || !clickAudio) return;
 
-    if (audioToggle && currentStage === 0 && isTypingRunning) {
+    if (audioToggleState && currentStage === 0 && isTypingRunning) {
       if (isScrolling) {
         toggleAudioFunc({
-          playTargets: [scrollAudio, clickAudio.current],
+          playTargets: [scrollAudio, clickAudio],
           pauseTargets: [typingAudio],
         });
       } else {
@@ -331,30 +388,22 @@ export default function App() {
         });
       }
     } else {
-      typingAudio.pause();
-      scrollAudio.pause();
+      typingAudio?.pause();
+      scrollAudio?.pause();
     }
-  }, [isScrolling, audioToggle, currentStage]);
+  }, [isScrolling, currentStage, audioToggleState]);
   return (
     <>
-      {!readyToPlay && <LoadingOverlay />}
-      <AudioGroup
-        refs={{
-          stage1BG,
-          stage1Menu,
-          stage2Start,
-          stage2Bubble,
-          stage2BGLab,
-          stageTo1,
-          clickAudio,
-        }}
-      />
+      {!isLoadingDone && <LoadingOverlay />}
+      <AudioGroup />
       <main
         className={`${
-          !readyToPlay ? 'opacity-0 overflow-hidden h-screen relative' : ''
+          !isLoadingDone ? 'opacity-0 overflow-hidden h-screen relative' : ''
         }`}
       >
-        <NavBar closeDrawer={closeDrawer} currentStage={currentStage} />
+        {!isNavBarHidden ? (
+          <NavBar closeDrawer={closeDrawer} currentStage={currentStage} />
+        ) : null}
         <RightDrawer
           rightDrawerRef={rightDrawerRef}
           setCurrentStage={setCurrentStage}
@@ -362,10 +411,9 @@ export default function App() {
 
         <section
           ref={heroAboutmeRef}
-          className='relative h-[200vh] overflow-hidden'
+          className='relative h-[204vh] overflow-hidden'
         >
-          <Hero currentStage={currentStage} readyToPlay={readyToPlay} />{' '}
-          {/* your <Canvas /> */}
+          <Hero /> {/* your <Canvas /> */}
           <div
             ref={leftText}
             className='absolute  font-bold top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'

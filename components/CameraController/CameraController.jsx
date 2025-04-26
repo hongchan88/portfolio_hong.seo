@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import * as THREE from 'three';
-import { useCameraStore } from '../../app/store/cameraStore';
+import { useCameraStore } from '../../app/stores/cameraStore';
 import { useThree } from '@react-three/fiber';
-import { useSettingStore } from '../../app/store/settingStore';
+import { useSettingStore } from '../../app/stores/settingStore';
 
 export default function CameraController() {
   const { camPos, zoom, camRotatePos } = useCameraStore();

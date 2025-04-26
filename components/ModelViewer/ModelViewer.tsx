@@ -7,10 +7,12 @@ import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
 import TiltedScene from '../TiltScene/TiltedScene';
 import CameraController from '../CameraController/CameraController';
-export default function ModelViewer({ currentStage, readyToPlay }) {
+import { useSettingStore } from '../../app/stores/settingStore';
+export default function ModelViewer() {
+  const { currentStage, isLoadingDone } = useSettingStore();
   return (
     <>
-      <div style={{ width: '100vw', height: '202vh' }}>
+      <div style={{ width: '100vw', height: '204vh' }}>
         {/* ✅ Background Image (behind the canvas) */}
         <div
           style={{
@@ -18,7 +20,7 @@ export default function ModelViewer({ currentStage, readyToPlay }) {
             bottom: 0,
             left: 0,
             width: '100%',
-            height: `${currentStage === 0 ? '50%' : '52%'}`,
+            height: `${currentStage === 0 ? '50%' : '50%'}`,
             background:
               'linear-gradient(140deg, rgba(19, 43, 101, 1) 50%, rgba(24, 75, 146, 1) 78%, rgba(39, 93, 137, 1) 99%)',
 
@@ -31,7 +33,7 @@ export default function ModelViewer({ currentStage, readyToPlay }) {
             bottom: 0,
             top: 0,
             width: '100%',
-            height: `${currentStage === 0 ? '50%' : '48%'}`,
+            height: `${currentStage === 0 ? '50%' : '50%'}`,
             background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
             zIndex: 1,
           }}
@@ -53,7 +55,7 @@ export default function ModelViewer({ currentStage, readyToPlay }) {
           <Suspense fallback={null}>
             <Canvas
               className={`${
-                !readyToPlay ? 'invisible opacity-0' : 'opacity-100'
+                !isLoadingDone ? 'invisible opacity-0' : 'opacity-100'
               } transition-opacity duration-700`}
               shadows
               style={{
@@ -68,11 +70,11 @@ export default function ModelViewer({ currentStage, readyToPlay }) {
                   <Model
                     url='/models/environment_combine_108.glb'
                     currentStage={currentStage}
-                    readyToPlay={readyToPlay}
+                    isLoadingDone={isLoadingDone}
                   />
                   <Avatar
                     currentStage={currentStage}
-                    readyToPlay={readyToPlay}
+                    isLoadingDone={isLoadingDone}
                   />
                 </group>
                 {/* <Environment

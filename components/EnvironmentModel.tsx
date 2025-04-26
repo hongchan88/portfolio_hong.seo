@@ -4,15 +4,15 @@ import React, { useRef, useEffect } from 'react';
 import { useGLTF, useTexture } from '@react-three/drei';
 import gsap from 'gsap';
 import Bubbles from './Bubble';
-import { useSettingStore } from '../app/store/settingStore';
+import { useSettingStore } from '../app/stores/settingStore';
 
 type ModelProps = {
   url: string;
   currentStage: number;
-  readyToPlay: boolean;
+  isLoadingDone: boolean;
 };
 
-export function Model({ url, currentStage, readyToPlay }: ModelProps) {
+export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
   const modelRef = useRef<THREE.Group>(null);
   const { scene, materials } = useGLTF(url);
   const isScrolling = useSettingStore((s) => s.isScrolling);
@@ -102,7 +102,7 @@ export function Model({ url, currentStage, readyToPlay }: ModelProps) {
     }
 
     gsap.killTweensOf([roomObj.scale, wallObj.scale, wallShadow.material]);
-    if (!readyToPlay) return;
+    if (!isLoadingDone) return;
     if (currentStage === 0) {
       wallShadow.material.transparent = true;
 
@@ -181,7 +181,7 @@ export function Model({ url, currentStage, readyToPlay }: ModelProps) {
         ease: 'back.in(1.7)',
       });
     }
-  }, [currentStage, readyToPlay]);
+  }, [currentStage, isLoadingDone]);
 
   return (
     <>

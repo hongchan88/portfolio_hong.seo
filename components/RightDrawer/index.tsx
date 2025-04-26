@@ -1,7 +1,7 @@
 import gsap from 'gsap';
 import { FC } from 'react';
-import { useSettingStore } from '../../app/store/settingStore';
-import { useCameraStore } from '../../app/store/cameraStore';
+import { useSettingStore } from '../../app/stores/settingStore';
+import { useCameraStore } from '../../app/stores/cameraStore';
 
 interface indexProps {
   rightDrawerRef: React.RefObject<HTMLDivElement>;
@@ -50,7 +50,7 @@ const RightDrawer: FC<indexProps> = ({ rightDrawerRef, setCurrentStage }) => {
   return (
     <div
       ref={rightDrawerRef}
-      className='absolute top-0 -right-80 h-full w-80 bg-white z-10'
+      className='fixed top-0 -right-80 h-full w-80 bg-white z-10'
     >
       <div className='w-full h-full flex justify-center items-center'>
         <ul className='font-mono font-bold text-2xl flex flex-col gap-10'>
