@@ -116,7 +116,11 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
     gsap.killTweensOf([roomObj.scale, wallObj.scale, wallShadow.material]);
     if (!isLoadingDone) return;
     if (currentStage === 0) {
-      wallShadow.material.transparent = true;
+      if (Array.isArray(wallShadow.material)) {
+        wallShadow.material.forEach((mat) => (mat.transparent = true));
+      } else {
+        wallShadow.material.transparent = true;
+      }
 
       gsap.fromTo(
         wallShadow.material,

@@ -2,7 +2,7 @@ import { useControls } from 'leva';
 import { useEffect } from 'react';
 import { useCameraStore } from '../stores/cameraStore';
 export const useCameraControls = () => {
-  const { setZoom, setCamPos, setCamRotatePos } = useCameraStore();
+  const { setZoom, setCamPos } = useCameraStore();
 
   const {
     cx,

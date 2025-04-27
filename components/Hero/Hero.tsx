@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { useSettingStore } from '@store/settingStore';
 import dynamic from 'next/dynamic';
