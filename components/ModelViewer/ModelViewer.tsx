@@ -8,8 +8,24 @@ import { Model } from '../EnvironmentModel';
 import TiltedScene from '../TiltScene/TiltedScene';
 import CameraController from '../CameraController/CameraController';
 import { useSettingStore } from '../../app/stores/settingStore';
+import { MusicNoteAnimation } from '../MusicNoteAnimation';
 export default function ModelViewer() {
   const { currentStage, isLoadingDone } = useSettingStore();
+  // const handlePointerDown = (e: any) => {
+  //   // e.stopPropagation();
+  //   if (e?.object?.userData?.clickable) {
+  //     console.log('🎯 Speaker clicked!');
+  //   }
+  // };
+  // const handlePointerOver = (e: any) => {
+  //   if (e?.object?.userData?.clickable) {
+  //     document.body.style.cursor = 'pointer';
+  //   }
+  // };
+  // const handlePointerOut = (e: any) => {
+  //   document.body.style.cursor = 'default';
+  // };
+
   return (
     <>
       <div style={{ width: '100vw', height: '204vh' }}>
@@ -62,13 +78,16 @@ export default function ModelViewer() {
                 width: '100%',
                 height: '100%',
               }}
+              // onPointerDown={handlePointerDown}
+              // onPointerOver={handlePointerOver}
+              // onPointerOut={handlePointerOut}
             >
               <TiltedScene>
+                <MusicNoteAnimation />
                 <CameraController />
                 <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
-                  {/* <group position={[23, 5, 4]} rotation={[0, 33, 0]}> */}
                   <Model
-                    url='/models/environment_combine_108.glb'
+                    url='/models/environment_combine_112.glb'
                     currentStage={currentStage}
                     isLoadingDone={isLoadingDone}
                   />

@@ -22,6 +22,18 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
     '/models/groundShadow_transparent3.png',
     '/models/labwallGround_transparent.png',
   ]);
+  // useEffect(() => {
+  //   const empty = scene.getObjectByName('speakerPosition'); // your Empty's name
+  //   if (empty) {
+  //     const worldPos = new THREE.Vector3();
+  //     empty.getWorldPosition(worldPos);
+  //     console.log('position', empty.position);
+  //     console.log('speakerPosition World Position:', worldPos);
+  //     // 여기서 World Position 정확히 나옴
+  //   } else {
+  //     console.log('speakerPosition not found');
+  //   }
+  // }, [scene]);
 
   useEffect(() => {
     if (!scene) return;
