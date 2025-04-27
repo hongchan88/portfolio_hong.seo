@@ -14,8 +14,9 @@ interface indexProps {
 }
 
 const NavBar: FC<indexProps> = ({ closeDrawer, currentStage }) => {
-  const { toggleAudio, audioToggleState, audioRefs, playAudioForStage } =
-    useAudioStore();
+  const toggleAudio = useAudioStore((s) => s.toggleAudio);
+  const audioToggleState = useAudioStore((s) => s.audioToggleState);
+  const audioRefs = useAudioStore((s) => s.audioRefs);
   const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
   const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
   const setFirstMenuCamera = useCameraStore((s) => s.setFirstMenuCameraPos);
@@ -65,15 +66,15 @@ License code: 6IRKHLAO88BY9C1L'
               if (rightDrawerToggle) {
                 closeDrawer();
               } else {
+                if (audioToggleState) {
+                  audioRefs['clickMenuAudio']?.play();
+                }
                 setRightDrawerToggle(true);
                 if (currentStage === 0) {
                   setFirstMenuCamera();
                 } else {
                   setSecondMenuCamera();
                 }
-              }
-              if (audioToggleState) {
-                audioRefs['clickMenuAudio'].play();
               }
             }}
           >

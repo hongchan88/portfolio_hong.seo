@@ -98,7 +98,7 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
 
     return () => {
       // Optional cleanup
-      // scrollTl.current?.kill();
+      scrollTl.current?.kill();
     };
   }, [isScrolling, materials]);
 

@@ -1,7 +1,6 @@
 'use client';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
 // Import your existing components
 import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
@@ -10,7 +9,9 @@ import CameraController from '../CameraController/CameraController';
 import { useSettingStore } from '../../app/stores/settingStore';
 import { MusicNoteAnimation } from '../MusicNoteAnimation';
 export default function ModelViewer() {
-  const { currentStage, isLoadingDone } = useSettingStore();
+  const currentStage = useSettingStore((s) => s.currentStage);
+  const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
+
   // const handlePointerDown = (e: any) => {
   //   // e.stopPropagation();
   //   if (e?.object?.userData?.clickable) {
@@ -87,7 +88,7 @@ export default function ModelViewer() {
                 <CameraController />
                 <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
                   <Model
-                    url='/models/environment_combine_112.glb'
+                    url='/models/environment_final2.glb'
                     currentStage={currentStage}
                     isLoadingDone={isLoadingDone}
                   />

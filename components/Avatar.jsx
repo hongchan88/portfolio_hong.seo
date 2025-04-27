@@ -1,48 +1,140 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useGLTF, useAnimations, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useSettingStore } from '../app/stores/settingStore';
+import { useAudioStore } from '@store/audioStore';
 
+/**
+ * Refactored Avatar component
+ * – Heavy material / traversal work has been moved out of the render‑tick
+ * – `useFrame` now only does the super‑cheap scroll / face‑swap checks
+ * – Blinking / flicker runs in its own requestAnimationFrame loop that is
+ *   started / stopped when stage 1 becomes active / inactive.
+ */
 export default function Avatar({ currentStage, isLoadingDone }) {
-  const groupRef = useRef();
+  const groupRef = useRef(null);
   const [prevStage, setPrevStage] = useState(null);
-  const isPlayingNextSection = useRef(false);
+  const setIsScrolling = useSettingStore((s) => s.setIsScrolling);
+  const isScrolling = useSettingStore((s) => s.isScrolling);
+  const audioToggleState = useAudioStore((s) => s.audioToggleState);
+  const audioRefs = useAudioStore((s) => s.audioRefs);
+  const setIsTypingRunning = useSettingStore((s) => s.setIsTypingRunning);
+  const isTypingRunning = useSettingStore((s) => s.isTypingRunning);
   const hasFlickered = useRef(false);
   const blinkStartTime = useRef(null);
-  const setIsScrolling = useSettingStore((s) => s.setIsScrolling);
-  const setIsTypingRunning = useSettingStore((s) => s.setIsTypingRunning);
-  // Load GLTF
+  const flickerRafId = useRef(null);
+  const restoreTimerId = useRef(null);
+  const clickingSound = audioRefs['clickingSound'];
+  const typingAudio = audioRefs['typingAudio'];
+  const scrollAudio = audioRefs['scrollAudio'];
+
+  /** ------------------------------------------------------------------
+   * LOAD ASSETS
+   * ------------------------------------------------------------------ */
   const { scene, animations } = useGLTF('/models/avatar_52.glb');
   const { actions } = useAnimations(animations, groupRef);
-  // Load face textures only once
+
   const [normalFace, waveFace, surpriseFace] = useTexture([
     '/face/normal8.png',
     '/face/wave7.png',
     '/face/surprise4.png',
   ]);
-  normalFace.flipY = false;
-  waveFace.flipY = false;
-  surpriseFace.flipY = false;
-  normalFace.colorSpace = THREE.SRGBColorSpace;
-  waveFace.colorSpace = THREE.SRGBColorSpace;
-  surpriseFace.colorSpace = THREE.SRGBColorSpace;
+  [normalFace, waveFace, surpriseFace].forEach((t) => {
+    t.flipY = false;
+    t.colorSpace = THREE.SRGBColorSpace;
+  });
 
-  const faceMesh = scene.getObjectByName('Object_3001');
-  const bodyMesh = scene.getObjectByName('Object_3002');
+  // cache meshes once the scene is ready
+  const { faceMesh, bodyMesh } = useMemo(() => {
+    return {
+      faceMesh: scene.getObjectByName('Object_3001'),
+      bodyMesh: scene.getObjectByName('Object_3002'),
+    };
+  }, [scene]);
+
+  // keep originals so we can restore them later
   const originalMaterials = useRef(new Map());
+
+  /** ------------------------------------------------------------------
+   * CONSTANTS
+   * ------------------------------------------------------------------ */
+  const FRAME_RANGES = useMemo(
+    () => [
+      [25, 70],
+      [287, 372],
+      [475, 485],
+    ],
+    []
+  );
+  function toggleAudioFunc({ playTargets, pauseTargets }) {
+    const playList = Array.isArray(playTargets) ? playTargets : [playTargets];
+    const pauseList = Array.isArray(pauseTargets)
+      ? pauseTargets
+      : [pauseTargets];
+
+    pauseList.forEach((audio) => {
+      audio?.pause();
+      audio.currentTime = 0;
+    });
+
+    playList.forEach((audio) => {
+      if (audio.paused) {
+        audio.currentTime = 0;
+        audio?.play().catch((e) => console.warn('Play blocked:', e));
+      }
+    });
+  }
   useEffect(() => {
-    setIsTypingRunning(actions['typing3'].isRunning());
-  }, [actions['typing3']?.isRunning()]);
+    if (!typingAudio || !scrollAudio || !clickingSound) return;
+
+    if (audioToggleState && currentStage === 0 && isTypingRunning) {
+      if (isScrolling) {
+        toggleAudioFunc({
+          playTargets: [scrollAudio, clickingSound],
+          pauseTargets: [typingAudio],
+        });
+      } else {
+        toggleAudioFunc({
+          playTargets: typingAudio,
+          pauseTargets: [scrollAudio],
+        });
+      }
+    } else {
+      typingAudio?.pause();
+      scrollAudio?.pause();
+    }
+  }, [isScrolling, currentStage, audioToggleState]);
+
+  const typingFps = useMemo(() => {
+    const typingClip = actions?.['typing3']?.getClip();
+    return typingClip
+      ? typingClip.tracks[0].times.length / typingClip.duration
+      : 30;
+  }, [actions]);
+
+  /** ------------------------------------------------------------------
+   * TYPING STATUS (for other UI parts)
+   * ------------------------------------------------------------------ */
+  useEffect(() => {
+    setIsTypingRunning(actions?.['typing3']?.isRunning() ?? false);
+  }, [actions?.['typing3']?.isRunning()]);
+
+  /** ------------------------------------------------------------------
+   * ANIMATION STATE MACHINE (baked → typing → nextSection etc.)
+   * ------------------------------------------------------------------ */
   useEffect(() => {
     if (!actions || !groupRef.current) return;
+
     const bakedAction = actions['baked_final'];
     const typingAction = actions['typing3'];
     const nextSectionAction = actions['avatarModel'];
 
     if (!bakedAction || !typingAction || !nextSectionAction) return;
+
+    /* helpers --------------------------------------------------------- */
     const mixer = bakedAction.getMixer();
     const cleanupFns = [];
 
@@ -70,18 +162,12 @@ export default function Avatar({ currentStage, isLoadingDone }) {
       nextSectionAction.timeScale = 1.5;
       nextSectionAction.play();
 
-      isPlayingNextSection.current = true;
-
-      const holdLast = () => {
-        nextSectionAction.paused = true;
-        isPlayingNextSection.current = false;
-      };
-
+      const holdLast = () => (nextSectionAction.paused = true);
       mixer.addEventListener('finished', holdLast);
       cleanupFns.push(() => mixer.removeEventListener('finished', holdLast));
     };
 
-    const playNextSectionInReverse = () => {
+    const playNextSectionReverse = () => {
       nextSectionAction.stop();
       nextSectionAction.setLoop(THREE.LoopOnce, 1);
       nextSectionAction.clampWhenFinished = true;
@@ -92,132 +178,160 @@ export default function Avatar({ currentStage, isLoadingDone }) {
 
       const holdStart = () => {
         nextSectionAction.paused = true;
-        isPlayingNextSection.current = false;
         typingAction.play();
       };
-
       mixer.addEventListener('finished', holdStart);
       cleanupFns.push(() => mixer.removeEventListener('finished', holdStart));
     };
 
-    // Stage transitions
+    /* stage‑change logic --------------------------------------------- */
     if (prevStage === 1 && currentStage === 0) {
-      playNextSectionInReverse();
-    } else if (currentStage === 0 && isLoadingDone === true) {
+      playNextSectionReverse();
+    } else if (currentStage === 0 && isLoadingDone) {
       playInitialSequence();
       originalMaterials.current.set('body', bodyMesh.material.clone());
       originalMaterials.current.set('face', faceMesh.material.clone());
-    } else if (currentStage === 1 && prevStage === 0) {
+    } else if (prevStage === 0 && currentStage === 1) {
       faceMesh.material = new THREE.MeshBasicMaterial({ map: surpriseFace });
       faceMesh.material.needsUpdate = true;
       playNextSectionOnce();
     }
 
     setPrevStage(currentStage);
-
     return () => cleanupFns.forEach((fn) => fn());
   }, [currentStage, isLoadingDone]);
 
-  const calculateFrameToTriggerScrolling = () => {
-    const typingAction = actions?.['typing3'];
-    if (typingAction && typingAction.isRunning()) {
-      const time = typingAction.time;
-      const fps =
-        typingAction.getClip().tracks[0]?.times?.length /
-          typingAction.getClip().duration || 30;
-      const currentFrame = Math.floor(time * fps);
-      const isInRange =
-        (currentFrame >= 25 && currentFrame <= 70) ||
-        (currentFrame >= 287 && currentFrame <= 372) ||
-        (currentFrame >= 475 && currentFrame <= 485);
-      setIsScrolling(isInRange);
-    } else {
-      setIsScrolling(false);
+  /** ------------------------------------------------------------------
+   * LIGHTWEIGHT PER‑FRAME CHECK (stage 0 only)
+   * ------------------------------------------------------------------ */
+  const calculateScrolling = () => {
+    const typing = actions?.['typing3'];
+    if (!typing || !typing.isRunning()) {
+      if (lastIsScrolling.current !== false) {
+        setIsScrolling(false);
+        lastIsScrolling.current = false;
+      }
+      return;
+    }
+
+    const frame = Math.floor(typing.time * typingFps);
+    const inRange = FRAME_RANGES.some(([s, e]) => frame >= s && frame <= e);
+
+    if (lastIsScrolling.current !== inRange) {
+      setIsScrolling(inRange);
+      lastIsScrolling.current = inRange;
     }
   };
-
-  const changeFacePng = () => {
+  const updateFaceTexture = () => {
     const action = actions?.['baked_final'];
-    if (!action || !faceMesh) return;
+    if (!action) return;
     const frame = Math.floor(action.time * 30);
     const useWave = frame >= 41 && frame <= 67;
-    if (useWave) {
-      waveFace.colorSpace = THREE.SRGBColorSpace;
-      faceMesh.material = new THREE.MeshBasicMaterial({
-        map: waveFace,
-      });
-    } else {
-      normalFace.colorSpace = THREE.SRGBColorSpace;
-      faceMesh.material = new THREE.MeshBasicMaterial({
-        map: normalFace,
-        // transparent: true,
-        // toneMapped: false,
-      });
-    }
+    const map = useWave ? waveFace : normalFace;
+    faceMesh.material = new THREE.MeshBasicMaterial({ map });
     faceMesh.material.needsUpdate = true;
   };
 
-  useFrame(({ clock }) => {
-    const nextSectionAction = actions['avatarModel'];
+  const frameCount = useRef(0);
+  const lastIsScrolling = useRef(false);
 
-    if (currentStage === 0 && isLoadingDone === true) {
-      calculateFrameToTriggerScrolling();
-      changeFacePng();
-      hasFlickered.current = false;
-    }
+  useFrame(() => {
+    if (currentStage !== 0 || !isLoadingDone) return;
 
-    if (currentStage === 1 && !nextSectionAction.isRunning()) {
-      const time = clock.getElapsedTime();
-      if (!blinkStartTime.current) blinkStartTime.current = time;
-      const elapsed = time - blinkStartTime.current;
-      const blinkCycle = 4.0;
-      const blinkDuration = 0.3;
-      const cycleTime = elapsed % blinkCycle;
-      const flickerToShow = cycleTime < blinkDuration;
-
-      if (!flickerToShow) {
-        scene.traverse((child) => {
-          if (child.isMesh) {
-            child.material = new THREE.MeshBasicMaterial({
-              color: '#ffaa00',
-              wireframe: true,
-            });
-            child.material.needsUpdate = true;
-          }
-        });
-      } else if (!hasFlickered.current) {
-        hasFlickered.current = true;
-        if (bodyMesh && originalMaterials.current.has('body')) {
-          bodyMesh.material = originalMaterials.current.get('body').clone();
-          bodyMesh.material.needsUpdate = true;
-        }
-        surpriseFace.colorSpace = THREE.SRGBColorSpace;
-        faceMesh.material = new THREE.MeshBasicMaterial({ map: surpriseFace });
-        faceMesh.material.needsUpdate = true;
-
-        let flickerCount = 0;
-        const maxFlickers = 6;
-        const interval = setInterval(() => {
-          const isOn = flickerCount % 2 === 0;
-          faceMesh.visible = isOn;
-          bodyMesh.visible = isOn;
-          flickerCount++;
-          if (flickerCount >= maxFlickers) {
-            clearInterval(interval);
-            faceMesh.visible = true;
-            bodyMesh.visible = true;
-          }
-        }, 80);
-      }
-    } else {
-      if (bodyMesh && originalMaterials.current.has('body')) {
-        bodyMesh.material = originalMaterials.current.get('body').clone();
-        bodyMesh.material.needsUpdate = true;
-      }
-      blinkStartTime.current = null;
+    frameCount.current++;
+    if (frameCount.current % 2 === 0) {
+      calculateScrolling();
+      updateFaceTexture();
     }
   });
 
+  /** ------------------------------------------------------------------
+   * BLINK / FLICKER LOOP (stage 1 only)
+   * ------------------------------------------------------------------ */
+  useEffect(() => {
+    const nextAction = actions?.['avatarModel'];
+    const shouldRun =
+      currentStage === 1 && nextAction && !nextAction.isRunning();
+
+    if (shouldRun) startFlickerLoop();
+    else stopFlickerLoop();
+
+    return stopFlickerLoop;
+  }, [currentStage, actions?.['avatarModel']?.isRunning()]);
+
+  function startFlickerLoop() {
+    if (flickerRafId.current) return; // already running
+    blinkStartTime.current = null;
+    hasFlickered.current = false;
+    flickerRafId.current = requestAnimationFrame(flickerLoop);
+  }
+
+  function stopFlickerLoop() {
+    if (flickerRafId.current) {
+      cancelAnimationFrame(flickerRafId.current);
+      flickerRafId.current = null;
+    }
+    if (restoreTimerId.current) {
+      clearInterval(restoreTimerId.current);
+      restoreTimerId.current = null;
+    }
+    restoreOriginalMaterials();
+  }
+
+  function restoreOriginalMaterials() {
+    if (bodyMesh && originalMaterials.current.has('body')) {
+      bodyMesh.material = originalMaterials.current.get('body').clone();
+      bodyMesh.material.needsUpdate = true;
+    }
+  }
+
+  function flickerLoop(timeMs) {
+    const time = timeMs / 1000; // to seconds
+    if (!blinkStartTime.current) blinkStartTime.current = time;
+
+    const elapsed = time - blinkStartTime.current;
+    const blinkCycle = 4.0;
+    const blinkDur = 0.3;
+    const cycleTime = elapsed % blinkCycle;
+    const blinkFrame = cycleTime < blinkDur;
+
+    if (!blinkFrame) {
+      scene.traverse((child) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshBasicMaterial({
+            color: '#ffaa00',
+            wireframe: true,
+          });
+          child.material.needsUpdate = true;
+        }
+      });
+    } else if (!hasFlickered.current) {
+      hasFlickered.current = true;
+      restoreOriginalMaterials();
+
+      faceMesh.material = new THREE.MeshBasicMaterial({ map: surpriseFace });
+      faceMesh.material.needsUpdate = true;
+
+      // little on/off burst -----------------------------------------
+      let count = 0;
+      const maxFlickers = 6;
+      restoreTimerId.current = setInterval(() => {
+        const visible = count % 2 === 0;
+        faceMesh.visible = visible;
+        bodyMesh.visible = visible;
+        if (++count >= maxFlickers) {
+          clearInterval(restoreTimerId.current);
+          restoreTimerId.current = null;
+          faceMesh.visible = true;
+          bodyMesh.visible = true;
+        }
+      }, 80);
+    }
+
+    flickerRafId.current = requestAnimationFrame(flickerLoop);
+  }
+
+  /** ------------------------------------------------------------------ */
   return (
     <group ref={groupRef}>
       <primitive object={scene} />

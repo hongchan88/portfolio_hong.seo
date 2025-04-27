@@ -2,12 +2,11 @@ import { create } from 'zustand';
 import { useSettingStore } from './settingStore';
 type AudioKey =
   | 'stage1BG'
-  | 'stage1Menu'
   | 'stage2Start'
   | 'stage2Bubble'
   | 'stage2BGLab'
-  | 'stageTo1'
-  | 'clickAudio'
+  | 'splash'
+  | 'clickingSound'
   | 'clickMenuAudio'
   | 'typingAudio'
   | 'scrollAudio';
@@ -22,7 +21,7 @@ type AudioStore = {
   scrollAudio: HTMLAudioElement | null;
   audioRefs: Partial<Record<AudioKey, HTMLAudioElement>>;
   setAudioRef: (key: AudioKey, el: HTMLAudioElement) => void;
-  playAudioForStage: () => void;
+  playAudioForStage: (prevStage?: number) => void;
 };
 
 export const useAudioStore = create<AudioStore>((set, get) => ({
@@ -47,13 +46,15 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
       audio.currentTime = 0; // optional: reset position
     }
   },
-  playAudioForStage: () => {
+  playAudioForStage: (prevStage) => {
     const { audioRefs, audioToggleState } = get();
     const stage = useSettingStore.getState().currentStage;
     // 1. Pause all currently playing audio
-    Object.values(audioRefs).forEach((audio) => {
+    Object.entries(audioRefs).forEach(([key, audio]) => {
+      if (key === 'clickMenuAudio' || key === 'splash') return; // ⬅️ skip this one
+
       audio?.pause();
-      audio.currentTime = 0; // optional: reset position
+      audio.currentTime = 0;
     });
     // 2. If false  don't play anything
     if (!audioToggleState) return;
@@ -62,6 +63,9 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
     switch (stage) {
       case 0:
         audioRefs['stage1BG']?.play();
+        if (prevStage === 1) {
+          audioRefs['splash']?.play();
+        }
         break;
       case 1:
         audioRefs['stage2Start']?.play();

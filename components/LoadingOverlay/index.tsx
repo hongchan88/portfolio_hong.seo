@@ -1,23 +1,24 @@
 'use client';
 import { useProgress } from '@react-three/drei';
+import { useSettingStore } from '@store/settingStore';
 import gsap from 'gsap';
 import { useEffect, useRef, useState } from 'react';
 
 export default function LoadingOverlay() {
   const { progress, active } = useProgress();
   const [maxProgress, setMaxProgress] = useState(0);
-  const [visible, setVisible] = useState(true);
   const imageRef = useRef<HTMLImageElement>(null);
   const imageRefWrapper = useRef<HTMLImageElement>(null);
+  const setIsLoadingDone = useSettingStore((s) => s.setIsLoadingDone);
+  const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
 
   useEffect(() => {
     if (progress > maxProgress) {
-      setMaxProgress(progress); // only grow, never shrink
+      setMaxProgress(progress); // grow only
     }
-  }, [progress]);
 
-  useEffect(() => {
-    if (!active && progress > 60) {
+    // ✅ Play animation ONCE when fully loaded
+    if (!active && progress === 100) {
       const tl = gsap.timeline();
       tl.to(imageRef.current, {
         clipPath: `inset(0 0% 0 0)`,
@@ -35,14 +36,16 @@ export default function LoadingOverlay() {
           duration: 0.2,
           ease: 'back.in(1.7)',
         });
-      //   const timeout = setTimeout(() => setVisible(false), 000);
-      //   return () => clearTimeout(timeout);
-    } else if (!active && progress === 100) {
-      setVisible(false);
+
+      const timeout = setTimeout(() => {
+        setIsLoadingDone(true);
+      }, 600); // wait until animation finishes
+
+      return () => clearTimeout(timeout);
     }
   }, [active, progress]);
 
-  if (!visible) return null;
+  if (isLoadingDone) return null;
 
   return (
     <div className='fixed inset-0 h-full w-full bg-greenYellowGradient z-[9999] flex flex-col items-center justify-center text-white pointer-events-none'>

@@ -15,13 +15,13 @@ export default function AudioElements() {
         loop
         autoPlay
       />
-      <audio
+      {/* <audio
         ref={(el) => {
           if (el && getAudioRefs['stage1Menu'] !== el)
             setAudioRef('stage1Menu', el);
         }}
         src='/sounds/woosh.mp3'
-      />
+      /> */}
       <audio
         ref={(el) => {
           if (el && getAudioRefs['stage2Start'] !== el)
@@ -47,15 +47,14 @@ export default function AudioElements() {
       />
       <audio
         ref={(el) => {
-          if (el && getAudioRefs['stageTo1'] !== el)
-            setAudioRef('stageTo1', el);
+          if (el && getAudioRefs['splash'] !== el) setAudioRef('splash', el);
         }}
         src='/sounds/splash.mp3'
       />
       <audio
         ref={(el) => {
-          if (el && getAudioRefs['clickAudio'] !== el)
-            setAudioRef('clickAudio', el);
+          if (el && getAudioRefs['clickingSound'] !== el)
+            setAudioRef('clickingSound', el);
         }}
         src='/sounds/click.mp3'
       />
