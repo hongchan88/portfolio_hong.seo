@@ -52,7 +52,6 @@ export default function RootLayout({ children }) {
           <ScrollRestoration />
           <div className='main-contents'>{children}</div>
         </ThemeProvider>
-        <Footer />
       </body>
     </html>
   );
