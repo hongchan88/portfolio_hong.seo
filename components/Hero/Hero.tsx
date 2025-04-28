@@ -1,3 +1,4 @@
+'use client';
 import { FC, useEffect, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { useSettingStore } from '@store/settingStore';
