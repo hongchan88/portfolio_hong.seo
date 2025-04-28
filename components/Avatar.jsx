@@ -7,14 +7,7 @@ import * as THREE from 'three';
 import { useSettingStore } from '../app/stores/settingStore';
 import { useAudioStore } from '@store/audioStore';
 
-/**
- * Refactored Avatar component
- * – Heavy material / traversal work has been moved out of the render‑tick
- * – `useFrame` now only does the super‑cheap scroll / face‑swap checks
- * – Blinking / flicker runs in its own requestAnimationFrame loop that is
- *   started / stopped when stage 1 becomes active / inactive.
- */
-export default function Avatar({ currentStage, isLoadingDone }) {
+export default function Avatar({ currentStage, isLoadingDone, url }) {
   const groupRef = useRef(null);
   const [prevStage, setPrevStage] = useState(null);
   const setIsScrolling = useSettingStore((s) => s.setIsScrolling);
@@ -23,10 +16,6 @@ export default function Avatar({ currentStage, isLoadingDone }) {
   const audioRefs = useAudioStore((s) => s.audioRefs);
   const setIsTypingRunning = useSettingStore((s) => s.setIsTypingRunning);
   const isTypingRunning = useSettingStore((s) => s.isTypingRunning);
-  const hasFlickered = useRef(false);
-  const blinkStartTime = useRef(null);
-  const flickerRafId = useRef(null);
-  const restoreTimerId = useRef(null);
   const clickingSound = audioRefs['clickingSound'];
   const typingAudio = audioRefs['typingAudio'];
   const scrollAudio = audioRefs['scrollAudio'];
@@ -34,7 +23,7 @@ export default function Avatar({ currentStage, isLoadingDone }) {
   /** ------------------------------------------------------------------
    * LOAD ASSETS
    * ------------------------------------------------------------------ */
-  const { scene, animations } = useGLTF('/models/avatar_52.glb');
+  const { scene, animations } = useGLTF(url);
   const { actions } = useAnimations(animations, groupRef);
 
   const [normalFace, waveFace, surpriseFace] = useTexture([
@@ -245,93 +234,46 @@ export default function Avatar({ currentStage, isLoadingDone }) {
     }
   });
 
-  /** ------------------------------------------------------------------
-   * BLINK / FLICKER LOOP (stage 1 only)
-   * ------------------------------------------------------------------ */
   useEffect(() => {
-    const nextAction = actions?.['avatarModel'];
-    const shouldRun =
-      currentStage === 1 && nextAction && !nextAction.isRunning();
+    if (currentStage === 1) {
+      const flicker = () => {
+        bodyMesh.material = new THREE.MeshBasicMaterial({
+          color: '#ffaa00',
+          wireframe: true,
+        });
+        faceMesh.material = new THREE.MeshBasicMaterial({
+          color: '#ffaa00',
+          wireframe: true,
+        });
 
-    if (shouldRun) startFlickerLoop();
-    else stopFlickerLoop();
+        let count = 0;
+        const flickerTimer = setInterval(() => {
+          const visible = count % 2 === 0;
+          faceMesh.visible = visible;
+          bodyMesh.visible = visible;
+          count++;
+          if (count > 8) {
+            clearInterval(flickerTimer);
+            faceMesh.visible = true;
+            bodyMesh.visible = true;
+          }
+        }, 80);
+      };
 
-    return stopFlickerLoop;
-  }, [currentStage, actions?.['avatarModel']?.isRunning()]);
-
-  function startFlickerLoop() {
-    if (flickerRafId.current) return; // already running
-    blinkStartTime.current = null;
-    hasFlickered.current = false;
-    flickerRafId.current = requestAnimationFrame(flickerLoop);
-  }
-
-  function stopFlickerLoop() {
-    if (flickerRafId.current) {
-      cancelAnimationFrame(flickerRafId.current);
-      flickerRafId.current = null;
-    }
-    if (restoreTimerId.current) {
-      clearInterval(restoreTimerId.current);
-      restoreTimerId.current = null;
-    }
-    restoreOriginalMaterials();
-  }
-
-  function restoreOriginalMaterials() {
-    if (bodyMesh && originalMaterials.current.has('body')) {
-      bodyMesh.material = originalMaterials.current.get('body').clone();
-      bodyMesh.material.needsUpdate = true;
-    }
-  }
-
-  function flickerLoop(timeMs) {
-    const time = timeMs / 1000; // to seconds
-    if (!blinkStartTime.current) blinkStartTime.current = time;
-
-    const elapsed = time - blinkStartTime.current;
-    const blinkCycle = 4.0;
-    const blinkDur = 0.3;
-    const cycleTime = elapsed % blinkCycle;
-    const blinkFrame = cycleTime < blinkDur;
-
-    if (!blinkFrame) {
-      scene.traverse((child) => {
-        if (child.isMesh) {
-          child.material = new THREE.MeshBasicMaterial({
-            color: '#ffaa00',
-            wireframe: true,
-          });
-          child.material.needsUpdate = true;
+      const timer = setTimeout(flicker, 1000); // wait 1 sec, then flicker
+      return () => {
+        clearTimeout(timer); // cancel if unmounted or stage changes
+      };
+    } else {
+      function restoreOriginalMaterials() {
+        if (bodyMesh && originalMaterials.current.has('body')) {
+          bodyMesh.material = originalMaterials.current.get('body').clone();
+          bodyMesh.material.needsUpdate = true;
         }
-      });
-    } else if (!hasFlickered.current) {
-      hasFlickered.current = true;
+      }
       restoreOriginalMaterials();
-
-      faceMesh.material = new THREE.MeshBasicMaterial({ map: surpriseFace });
-      faceMesh.material.needsUpdate = true;
-
-      // little on/off burst -----------------------------------------
-      let count = 0;
-      const maxFlickers = 6;
-      restoreTimerId.current = setInterval(() => {
-        const visible = count % 2 === 0;
-        faceMesh.visible = visible;
-        bodyMesh.visible = visible;
-        if (++count >= maxFlickers) {
-          clearInterval(restoreTimerId.current);
-          restoreTimerId.current = null;
-          faceMesh.visible = true;
-          bodyMesh.visible = true;
-        }
-      }, 80);
     }
-
-    flickerRafId.current = requestAnimationFrame(flickerLoop);
-  }
-
-  /** ------------------------------------------------------------------ */
+  }, [currentStage]);
   return (
     <group ref={groupRef}>
       <primitive object={scene} />

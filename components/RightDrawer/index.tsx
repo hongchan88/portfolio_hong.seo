@@ -2,6 +2,9 @@ import gsap from 'gsap';
 import { FC } from 'react';
 import { useSettingStore } from '../../app/stores/settingStore';
 import { useCameraStore } from '../../app/stores/cameraStore';
+import { FaLinkedin } from 'react-icons/fa';
+import { FaGithub } from 'react-icons/fa';
+import Link from 'next/link';
 
 interface indexProps {
   rightDrawerRef: React.RefObject<HTMLDivElement>;
@@ -137,7 +140,30 @@ const RightDrawer: FC<indexProps> = ({ rightDrawerRef, setCurrentStage }) => {
           >
             Work
           </li>
-          <li className='cursor-pointer'>Contact me</li>
+          {/* <li className='cursor-pointer'>Contact me</li> */}
+          <li>
+            <div className='flex gap-5 '>
+              <span className=' cursor-pointer'>
+                <Link
+                  href='https://www.linkedin.com/in/hong-seo/'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <FaLinkedin />
+                </Link>
+              </span>
+
+              <span className=' cursor-pointer'>
+                <Link
+                  href='https://github.com/hongchan88'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <FaGithub />
+                </Link>
+              </span>
+            </div>
+          </li>
         </ul>
       </div>
     </div>

@@ -23,7 +23,6 @@ export default function CameraController() {
     if (!camera) return;
     // animate camera position
 
-    console.log('currentstate and right');
     const tl = gsap.timeline();
     tl.to(
       camera.position,

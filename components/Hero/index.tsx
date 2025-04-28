@@ -69,17 +69,17 @@ const Hero: FC<HeroProps> = ({}) => {
   }, [rightDrawerToggle]);
 
   const closeDrawer = () => {
-    setRightDrawerToggle(false);
-    rightDrawerToggleRef.current = false;
+    if (audioToggleRef.current) {
+      audioRefs?.['clickMenuAudio']?.play();
+    }
     setCameraDefault();
     gsap.to(rightDrawerRef.current, {
       right: -320,
       delay: 0.1,
       ease: 'power1.in',
       onStart: () => {
-        if (audioToggleRef.current) {
-          audioRefs?.['clickMenuAudio']?.play();
-        }
+        setRightDrawerToggle(false);
+        rightDrawerToggleRef.current = false;
       },
       onComplete: () => {
         animatingRef.current = false;
@@ -376,7 +376,7 @@ const Hero: FC<HeroProps> = ({}) => {
         >
           <img
             ref={aboutImgRef}
-            src='/aboutme/aboutme3.png'
+            src='/aboutme/aboutme.png'
             alt='About Me'
             className='w-auto h-auto'
           />

@@ -18,8 +18,8 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
   const isScrolling = useSettingStore((s) => s.isScrolling);
   // ✅ Load textures once using useTexture
   const [wallShadowTex, groundShadowTex, labWallGroundTex] = useTexture([
-    '/models/wallShadow_transparent6.png',
-    '/models/groundShadow_transparent3.png',
+    '/models/wallShadow_transparent.png',
+    '/models/groundShadow_transparent.png',
     '/models/labwallGround_transparent.png',
   ]);
   // useEffect(() => {
@@ -40,10 +40,8 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
 
     wallShadowTex.flipY = false;
     groundShadowTex.flipY = false;
-    labWallGroundTex.flipY = false;
     wallShadowTex.needsUpdate = true;
     groundShadowTex.needsUpdate = true;
-    labWallGroundTex.needsUpdate = true;
 
     scene.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;

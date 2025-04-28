@@ -8,6 +8,10 @@ import TiltedScene from '../TiltScene/TiltedScene';
 import CameraController from '../CameraController/CameraController';
 import { useSettingStore } from '../../app/stores/settingStore';
 import { MusicNoteAnimation } from '../MusicNoteAnimation';
+
+const ENVIRONMENT_MODEL_GLB = '/models/environmentModel.glb';
+const AVATAR_MODEL_GLB = '/models/avartarModel.glb';
+
 export default function ModelViewer() {
   const currentStage = useSettingStore((s) => s.currentStage);
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
@@ -88,11 +92,12 @@ export default function ModelViewer() {
                 <CameraController />
                 <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
                   <Model
-                    url='/models/environment_final2.glb'
+                    url={ENVIRONMENT_MODEL_GLB}
                     currentStage={currentStage}
                     isLoadingDone={isLoadingDone}
                   />
                   <Avatar
+                    url={AVATAR_MODEL_GLB}
                     currentStage={currentStage}
                     isLoadingDone={isLoadingDone}
                   />
