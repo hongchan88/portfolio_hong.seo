@@ -36,7 +36,7 @@ const NavBar: FC<indexProps> = ({ closeDrawer, currentStage }) => {
     <div ref={navMainRef} className='fixed top-0 w-full z-30 '>
       <div className='flex w-full justify-between p-10'>
         <div className='w-12 h-12'>
-          <img src='./loading/loading2.png' />
+          <img src='./loading/loading2.webp' />
         </div>
         <div className='flex gap-5  '>
           <div

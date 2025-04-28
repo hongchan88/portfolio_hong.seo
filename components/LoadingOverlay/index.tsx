@@ -2,6 +2,7 @@
 import { useProgress } from '@react-three/drei';
 import { useSettingStore } from '@store/settingStore';
 import gsap from 'gsap';
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 export default function LoadingOverlay() {
@@ -54,16 +55,22 @@ export default function LoadingOverlay() {
         className='relative w-56 h-56 mb-4 overflow-hidden x'
       >
         {/* Base image (desaturated/gray) */}
-        <img
-          src='/loading/loading2.png' // Replace with your PNG
+        <Image
+          width={224}
+          height={224}
+          src='/loading/loading2.webp' // Replace with your PNG
           alt='avatar'
           className='absolute top-0 left-0 w-full h-full object-cover opacity-20'
+          priority
         />
 
         {/* Colored reveal from left to right using clip-path */}
-        <img
+        <Image
+          width={224}
+          height={224}
           ref={imageRef}
-          src='/loading/loading2.png' // Same image
+          priority
+          src='/loading/loading2.webp' // Same image
           alt='avatar fill'
           className='absolute top-0 left-0 w-full h-full object-cover'
           style={{
