@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
-export default function LoadingOverlay() {
+export default function LoadingOverlay({}) {
   const { progress, active } = useProgress();
   const [maxProgress, setMaxProgress] = useState(0);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -49,10 +49,10 @@ export default function LoadingOverlay() {
   if (isLoadingDone) return null;
 
   return (
-    <div className='fixed inset-0 h-full w-full bg-greenYellowGradient z-[9999] flex flex-col items-center justify-center text-white pointer-events-none'>
+    <div className='fixed inset-0 h-full w-full bg-greenYellowGradient z-[9999] flex flex-col items-center justify-center pointer-events-none'>
       <div
         ref={imageRefWrapper}
-        className='relative w-56 h-56 mb-4 overflow-hidden x'
+        className='relative w-56 h-56 mb-4 overflow-hidden '
       >
         {/* Base image (desaturated/gray) */}
         <Image

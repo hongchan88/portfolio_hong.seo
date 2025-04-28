@@ -26,7 +26,7 @@ export const useSettingStore = create<SettingState>((set, get) => ({
   isLoadingDone: false,
   isTypingRunning: false,
   amountOfScrollingInStage2: 0,
-  isNavBarHideen: false,
+  isNavBarHideen: true,
   setIsNavBarHideen: (value) => set({ isNavBarHideen: value }),
   setAmountOfScrollingInStage2: (value) =>
     set({ amountOfScrollingInStage2: value }),
