@@ -11,9 +11,10 @@ import NavBar from '../NavBar';
 import RightDrawer from '../RightDrawer';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useCameraStore } from '@store/cameraStore';
-const ModelViewer = dynamic(() => import('../ModelViewer/ModelViewer'), {
+const ModelViewer = dynamic(() => import('../../components/ModelViewer'), {
   ssr: false,
 });
+
 interface HeroProps {}
 
 const Hero: FC<HeroProps> = ({}) => {
