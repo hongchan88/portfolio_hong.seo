@@ -3,6 +3,7 @@ import { useScroll, useTransform, motion } from 'motion/react';
 import React, { useEffect, useRef, useState } from 'react';
 import ProjectInfo from '../Project/ProjectInfo';
 import { projectsData } from '../../app/data/data';
+import { SiLeetcode } from 'react-icons/si';
 
 interface TimelineEntry {
   title: string;
@@ -10,11 +11,13 @@ interface TimelineEntry {
   git?: string;
   live?: string;
   timelineYear?: string;
+  leetcode?: string;
 }
 const projectData = projectsData.map((project) => ({
   timelineYear: project.timelineYear,
   title: project.title,
   git: project.git,
+  leetcode: project.leetcode,
   live: project.live,
   content: (
     <div>
@@ -81,7 +84,7 @@ export const Timeline = () => {
                 <div className='flex flex-col gap-3'>
                   <h3>{item.title}</h3>
                   <p className='text-lg '>{item.timelineYear}</p>
-                  <div className='flex gap-5 '>
+                  <div className='flex gap-5 items-center'>
                     {item?.git && (
                       <a
                         href={item.git}
@@ -104,6 +107,16 @@ export const Timeline = () => {
                           className='h-auto w-10 '
                           src='https://img.icons8.com/pastel-glyph/64/000000/external-link--v1.png'
                         />
+                      </a>
+                    )}
+                    {item?.leetcode && (
+                      <a
+                        href={item.leetcode}
+                        target={'_blank'}
+                        className='dark:bg-yellow-50 rounded-lg'
+                        title='leetcode'
+                      >
+                        <SiLeetcode />
                       </a>
                     )}
                   </div>
