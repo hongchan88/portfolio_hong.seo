@@ -12,7 +12,7 @@ export default function Projects() {
       {/* Grid starts here */}
       <div className='bg-[#F1F1F1] dark:bg-gray-900'>
         {projectsData?.map((proj, idx) => (
-          <div className='max-w-6xl mx-auto gap-20 py-10 pb-20'>
+          <div key={idx} className='max-w-6xl mx-auto gap-20 py-10 pb-20'>
             <div className='flex mt-14'>
               <ProjectImage
                 title={proj.title}
