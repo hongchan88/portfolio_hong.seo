@@ -1,7 +1,5 @@
-const withNextJsObfuscator = require('nextjs-obfuscator');
-
-module.exports = withNextJsObfuscator(
-  {
+module.exports =
+  ({
     // Obfuscator options
     compact: true,
     controlFlowFlattening: true,
@@ -10,5 +8,4 @@ module.exports = withNextJsObfuscator(
     // Obfuscator plugin options
     enabled: 'detect', // Only obfuscate in production
     log: false,
-  }
-)({});
+  });
