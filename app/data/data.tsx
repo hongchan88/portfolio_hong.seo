@@ -63,15 +63,11 @@ export const projectsData: Project[] = [
         </h3>
         <ul className='list-disc list-inside ml-4 space-y-1'>
           <li>
-            Built with <strong>Next.js</strong>, <strong>TypeScript</strong>,
-            and <strong>Tailwind CSS</strong>
+            Streamlines PDF customization and export for business documents
           </li>
           <li>
-            streamlines PDF customization and export for business documents
-          </li>
-          <li>
-            Supports custom inputs such as company names, contract durations,
-            logos, and certifications
+            Supports custom inputs including company names, contract durations,
+            and AU/US document toggles
           </li>
           <li>
             Enables fast, client-specific personalization of reusable templates
