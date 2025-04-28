@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import { ThemeProvider } from 'next-themes';
 import { Space_Mono, Rubik } from 'next/font/google';
 import dynamic from 'next/dynamic';
-const ScrollRestoration = dynamic(() => import('@utils/ScrollRestoration'), {
+const ScrollRestoration = dynamic(() => import('./utils/ScrollRestoration'), {
   ssr: false,
 });
 const spaceMono = Space_Mono({
