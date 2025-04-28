@@ -4,7 +4,7 @@ import LoadingOverlay from '../components/LoadingOverlay';
 import { useSettingStore } from './stores/settingStore';
 import AudioGroup from '../components/AudioGroup/AudioGroup';
 import Projects from '../components/Projects';
-import Hero from '../components/Hero/Hero';
+import Hero from 'components/Hero';
 export default function App() {
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
 
