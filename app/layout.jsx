@@ -3,10 +3,10 @@ import '../styles/globals.css';
 import Footer from '../components/Footer';
 import { ThemeProvider } from 'next-themes';
 import { Space_Mono, Rubik } from 'next/font/google';
-import dynamic from 'next/dynamic';
-const ScrollRestoration = dynamic(() => import('./utils/ScrollRestoration'), {
-  ssr: false,
-});
+// import dynamic from 'next/dynamic';
+// const ScrollRestoration = dynamic(() => import('./utils/ScrollRestoration'), {
+//   ssr: false,
+// });
 const spaceMono = Space_Mono({
   subsets: ['latin'],
   weight: ['400', '700'], // adjust if needed
@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
         </div>
 
         <ThemeProvider defaultTheme='light' attribute='class'>
-          <ScrollRestoration />
+          {/* <ScrollRestoration /> */}
           <div className='main-contents'>{children}</div>
         </ThemeProvider>
         <Footer />
