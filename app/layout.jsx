@@ -3,10 +3,8 @@ import '../styles/globals.css';
 import Footer from '../components/Footer';
 import { ThemeProvider } from 'next-themes';
 import { Space_Mono, Rubik } from 'next/font/google';
-import dynamic from 'next/dynamic';
-const ScrollRestoration = dynamic(() => import('./utils/ScrollRestoration'), {
-  ssr: false,
-});
+import ScrollRestoration from './utils/ScrollRestoration';
+
 const spaceMono = Space_Mono({
   subsets: ['latin'],
   weight: ['400', '700'], // adjust if needed

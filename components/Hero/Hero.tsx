@@ -1,7 +1,6 @@
 import { FC, useEffect, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { useSettingStore } from '@store/settingStore';
-import dynamic from 'next/dynamic';
 import { useAudioStore } from '@store/audioStore';
 import { Observer } from 'gsap/Observer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,9 +10,7 @@ import NavBar from '../NavBar';
 import RightDrawer from '../RightDrawer';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useCameraStore } from '@store/cameraStore';
-const ModelViewer = dynamic(() => import('../../components/ModelViewer'), {
-  ssr: false,
-});
+import ModelViewer from 'components/ModelViewer';
 
 interface HeroProps {}
 
