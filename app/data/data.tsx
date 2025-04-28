@@ -28,7 +28,7 @@ export const projectsData: Project[] = [
     timelineYear: '2025',
     title: 'Portfolio',
     imgUrl: ['projects/2025-2.png', 'projects/2025-1.png'],
-    live: 'https://portfolio-hong.seo',
+    live: 'https://portfolio-hong-seo.vercel.app/',
     description: (
       <div>
         <h3 className='font-semibold mb-1'>Personal Portfolio Website</h3>
@@ -191,7 +191,7 @@ export const projectsData: Project[] = [
       'GSAP',
       'AWS',
     ],
-    git: 'https://github.com/hongchan88/portfolio_hong.seo',
+    git: 'https://github.com/hongchan88',
     leetcode: 'https://leetcode.com/hongchan88/',
   },
   {
@@ -215,7 +215,7 @@ export const projectsData: Project[] = [
         </div>
       </div>
     ),
-    stacks: ['typescript', 'scss', 'figma'],
+    stacks: ['typescript', 'scss'],
     git: '',
     live: 'https://www.figma.com/community/plugin/1422432392194647189/textswapper',
   },

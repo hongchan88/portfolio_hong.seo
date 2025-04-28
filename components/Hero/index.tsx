@@ -334,8 +334,8 @@ const Hero: FC<HeroProps> = ({}) => {
             // src='https://lottie.host/33d9972a-5ef1-46bc-af9c-94aa2c58392a/T31TJwnUh0.lottie'
             src={
               currentStage === 0
-                ? './lottieAnimation/scroll_animation_black.json'
-                : './lottieAnimation/scroll_animation_white.json'
+                ? '/lottieAnimation/scroll_animation_black.json'
+                : '/lottieAnimation/scroll_animation_white.json'
             }
             loop
             autoplay
