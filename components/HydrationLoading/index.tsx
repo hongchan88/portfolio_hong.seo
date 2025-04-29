@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function HydrationLoading() {
   return (
     <div className='fixed inset-0 h-full w-full bg-greenYellowGradient z-[9999] flex flex-col items-center justify-center pointer-events-none'>
-      <div className='relative w-56 h-56 mb-4 overflow-hidden animate-pulse'>
+      <div className='relative w-56 h-56 mb-4 overflow-hidden animate-subtlePulse'>
         <Image
           width={224}
           height={224}
@@ -14,6 +14,7 @@ export default function HydrationLoading() {
           priority
         />
       </div>
+      <p className=' font-rubik font-bold text-gray-500'>LOADING</p>
     </div>
   );
 }

@@ -1,9 +1,21 @@
+const { keyframes } = require('motion');
+
 module.exports = {
   mode: 'jit',
   purge: ['./app/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
+      keyframes: {
+        subtlePulse: {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.8', transform: 'scale(1.1)' },
+        },
+      },
+      animation: {
+        subtlePulse: 'subtlePulse 2s ease-in-out infinite',
+      },
+
       fontFamily: {
         mono: ['var(--font-space-mono)', 'monospace'],
         rubik: ['var(--font-rubik)', 'rubik'],

@@ -84,6 +84,7 @@ export default function LoadingOverlay({}) {
           }}
         />
       </div>
+      <p className=' font-rubik font-bold text-gray-500'>LOADING</p>
     </div>
   );
 }
