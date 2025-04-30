@@ -40,8 +40,8 @@ export const projectsData: Project[] = [
           </li>
           <li>
             Integrated <strong>3D animation</strong> using{' '}
-            <strong>Blender</strong> and <strong>GSAP</strong> for impressive
-            visual effects
+            <strong>Blender</strong>, <strong>Three.js</strong>, and{' '}
+            <strong>GSAP</strong> for impressive visual effects
           </li>
           <li>
             Focused on delivering an engaging and interactive user experience
