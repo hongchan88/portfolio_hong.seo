@@ -153,7 +153,7 @@ const Hero: FC<HeroProps> = ({}) => {
     observerRef.current = Observer.create({
       type: 'wheel,touch,pointer',
       wheelSpeed: -1,
-      tolerance: 100,
+      tolerance: 5,
       preventDefault: true,
       onClick: () => {
         if (rightDrawerToggleRef.current) {
