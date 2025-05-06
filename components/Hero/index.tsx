@@ -9,7 +9,6 @@ import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import NavBar from '../NavBar';
 import RightDrawer from '../RightDrawer';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useCameraStore } from '@store/cameraStore';
 import dynamic from 'next/dynamic';
 
@@ -24,6 +23,7 @@ const Hero: FC<HeroProps> = ({}) => {
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
   const aboutSectionRef = useRef(null);
   const aboutImgRef = useRef(null);
+  const heroContentRef = useRef<HTMLDivElement>(null); // NEW
 
   const animatingRef = useRef(false);
   const rightDrawerRef = useRef<HTMLDivElement>(null);
@@ -39,6 +39,7 @@ const Hero: FC<HeroProps> = ({}) => {
   );
   const isTypingRunning = useSettingStore((s) => s.isTypingRunning);
   const audioRefs = useAudioStore((s) => s.audioRefs);
+  const isMobile = useSettingStore((s) => s.isMobile);
 
   const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
   const pauseAudio = useAudioStore((s) => s.pauseAuido);
@@ -50,9 +51,11 @@ const Hero: FC<HeroProps> = ({}) => {
   const setCameraDefault = useCameraStore((s) => s.setDefault);
   const savedScrollValue = useRef(0);
   const prevRightDrawerToggle = useRef(false);
+  const isObserverReady = useRef(false);
 
   const prevStageRef = useRef(currentStage); // new!
   const rightDrawerToggleRef = useRef(rightDrawerToggle);
+
   useEffect(() => {
     if (prevStageRef.current === 1 && currentStage === 0) {
       // ✅ Here you can handle special logic
@@ -91,17 +94,7 @@ const Hero: FC<HeroProps> = ({}) => {
       setIsNavBarHideen(false);
     }
   }, [isTypingRunning]);
-  useEffect(() => {
-    if (!isLoadingDone) {
-      document.body.style.overflow = 'hidden'; // 🚫 disable scroll
-    } else {
-      document.body.style.overflow = '';
-    }
 
-    return () => {
-      document.body.style.overflow = ''; // cleanup on unmount
-    };
-  }, [isLoadingDone]);
   useEffect(() => {
     isNavBarHiddenRef.current = isNavBarHideen;
   }, [isNavBarHideen]);
@@ -132,6 +125,7 @@ const Hero: FC<HeroProps> = ({}) => {
   function goNextStage() {
     // ✅ Set animating lock
     setCurrentStage((prev) => {
+      if (prev > 0) return 1;
       return prev + 1;
     });
   }
@@ -140,7 +134,7 @@ const Hero: FC<HeroProps> = ({}) => {
   function goPrevStage() {
     setCurrentStage((prev) => {
       // Can't go lower than 0
-
+      console.log(prev, 'prev in go prev stage');
       if (prev <= 0) return 0;
       return prev - 1;
     });
@@ -151,9 +145,9 @@ const Hero: FC<HeroProps> = ({}) => {
     observerRef.current?.kill(); // ✅ Clean previous observer
 
     observerRef.current = Observer.create({
-      type: 'wheel,touch,pointer',
+      type: 'wheel,touch',
       wheelSpeed: -1,
-      tolerance: 5,
+      tolerance: 10,
       preventDefault: true,
       onClick: () => {
         if (rightDrawerToggleRef.current) {
@@ -168,217 +162,191 @@ const Hero: FC<HeroProps> = ({}) => {
         }
       },
       onUp: () => {
+        console.log(currentStage, 'current stage onup');
         if (rightDrawerToggleRef.current || isNavBarHiddenRef.current) return;
+
         if (!animatingRef.current) {
           goNextStage();
         }
       },
     });
+    isObserverReady.current = true; // ✅ MOVE IT HERE
   };
   useGSAP(
     () => {
       if (!isLoadingDone) return;
 
-      initObserver();
+      const ctx = gsap.context(() => {
+        initObserver();
+      }, heroAboutmeRef); // or any root-level container if preferred
 
       return () => {
-        observerRef.current?.kill(); // ✅ Important cleanup
+        observerRef.current?.kill(); // custom cleanup
+        ctx.revert(); // just in case any GSAP effects appear later
       };
     },
-    { dependencies: [isLoadingDone] }
-  );
-  useGSAP(
-    () => {
-      if (
-        !aboutSectionRef.current ||
-        !heroAboutmeRef.current ||
-        !aboutImgRef.current
-      )
-        return;
-
-      gsap.registerPlugin(ScrollTrigger); // ✅ Only registered where it's needed
-      const ctx = gsap.context(() => {
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            id: 'my-scroll-trigger',
-            trigger: heroAboutmeRef.current,
-            start: '10 top',
-            end: `+=${aboutImgRef.current.offsetHeight}`,
-            scrub: 1.5,
-            pin: true,
-            pinSpacing: true,
-            markers: process.env.NODE_ENV === 'development', // ✅ Debug only
-            onEnter: () => {},
-            onUpdate: () => {
-              if (rightDrawerToggleRef.current) {
-                closeDrawer();
-              }
-            },
-            onLeave: () => {
-              setIsNavBarHideen(true);
-              pauseAudio('stage2BGLab');
-              // audioRefs['stage2BGLab']?.pause();
-            },
-            onEnterBack: () => {
-              setIsNavBarHideen(false);
-              playAudioForStage();
-            },
-
-            onLeaveBack: () => {
-              initObserver(); // ✅ Re-init observer when scrolling back up
-            },
-          },
-        });
-
-        tl.to(aboutSectionRef.current, {
-          opacity: 1,
-          duration: 0.1,
-        });
-        tl.to(
-          aboutSectionRef.current,
-          {
-            y: -aboutImgRef.current.offsetHeight,
-            ease: 'none',
-          },
-          '<'
-        );
-      });
-      return () => ctx.revert();
-    },
-    { scope: heroAboutmeRef }
-  );
-  useGSAP(
-    () => {
-      if (!isLoadingDone) return null;
-
-      const container = heroAboutmeRef.current;
-      if (!container) return;
-
-      animatingRef.current = true;
-
-      const tl = gsap.timeline({
-        defaults: { duration: 1, ease: 'power1.inOut' },
-        onComplete: () => {
-          animatingRef.current = false;
-          if (currentStage === 1) {
-            killObserver();
-          }
-        },
-      });
-
-      switch (currentStage) {
-        case 0:
-          // Hero fully visible
-
-          tl.to(container, { yPercent: 0 });
-          playAudioForStage(prevStageRef.current);
-
-          break;
-        case 1:
-          tl.to(container, { yPercent: -50 });
-          playAudioForStage();
-
-          // "Halfway" – 50% scrolled up
-
-          break;
-      }
-    },
-    { dependencies: [currentStage, isLoadingDone] }
-  );
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({
-        defaults: { duration: 1, ease: 'power1.inOut' },
-        onComplete: () => {
-          animatingRef.current = false;
-        },
-      });
-
-      if (currentStage === 0 && rightDrawerToggle) {
-        tl.to(rightDrawerRef.current, { right: 0 }).to(
-          leftText.current,
-          { left: '-50%' },
-          '<'
-        );
-      } else if (currentStage === 0) {
-        tl.to(rightDrawerRef.current, { right: -320 }).to(
-          leftText.current,
-          { left: '5%' },
-          '<'
-        );
-      }
-
-      if (currentStage === 1 && rightDrawerToggle) {
-        tl.to(rightDrawerRef.current, { right: 0 }).to(
-          aboutSectionRef.current,
-          { left: '-50%' },
-          '<'
-        );
-      } else if (currentStage === 1) {
-        tl.to(rightDrawerRef.current, { right: -320 }).to(
-          aboutSectionRef.current,
-          { left: '0' },
-          '<'
-        );
-      }
-    },
     {
-      dependencies: [currentStage, rightDrawerToggle],
+      dependencies: [isLoadingDone],
+      scope: heroAboutmeRef, // ✅ same scope for future-proofing
     }
   );
+
+  useGSAP(
+    () => {
+      if (!heroAboutmeRef.current) return;
+      let ctx: gsap.Context; // Declare ctx here
+      console.log(isObserverReady.current, 'observer ready');
+      function waitForObserver() {
+        if (!isObserverReady.current) {
+          setTimeout(waitForObserver, 20); // Retry until ready
+          return;
+        }
+        gsap.registerPlugin(ScrollTrigger);
+
+        ctx = gsap.context(() => {
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              id: 'my-scroll-trigger',
+              trigger: heroAboutmeRef.current,
+              start: '10 top',
+              end: `+=${aboutImgRef.current.offsetHeight}`,
+              scrub: 1.5,
+              pin: true,
+              // pinSpacing: true,
+              markers: process.env.NODE_ENV === 'development',
+              onUpdate: () => {
+                if (rightDrawerToggleRef.current) {
+                  closeDrawer();
+                }
+              },
+              onEnter: () => {
+                console.log('on enter');
+              },
+              onLeave: () => {
+                console.log('on leave');
+                setIsNavBarHideen(true);
+                pauseAudio('stage2BGLab');
+              },
+              onEnterBack: () => {
+                console.log('on Enter Back');
+                setIsNavBarHideen(false);
+                playAudioForStage();
+              },
+              onLeaveBack: () => {
+                console.log('on leave Back');
+                initObserver();
+                goPrevStage();
+              },
+            },
+          });
+
+          tl.to(aboutSectionRef.current, {
+            opacity: 1,
+            duration: 0.1,
+          });
+          tl.to(
+            aboutSectionRef.current,
+            {
+              y: -aboutImgRef.current.offsetHeight,
+              ease: 'none',
+            },
+            '<'
+          );
+        }, heroAboutmeRef);
+      }
+
+      waitForObserver();
+
+      return () => {
+        ctx?.revert(); // Only revert if ctx is defined
+      };
+    },
+    {
+      scope: heroAboutmeRef,
+      dependencies: [aboutImgRef, heroAboutmeRef],
+    }
+  );
+
+  useGSAP(
+    () => {
+      if (!isLoadingDone) return;
+
+      const ctx = gsap.context(() => {
+        const container = heroContentRef.current;
+        const height = container?.getBoundingClientRect().height ?? 0;
+        if (!container || height === 0) return;
+
+        animatingRef.current = true;
+
+        const tl = gsap.timeline({
+          defaults: { duration: 1, ease: 'power1.inOut' },
+          onComplete: () => {
+            animatingRef.current = false;
+            if (currentStage === 1) {
+              killObserver();
+            }
+          },
+        });
+
+        switch (currentStage) {
+          case 0:
+            document.body.style.overflow = 'hidden';
+            tl.to(container, { y: 0 });
+            playAudioForStage(prevStageRef.current);
+            break;
+          case 1:
+            document.body.style.overflow = '';
+            tl.to(container, { y: -height / 2 });
+            playAudioForStage();
+            break;
+        }
+      }, heroAboutmeRef); // Scoped to section
+
+      return () => ctx.revert();
+    },
+    {
+      dependencies: [currentStage, isLoadingDone, heroContentRef],
+      scope: heroAboutmeRef,
+    }
+  );
+
   return (
     <>
       {!isNavBarHideen ? (
-        <div className='fixed bottom-0 z-50 flex justify-center items-center pointer-events-none animate-bounce '>
-          <DotLottieReact
-            // src='https://lottie.host/33d9972a-5ef1-46bc-af9c-94aa2c58392a/T31TJwnUh0.lottie'
-            src={
-              currentStage === 0
-                ? '/lottieAnimation/scroll_animation_black.json'
-                : '/lottieAnimation/scroll_animation_white.json'
-            }
-            loop
-            autoplay
-            style={{ width: '100px', height: 'auto', aspectRatio: '1' }}
-          />
+        <div className='fixed bottom-3 left-5 z-50 flex justify-center items-center pointer-events-none animate-bounce '>
+          <span
+            className={` text-xs ${
+              currentStage === 0 ? 'text-black' : ' text-white'
+            }`}
+          >
+            [scroll to explore]
+          </span>
         </div>
       ) : null}
+
       {!isNavBarHideen ? (
         <NavBar closeDrawer={closeDrawer} currentStage={currentStage} />
       ) : null}
       <RightDrawer
         rightDrawerRef={rightDrawerRef}
+        leftText={leftText}
         setCurrentStage={setCurrentStage}
+        animatingRef={animatingRef}
+        aboutSectionRef={aboutSectionRef}
       />
       <section
         ref={heroAboutmeRef}
-        className='relative h-[204vh] overflow-hidden'
+        style={{
+          height: isMobile ? 'calc(204vh + 400px)' : '204vh',
+        }}
+        className={`relative overflow-hidden pointer-events-none`}
       >
-        <div className='relative w-full'>
-          <div className='flex flex-row justify-center items-start overflow-hidden'>
-            <ModelViewer />
-          </div>
-        </div>
-        <div
-          ref={leftText}
-          className='absolute  font-bold top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'
-        >
-          <div className='flex flex-col gap-5'>
-            <p className='font-rubik font-bold text-5xl leading-relaxed'>
-              Hey,
-              <br /> My name is Hong.
-            </p>
-          </div>
-        </div>
-        <div
-          ref={aboutSectionRef}
-          className='absolute top-2/3 left-0 w-2/5 z-20 opacity-0 pointer-events-none'
-        >
-          <img
-            ref={aboutImgRef}
-            src='/aboutme/aboutme.png'
-            alt='About Me'
-            className='w-auto h-auto'
+        {/* 👇 NEW wrapper div for animation */}
+        <div ref={heroContentRef} className=' w-full h-full'>
+          <ModelViewer
+            leftTextRef={leftText}
+            aboutImgRef={aboutImgRef}
+            aboutSectionRef={aboutSectionRef}
           />
         </div>
       </section>

@@ -5,15 +5,27 @@ import { useCameraStore } from '../../app/stores/cameraStore';
 import { FaLinkedin } from 'react-icons/fa';
 import { FaGithub } from 'react-icons/fa';
 import Link from 'next/link';
+import { useGSAP } from '@gsap/react';
 
 interface indexProps {
   rightDrawerRef: React.RefObject<HTMLDivElement>;
   setCurrentStage: React.Dispatch<React.SetStateAction<number>>;
+  leftText: React.RefObject<HTMLDivElement>;
+  animatingRef: React.RefObject<Boolean>;
+  aboutSectionRef: React.RefObject<HTMLDivElement>;
 }
 
-const RightDrawer: FC<indexProps> = ({ rightDrawerRef, setCurrentStage }) => {
+const RightDrawer: FC<indexProps> = ({
+  rightDrawerRef,
+  setCurrentStage,
+  leftText,
+  animatingRef,
+  aboutSectionRef,
+}) => {
   const { setRightDrawerToggle, currentStage, amountOfScrollingInStage2 } =
     useSettingStore();
+  const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
+
   const setCameraDefault = useCameraStore((s) => s.setDefault);
 
   const playBubbleCover = () => {
@@ -51,10 +63,52 @@ const RightDrawer: FC<indexProps> = ({ rightDrawerRef, setCurrentStage }) => {
     // Hide wrapper again
     tl.set(wrapper, { opacity: 0, pointerEvents: 'none' });
   };
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        defaults: { duration: 1, ease: 'power1.inOut' },
+        onComplete: () => {
+          animatingRef.current = false;
+        },
+      });
+
+      if (currentStage === 0 && rightDrawerToggle) {
+        tl.to(rightDrawerRef.current, { right: 0 }).to(
+          leftText.current,
+          { left: '-100%' },
+          '<'
+        );
+      } else if (currentStage === 0) {
+        tl.to(rightDrawerRef.current, { right: '-100%' }).to(
+          leftText.current,
+          { left: '5%' },
+          '<'
+        );
+      }
+
+      if (currentStage === 1 && rightDrawerToggle) {
+        tl.to(rightDrawerRef.current, { right: 0 }).to(
+          aboutSectionRef.current,
+          { left: '-100%' },
+          '<'
+        );
+      } else if (currentStage === 1) {
+        tl.to(rightDrawerRef.current, { right: '-100%' }).to(
+          aboutSectionRef.current,
+          { left: '0' },
+          '<'
+        );
+      }
+    },
+    {
+      dependencies: [currentStage, rightDrawerToggle],
+    }
+  );
   return (
     <div
       ref={rightDrawerRef}
-      className='fixed top-0 -right-80 h-full w-80 bg-white z-10'
+      className={`fixed top-0 h-full md:w-80 w-full bg-white z-10 ${'opacity-95'}`}
     >
       <div className='w-full h-full flex justify-center items-center'>
         <ul className='font-mono font-bold text-2xl flex flex-col gap-10'>
@@ -116,6 +170,7 @@ const RightDrawer: FC<indexProps> = ({ rightDrawerRef, setCurrentStage }) => {
           )}
           <li
             onClick={() => {
+              document.body.style.overflow = '';
               playBubbleCover();
               setRightDrawerToggle(false);
               setCameraDefault();

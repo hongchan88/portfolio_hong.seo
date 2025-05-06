@@ -17,6 +17,8 @@ type SettingState = {
   setIsTypingRunning: (value: boolean) => void;
   setCurrentStage: (value: number | ((prev: number) => number)) => void;
   setIsLoadingDone: (boolean: boolean) => void;
+  isMobile: boolean;
+  setIsMobile: (value: boolean) => void;
 };
 
 export const useSettingStore = create<SettingState>((set, get) => ({
@@ -27,6 +29,8 @@ export const useSettingStore = create<SettingState>((set, get) => ({
   isTypingRunning: false,
   amountOfScrollingInStage2: 0,
   isNavBarHideen: true,
+  isMobile: false,
+  setIsMobile: (value) => set({ isMobile: value }),
   setIsNavBarHideen: (value) => set({ isNavBarHideen: value }),
   setAmountOfScrollingInStage2: (value) =>
     set({ amountOfScrollingInStage2: value }),

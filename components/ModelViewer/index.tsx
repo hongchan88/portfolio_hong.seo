@@ -1,5 +1,5 @@
 'use client';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 // Import your existing components
 import Avatar from '../Avatar';
@@ -12,28 +12,51 @@ import { MusicNoteAnimation } from '../MusicNoteAnimation';
 const ENVIRONMENT_MODEL_GLB = '/models/environmentModel.glb';
 const AVATAR_MODEL_GLB = '/models/avartarModel.glb';
 
-export default function ModelViewer() {
+export default function ModelViewer({
+  leftTextRef,
+  aboutSectionRef,
+  aboutImgRef,
+}) {
   const currentStage = useSettingStore((s) => s.currentStage);
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  // const handlePointerDown = (e: any) => {
-  //   // e.stopPropagation();
-  //   if (e?.object?.userData?.clickable) {
-  //     console.log('🎯 Speaker clicked!');
-  //   }
-  // };
-  // const handlePointerOver = (e: any) => {
-  //   if (e?.object?.userData?.clickable) {
-  //     document.body.style.cursor = 'pointer';
-  //   }
-  // };
-  // const handlePointerOut = (e: any) => {
-  //   document.body.style.cursor = 'default';
-  // };
+    const handleLost = (e) => {
+      e.preventDefault();
+      console.warn('WebGL context lost');
+      window.location.reload(); // refreshes the page
+    };
+    const handleRestore = () => {
+      console.log('WebGL context restored');
+    };
+
+    canvas.addEventListener('webglcontextlost', handleLost);
+    canvas.addEventListener('webglcontextrestored', handleRestore);
+
+    return () => {
+      canvas.removeEventListener('webglcontextlost', handleLost);
+      canvas.removeEventListener('webglcontextrestored', handleRestore);
+    };
+  }, []);
 
   return (
     <>
-      <div style={{ width: '100vw', height: '204vh' }}>
+      <div className='w-full h-full'>
+        {' '}
+        <div
+          ref={aboutSectionRef}
+          className='absolute top-2/3 left-0 w-full z-20 opacity-0 pointer-events-none'
+        >
+          <img
+            ref={aboutImgRef}
+            src='/aboutme/aboutmeFill.png'
+            alt='About Me'
+            className='md:w-2/5 w-full h-auto'
+          />
+        </div>
         {/* ✅ Background Image (behind the canvas) */}
         <div
           style={{
@@ -58,8 +81,20 @@ export default function ModelViewer() {
             background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
             zIndex: 1,
           }}
-        ></div>
-
+        >
+          {' '}
+          <div
+            ref={leftTextRef}
+            className='absolute font-bold top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'
+          >
+            <div className='flex flex-col gap-5'>
+              <p className='font-rubik font-bold md:text-5xl text-2xl leading-relaxed'>
+                Hey,
+                <br /> My name is Hong.
+              </p>
+            </div>
+          </div>
+        </div>
         {/* ✅ Canvas Container */}
         <div
           style={{
@@ -75,9 +110,11 @@ export default function ModelViewer() {
         >
           <Suspense fallback={null}>
             <Canvas
+              onTouchStart={(e) => e.preventDefault()}
+              ref={canvasRef}
               className={`${
                 !isLoadingDone ? 'invisible opacity-0' : 'opacity-100'
-              } transition-opacity duration-700`}
+              } transition-opacity duration-700 `}
               shadows
               style={{
                 width: '100%',

@@ -1,9 +1,11 @@
 'use client';
 import '../styles/globals.css';
-import Footer from '../components/Footer';
 import { ThemeProvider } from 'next-themes';
 import { Space_Mono, Rubik } from 'next/font/google';
 import dynamic from 'next/dynamic';
+import { useSettingStore } from '@store/settingStore';
+import { useCameraStore } from '@store/cameraStore';
+import { useEffect } from 'react';
 const ScrollRestoration = dynamic(() => import('./utils/ScrollRestoration'), {
   ssr: false,
 });
@@ -20,13 +22,37 @@ const rubik = Rubik({
   display: 'swap',
 });
 export default function RootLayout({ children }) {
+  const setIsMobile = useSettingStore((s) => s.setIsMobile);
+  const setZoom = useCameraStore((s) => s.setZoom);
+  const isMobile = useSettingStore((s) => s.isMobile);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (isMobile) return; // it keeps re-render on mobile
+      window.location.reload(); // refreshes the page
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isMobile]);
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+    setIsMobile(isMobile);
+    setZoom(isMobile ? 100 : 70);
+  }, []);
   return (
     <html
       lang='en'
       className={`${spaceMono.variable} ${rubik.variable}`}
       suppressHydrationWarning
     >
-      <body className='dark:bg-gray-800 w-full'>
+      <body
+        style={{ overscrollBehavior: 'none' }}
+        className='dark:bg-gray-800 w-full'
+      >
         {/* Add to your layout, at the root */}
         <div
           id='bubbleOverlayWrapper'

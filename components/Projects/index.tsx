@@ -7,7 +7,7 @@ interface indexProps {}
 const Projects: FC<indexProps> = ({}) => {
   return (
     <section
-      className='projects-section'
+      className='relative'
       style={{
         height: '100%',
         marginTop: '-100vh',
@@ -15,7 +15,7 @@ const Projects: FC<indexProps> = ({}) => {
       }}
     >
       <div className='max-w-7xl mx-auto py-20 px-4 md:px-8 lg:px-10'>
-        <div className='text-5xl font-light text-left font-rubik text-neutral-700 dark:text-neutral-300'>
+        <div className='text-5xl font-light text-left font-rubik text-neutral-700 dark:text-neutral-300 md:h-auto h-52'>
           I enjoy building{' '}
           <ContainerTextFlip
             words={[

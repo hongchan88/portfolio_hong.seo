@@ -5,19 +5,20 @@ import { useSettingStore } from './stores/settingStore';
 import AudioGroup from '../components/AudioGroup/AudioGroup';
 import Projects from '../components/Projects';
 import Hero from 'components/Hero';
-import Image from 'next/image';
 import Footer from 'components/Footer';
 import HydrationLoading from 'components/HydrationLoading';
+import { useCameraStore } from '@store/cameraStore';
 export default function App() {
   const [isHydrated, setIsHydrated] = useState(false);
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
-
   useEffect(() => {
     setIsHydrated(true);
   }, []);
   // useCameraControls();
-  console.log('app rerender');
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+  }, []);
   return (
     <>
       {/* Show HydrationLoading only before hydration */}
