@@ -52,7 +52,7 @@ export default function ModelViewer({
         >
           <img
             ref={aboutImgRef}
-            src='/aboutme/aboutmeFill.png'
+            src='/aboutme/aboutMeFill.png'
             alt='About Me'
             className='md:w-2/5 w-full h-auto'
           />
