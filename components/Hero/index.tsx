@@ -7,10 +7,10 @@ import { Observer } from 'gsap/Observer';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-import NavBar from '../NavBar';
-import RightDrawer from '../RightDrawer';
 import { useCameraStore } from '@store/cameraStore';
 import dynamic from 'next/dynamic';
+import { useRefStore } from '@store/refsStore';
+import HeroOverlays from 'components/HeroOverlays';
 
 const ModelViewer = dynamic(() => import('../../components/ModelViewer'), {
   ssr: false,
@@ -21,13 +21,9 @@ const Hero: FC<HeroProps> = ({}) => {
   gsap.registerPlugin(ScrollToPlugin);
   const observerRef = useRef<Observer | null>(null);
   const heroAboutmeRef = useRef<HTMLDivElement>(null);
-  const aboutSectionRef = useRef(null);
-  const aboutImgRef = useRef(null);
   const heroContentRef = useRef<HTMLDivElement>(null); // NEW
 
   const animatingRef = useRef(false);
-  const rightDrawerRef = useRef<HTMLDivElement>(null);
-  const leftText = useRef<HTMLDivElement>(null);
   const currentStage = useSettingStore((s) => s.currentStage);
   const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
   const setCurrentStage = useSettingStore((s) => s.setCurrentStage);
@@ -49,12 +45,17 @@ const Hero: FC<HeroProps> = ({}) => {
 
   const audioToggleRef = useRef(audioToggleState);
   const setCameraDefault = useCameraStore((s) => s.setDefault);
+  const setMobileDefault = useCameraStore((s) => s.setMobileDefault);
   const savedScrollValue = useRef(0);
   const prevRightDrawerToggle = useRef(false);
   const isObserverReady = useRef(false);
 
+  const aboutImgRef = useRef(null);
+  const leftText = useRef<HTMLDivElement>(null);
   const prevStageRef = useRef(currentStage); // new!
   const rightDrawerToggleRef = useRef(rightDrawerToggle);
+  const rightDrawerRef = useRefStore((s) => s.rightDrawerRef);
+  const aboutSectionRef = useRefStore((s) => s.aboutSectionRef);
 
   useEffect(() => {
     if (prevStageRef.current === 1 && currentStage === 0) {
@@ -75,7 +76,11 @@ const Hero: FC<HeroProps> = ({}) => {
     if (audioToggleRef.current) {
       audioRefs?.['clickMenuAudio']?.play();
     }
-    setCameraDefault();
+    if (isMobile) {
+      setMobileDefault();
+    } else {
+      setCameraDefault();
+    }
     gsap.to(rightDrawerRef.current, {
       right: -320,
       delay: 0.1,
@@ -193,7 +198,8 @@ const Hero: FC<HeroProps> = ({}) => {
 
   useGSAP(
     () => {
-      if (!heroAboutmeRef.current) return;
+      if (!heroAboutmeRef.current || !isLoadingDone || !aboutImgRef.current)
+        return;
       let ctx: gsap.Context; // Declare ctx here
       console.log(isObserverReady.current, 'observer ready');
       function waitForObserver() {
@@ -202,7 +208,9 @@ const Hero: FC<HeroProps> = ({}) => {
           return;
         }
         gsap.registerPlugin(ScrollTrigger);
-
+        ScrollTrigger.config({
+          ignoreMobileResize: true,
+        });
         ctx = gsap.context(() => {
           const tl = gsap.timeline({
             scrollTrigger: {
@@ -212,7 +220,8 @@ const Hero: FC<HeroProps> = ({}) => {
               end: `+=${aboutImgRef.current.offsetHeight}`,
               scrub: 1.5,
               pin: true,
-              // pinSpacing: true,
+              pinSpacing: true,
+
               markers: process.env.NODE_ENV === 'development',
               onUpdate: () => {
                 if (rightDrawerToggleRef.current) {
@@ -263,7 +272,7 @@ const Hero: FC<HeroProps> = ({}) => {
     },
     {
       scope: heroAboutmeRef,
-      dependencies: [aboutImgRef, heroAboutmeRef],
+      dependencies: [aboutImgRef, heroAboutmeRef, isLoadingDone],
     }
   );
 
@@ -312,42 +321,39 @@ const Hero: FC<HeroProps> = ({}) => {
 
   return (
     <>
-      {!isNavBarHideen ? (
-        <div className='fixed bottom-3 left-5 z-50 flex justify-center items-center pointer-events-none animate-bounce '>
-          <span
-            className={` text-xs ${
-              currentStage === 0 ? 'text-black' : ' text-white'
-            }`}
-          >
-            [scroll to explore]
-          </span>
-        </div>
-      ) : null}
-
-      {!isNavBarHideen ? (
-        <NavBar closeDrawer={closeDrawer} currentStage={currentStage} />
-      ) : null}
-      <RightDrawer
-        rightDrawerRef={rightDrawerRef}
-        leftText={leftText}
-        setCurrentStage={setCurrentStage}
+      <HeroOverlays
+        closeDrawer={closeDrawer}
         animatingRef={animatingRef}
-        aboutSectionRef={aboutSectionRef}
+        leftText={leftText}
       />
       <section
         ref={heroAboutmeRef}
-        style={{
-          height: isMobile ? 'calc(204vh + 400px)' : '204vh',
-        }}
         className={`relative overflow-hidden pointer-events-none`}
       >
-        {/* 👇 NEW wrapper div for animation */}
         <div ref={heroContentRef} className=' w-full h-full'>
-          <ModelViewer
-            leftTextRef={leftText}
-            aboutImgRef={aboutImgRef}
-            aboutSectionRef={aboutSectionRef}
-          />
+          <ModelViewer />
+          <div
+            ref={aboutSectionRef}
+            className='absolute top-2/3 left-0 w-full z-20 opacity-0 pointer-events-none'
+          >
+            <img
+              ref={aboutImgRef}
+              src='/aboutme/aboutMeFill.png'
+              alt='About Me'
+              className='md:w-2/5 w-full h-auto'
+            />
+          </div>
+          <div
+            ref={leftText}
+            className='absolute font-bold top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'
+          >
+            <div className='flex flex-col gap-5'>
+              <p className='font-rubik font-bold md:text-5xl md:leading-normal text-2xl leading-relaxed'>
+                Hey,
+                <br /> My name is Hong.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </>

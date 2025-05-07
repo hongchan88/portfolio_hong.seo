@@ -25,6 +25,8 @@ export default function RootLayout({ children }) {
   const setIsMobile = useSettingStore((s) => s.setIsMobile);
   const setZoom = useCameraStore((s) => s.setZoom);
   const isMobile = useSettingStore((s) => s.isMobile);
+  const mobileZoom = useCameraStore((s) => s.mobileZoom);
+  const defaultZoom = useCameraStore((s) => s.zoom);
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,7 +44,7 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const isMobile = window.innerWidth <= 768;
     setIsMobile(isMobile);
-    setZoom(isMobile ? 90 : 70);
+    setZoom(isMobile ? mobileZoom : defaultZoom);
   }, []);
   return (
     <html

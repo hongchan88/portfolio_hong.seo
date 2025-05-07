@@ -1,16 +1,18 @@
 import { FC } from 'react';
 import { ContainerTextFlip } from '../ContainerTextFlip';
 import { Timeline } from '../Timeline/Timeline';
+import { useSettingStore } from '@store/settingStore';
 
 interface indexProps {}
 
 const Projects: FC<indexProps> = ({}) => {
+  const isMobile = useSettingStore((s) => s.isMobile);
   return (
     <section
       className='relative'
       style={{
         height: '100%',
-        marginTop: '-100vh',
+        marginTop: `${isMobile ? 'calc(-102vh + 200px)' : '-102vh'}`,
         // background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
       }}
     >

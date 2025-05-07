@@ -13,11 +13,7 @@ import * as THREE from 'three';
 const ENVIRONMENT_MODEL_GLB = '/models/environmentModel.glb';
 const AVATAR_MODEL_GLB = '/models/avartarModel.glb';
 
-export default function ModelViewer({
-  leftTextRef,
-  aboutSectionRef,
-  aboutImgRef,
-}) {
+export default function ModelViewer({}) {
   const currentStage = useSettingStore((s) => s.currentStage);
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
   const isMobile = useSettingStore((s) => s.isMobile);
@@ -47,17 +43,6 @@ export default function ModelViewer({
   return (
     <>
       <div className='w-full h-full'>
-        <div
-          ref={aboutSectionRef}
-          className='absolute top-2/3 left-0 w-full z-20 opacity-0 pointer-events-none'
-        >
-          <img
-            ref={aboutImgRef}
-            src='/aboutme/aboutMeFill.png'
-            alt='About Me'
-            className='md:w-2/5 w-full h-auto'
-          />
-        </div>
         {/* ✅ Background Image (behind the canvas) */}
         <div
           style={{
@@ -65,7 +50,7 @@ export default function ModelViewer({
             top: `${isMobile ? '102vh' : '102vh'}`,
             left: 0,
             width: '100%',
-            height: `${isMobile ? 'calc(100vh + 200px)' : '50%'}`,
+            height: `${isMobile ? 'calc(102vh + 200px)' : '50%'}`,
             background:
               'linear-gradient(140deg, rgba(19, 43, 101, 1) 50%, rgba(24, 75, 146, 1) 78%, rgba(39, 93, 137, 1) 99%)',
 
@@ -75,7 +60,6 @@ export default function ModelViewer({
         <div
           style={{
             position: 'absolute',
-            bottom: 0,
             top: 0,
             width: '100%',
             height: `${isMobile ? '102vh' : '50%'}`,
@@ -84,23 +68,12 @@ export default function ModelViewer({
           }}
         >
           {' '}
-          <div
-            ref={leftTextRef}
-            className='absolute font-bold top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'
-          >
-            <div className='flex flex-col gap-5'>
-              <p className='font-rubik font-bold md:text-5xl text-2xl leading-relaxed'>
-                Hey,
-                <br /> My name is Hong.
-              </p>
-            </div>
-          </div>
         </div>
         {/* ✅ Canvas Container */}
         <div
           style={{
             width: '100%',
-            height: '100%',
+            height: `${isMobile ? 'calc(204vh + 200px)' : '204vh'}`,
 
             display: 'flex',
             alignItems: 'center',
@@ -120,6 +93,7 @@ export default function ModelViewer({
               style={{
                 width: '100%',
                 height: '100%',
+                touchAction: 'pan-y',
               }}
               // onPointerDown={handlePointerDown}
               // onPointerOver={handlePointerOver}

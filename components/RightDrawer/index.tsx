@@ -9,7 +9,6 @@ import { useGSAP } from '@gsap/react';
 
 interface indexProps {
   rightDrawerRef: React.RefObject<HTMLDivElement>;
-  setCurrentStage: React.Dispatch<React.SetStateAction<number>>;
   leftText: React.RefObject<HTMLDivElement>;
   animatingRef: React.RefObject<Boolean>;
   aboutSectionRef: React.RefObject<HTMLDivElement>;
@@ -17,17 +16,18 @@ interface indexProps {
 
 const RightDrawer: FC<indexProps> = ({
   rightDrawerRef,
-  setCurrentStage,
   leftText,
   animatingRef,
   aboutSectionRef,
 }) => {
   const { setRightDrawerToggle, currentStage, amountOfScrollingInStage2 } =
     useSettingStore();
+  const setCurrentStage = useSettingStore((s) => s.setCurrentStage);
   const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
 
   const setCameraDefault = useCameraStore((s) => s.setDefault);
-
+  const isMobile = useSettingStore((s) => s.isMobile);
+  const setMobileDefault = useCameraStore((s) => s.setMobileDefault);
   const playBubbleCover = () => {
     const wrapper = document.getElementById('bubbleOverlayWrapper');
     const circle = document.getElementById('bubbleCircle');
@@ -125,7 +125,11 @@ const RightDrawer: FC<indexProps> = ({
               onClick={() => {
                 playBubbleCover();
                 setRightDrawerToggle(false);
-                setCameraDefault();
+                if (isMobile) {
+                  setMobileDefault();
+                } else {
+                  setCameraDefault();
+                }
                 setCurrentStage(0);
                 gsap.to(window, {
                   duration: 1,
@@ -153,12 +157,16 @@ const RightDrawer: FC<indexProps> = ({
               onClick={() => {
                 playBubbleCover();
                 setRightDrawerToggle(false);
-                setCameraDefault();
+                if (isMobile) {
+                  setMobileDefault();
+                } else {
+                  setCameraDefault();
+                }
                 setCurrentStage(1);
                 gsap.to(window, {
                   duration: 1,
                   scrollTo: {
-                    y: window.scrollY + 200,
+                    y: 200,
                   },
                   ease: 'power2.out',
                 });
@@ -173,7 +181,11 @@ const RightDrawer: FC<indexProps> = ({
               document.body.style.overflow = '';
               playBubbleCover();
               setRightDrawerToggle(false);
-              setCameraDefault();
+              if (isMobile) {
+                setMobileDefault();
+              } else {
+                setCameraDefault();
+              }
               setCurrentStage(1);
               const scrollAmount = window.innerHeight * 2; // 200vh
               gsap.to(window, {
@@ -181,10 +193,10 @@ const RightDrawer: FC<indexProps> = ({
                 scrollTo: {
                   y: `${
                     currentStage === 0
-                      ? window.scrollY + scrollAmount + 300
+                      ? window.scrollY + scrollAmount + (isMobile ? 500 : 300)
                       : scrollAmount +
                         window.scrollY +
-                        300 -
+                        (isMobile ? 400 : 300) -
                         amountOfScrollingInStage2
                   }`,
                 },
