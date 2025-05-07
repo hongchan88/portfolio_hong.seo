@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
       if (isMobile) return; // it keeps re-render on mobile
       window.location.reload(); // refreshes the page
     };
@@ -41,7 +42,7 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const isMobile = window.innerWidth <= 768;
     setIsMobile(isMobile);
-    setZoom(isMobile ? 100 : 70);
+    setZoom(isMobile ? 90 : 70);
   }, []);
   return (
     <html

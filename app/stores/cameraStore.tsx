@@ -4,6 +4,10 @@ type useCameraType = {
   camPos: number[];
   zoom: number;
   camRotatePos: number[];
+  mobileCamPos: number[];
+  mobileZoom: number;
+  mobileCameraTarget: number[];
+  cameraTarget: number[];
   setCamPos: (pos: number[]) => void;
   setZoom: (z: number) => void;
   setDefault: () => void;
@@ -13,6 +17,12 @@ type useCameraType = {
 };
 export const useCameraStore = create<useCameraType>((set, get) => ({
   camPos: [10, 5, 14],
+  cameraTarget: [0, 0, 0],
+  mobileCamPos: [6.906740204411565, 6.4844114698193, 16.775365042190266],
+  mobileCameraTarget: [
+    -0.2978507511193125, -0.35666763170937515, -0.8854790401519885,
+  ],
+  mobileZoom: 80,
   zoom: 70,
   camRotatePos: [0, 0, 0],
   setCamPos: (pos) => set({ camPos: pos }),

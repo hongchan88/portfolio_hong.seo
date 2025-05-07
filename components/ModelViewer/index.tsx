@@ -1,6 +1,6 @@
 'use client';
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Suspense, useEffect, useRef } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
 // Import your existing components
 import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
@@ -8,6 +8,7 @@ import TiltedScene from '../TiltScene/TiltedScene';
 import CameraController from '../CameraController/CameraController';
 import { useSettingStore } from '../../app/stores/settingStore';
 import { MusicNoteAnimation } from '../MusicNoteAnimation';
+import * as THREE from 'three';
 
 const ENVIRONMENT_MODEL_GLB = '/models/environmentModel.glb';
 const AVATAR_MODEL_GLB = '/models/avartarModel.glb';
@@ -19,6 +20,7 @@ export default function ModelViewer({
 }) {
   const currentStage = useSettingStore((s) => s.currentStage);
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
+  const isMobile = useSettingStore((s) => s.isMobile);
   const canvasRef = useRef(null);
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -45,7 +47,6 @@ export default function ModelViewer({
   return (
     <>
       <div className='w-full h-full'>
-        {' '}
         <div
           ref={aboutSectionRef}
           className='absolute top-2/3 left-0 w-full z-20 opacity-0 pointer-events-none'
@@ -61,10 +62,10 @@ export default function ModelViewer({
         <div
           style={{
             position: 'absolute',
-            bottom: 0,
+            top: `${isMobile ? '102vh' : '102vh'}`,
             left: 0,
             width: '100%',
-            height: `${currentStage === 0 ? '50%' : '50%'}`,
+            height: `${isMobile ? 'calc(100vh + 200px)' : '50%'}`,
             background:
               'linear-gradient(140deg, rgba(19, 43, 101, 1) 50%, rgba(24, 75, 146, 1) 78%, rgba(39, 93, 137, 1) 99%)',
 
@@ -77,7 +78,7 @@ export default function ModelViewer({
             bottom: 0,
             top: 0,
             width: '100%',
-            height: `${currentStage === 0 ? '50%' : '50%'}`,
+            height: `${isMobile ? '102vh' : '50%'}`,
             background: 'linear-gradient(to bottom, rgba(177,204,112,0.2) 50%)',
             zIndex: 1,
           }}
@@ -125,9 +126,12 @@ export default function ModelViewer({
               // onPointerOut={handlePointerOut}
             >
               <TiltedScene>
-                <MusicNoteAnimation />
                 <CameraController />
-                <group position={[3, 1, -3]} rotation={[0, 4.6, 0]}>
+                <MusicNoteAnimation />
+                <group
+                  position={isMobile ? [1, 4.8, -2] : [3, 1, -3]}
+                  rotation={isMobile ? [0.2, 4.6, 0.07] : [0, 4.6, 0]}
+                >
                   <Model
                     url={ENVIRONMENT_MODEL_GLB}
                     currentStage={currentStage}
@@ -143,21 +147,23 @@ export default function ModelViewer({
               files='/textures/brown_photostudio_02_4k.exr'
               background={false}
               /> */}
+                <CameraViewSaver />
                 {/* <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                enableRotate={false}
-                onChange={(e) => {
-                const cam = e.target.object;
-                setCamPos([cam.position.x, cam.position.y, cam.position.z]);
-                setZoom(cam.zoom);
-                setCamRotatePos([
-                  cam.rotation.x,
-                  cam.rotation.y,
-                  cam.rotation.z,
-                ]);
-                }}
-              /> */}
+                  enableZoom={false}
+                  enablePan={false}
+                  enableRotate={false}
+                  onChange={(e) => {
+                    const cam = e.target.object;
+                    console.log(cam, 'position');
+                    // setCamPos([cam.position.x, cam.position.y, cam.position.z]);
+                    // setZoom(cam.zoom);
+                    // setCamRotatePos([
+                    //   cam.rotation.x,
+                    //   cam.rotation.y,
+                    //   cam.rotation.z,
+                    // ]);
+                  }}
+                /> */}
               </TiltedScene>
             </Canvas>
           </Suspense>
@@ -168,3 +174,30 @@ export default function ModelViewer({
 }
 
 // ✅ Tilt the Entire 3D Scene When Moving Mouse Over It
+function CameraViewSaver() {
+  const { camera } = useThree();
+
+  const saveCameraView = () => {
+    camera.updateMatrixWorld(); // Ensure matrices are current
+    const position = camera.position.toArray();
+    const direction = camera.getWorldDirection(new THREE.Vector3()).toArray();
+
+    console.log('Saved view:', { position, direction });
+
+    // You can save to Zustand, localStorage, or send to backend
+    // Example: useCameraStore.setState({ savedCamera: { position, direction } });
+  };
+
+  // Option 1: Trigger it by keypress for testing
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 's') {
+        saveCameraView();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
+  return null;
+}

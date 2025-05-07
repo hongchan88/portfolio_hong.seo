@@ -4,8 +4,10 @@ import { useRef } from 'react';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { useSettingStore } from '@store/settingStore';
 
 export function MusicNoteAnimation() {
+  const isMobile = useSettingStore((s) => s.isMobile);
   const textures = [
     useLoader(TextureLoader, '/music/music_1.png'),
     useLoader(TextureLoader, '/music/music_2.png'),
@@ -16,7 +18,9 @@ export function MusicNoteAnimation() {
 
   const meshRef = useRef<THREE.Mesh>(null);
   const { camera } = useThree();
-  const startPosition: [number, number, number] = [4.24, 3.03, -2.26];
+  const startPosition: [number, number, number] = isMobile
+    ? [2.24, 6.93, -1.26]
+    : [4.24, 3.03, -2.26];
 
   useGSAP(
     () => {

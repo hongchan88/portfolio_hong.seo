@@ -2,13 +2,16 @@ import { useControls } from 'leva';
 import { useEffect } from 'react';
 import { useCameraStore } from '../stores/cameraStore';
 export const useCameraControls = () => {
-  const { setZoom, setCamPos } = useCameraStore();
+  const { setZoom, setCamPos, setCamRotatePos } = useCameraStore();
 
   const {
     cx,
     cy,
     cz,
     zoom: czoom,
+    rx,
+    rz,
+    ry,
   } = useControls('Camera Position', {
     cx: { value: 10, step: 1 },
     cy: { value: 5, step: 1 },

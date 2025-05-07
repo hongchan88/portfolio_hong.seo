@@ -208,7 +208,7 @@ const Hero: FC<HeroProps> = ({}) => {
             scrollTrigger: {
               id: 'my-scroll-trigger',
               trigger: heroAboutmeRef.current,
-              start: '10 top',
+              start: '5 top',
               end: `+=${aboutImgRef.current.offsetHeight}`,
               scrub: 1.5,
               pin: true,
@@ -296,7 +296,7 @@ const Hero: FC<HeroProps> = ({}) => {
             break;
           case 1:
             document.body.style.overflow = '';
-            tl.to(container, { y: -height / 2 });
+            tl.to(container, { y: isMobile ? '-102vh' : -height / 2 });
             playAudioForStage();
             break;
         }
