@@ -51,13 +51,26 @@ export const Timeline = () => {
   const ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  // useEffect(() => {
+  //   if (ref.current) {
+  //     const rect = ref.current.getBoundingClientRect();
+  //     setHeight(rect.height);
+  //   }
+  // }, [ref]);
   useEffect(() => {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setHeight(rect.height);
-    }
-  }, [ref]);
+    if (!ref.current) return;
 
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        console.log('Observed size:', entry.contentRect.height);
+        setHeight(entry.contentRect.height);
+      }
+    });
+
+    observer.observe(ref.current); // 👈 This tells it which element to watch
+
+    return () => observer.disconnect(); // cleanup
+  }, []);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start 10%', 'end 50%'],
@@ -68,7 +81,7 @@ export const Timeline = () => {
 
   return (
     <div
-      className='w-full bg-white dark:bg-neutral-950 font-sans md:px-10'
+      className='w-full h-full bg-white dark:bg-neutral-950 font-sans md:px-10'
       ref={containerRef}
     >
       <div ref={ref} className='relative max-w-7xl mx-auto pb-20'>

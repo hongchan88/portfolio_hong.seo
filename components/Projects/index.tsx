@@ -9,7 +9,7 @@ const Projects: FC<indexProps> = ({}) => {
   const isMobile = useSettingStore((s) => s.isMobile);
   return (
     <section
-      className='relative'
+      className='block'
       style={{
         height: '100%',
         marginTop: `${isMobile ? 'calc(-102vh + 200px)' : '-102vh'}`,
