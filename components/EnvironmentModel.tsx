@@ -5,7 +5,10 @@ import { useGLTF, useTexture } from '@react-three/drei';
 import gsap from 'gsap';
 import Bubbles from './Bubble';
 import { useSettingStore } from '../app/stores/settingStore';
-
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { useLoader, useThree } from '@react-three/fiber';
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader';
 type ModelProps = {
   url: string;
   currentStage: number;
@@ -14,13 +17,27 @@ type ModelProps = {
 
 export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
   const modelRef = useRef<THREE.Group>(null);
-  const { scene, materials } = useGLTF(url);
+  const { gl: renderer } = useThree();
+
+  const gltf = useLoader(GLTFLoader, url, (loader) => {
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    dracoLoader.setDecoderConfig({ type: 'wasm' });
+
+    const ktx2Loader = new KTX2Loader();
+    ktx2Loader.setTranscoderPath('/ktx2/');
+    ktx2Loader.detectSupport(renderer); // 🚨 Must be called before load
+
+    loader.setDRACOLoader(dracoLoader);
+    loader.setKTX2Loader(ktx2Loader);
+  });
+  const { scene, materials } = gltf;
   const isScrolling = useSettingStore((s) => s.isScrolling);
   // ✅ Load textures once using useTexture
   const [wallShadowTex, groundShadowTex, labWallGroundTex] = useTexture([
-    '/models/wallShadow_transparent.png',
-    '/models/groundShadow_transparent.png',
-    '/models/labwallGround_transparent.png',
+    '/models/wallShadow_transparent.webp',
+    '/models/groundShadow_transparent.webp',
+    '/models/labwallGround_transparent.webp',
   ]);
   // useEffect(() => {
   //   const empty = scene.getObjectByName('speakerPosition'); // your Empty's name
@@ -64,14 +81,14 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
         });
       }
 
-      if (child.name === 'lab_ground_wall') {
-        child.material = new THREE.MeshStandardMaterial({
-          map: labWallGroundTex,
-          transparent: true,
-          opacity: 0.2,
-          depthWrite: false,
-        });
-      }
+      // if (child.name === 'lab_ground_wall') {
+      //   child.material = new THREE.MeshStandardMaterial({
+      //     map: labWallGroundTex,
+      //     transparent: true,
+      //     opacity: 0.2,
+      //     depthWrite: false,
+      //   });
+      // }
 
       child.material.needsUpdate = true;
     });

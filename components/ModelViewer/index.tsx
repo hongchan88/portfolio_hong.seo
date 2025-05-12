@@ -10,8 +10,8 @@ import { useSettingStore } from '../../app/stores/settingStore';
 import { MusicNoteAnimation } from '../MusicNoteAnimation';
 import * as THREE from 'three';
 
-const ENVIRONMENT_MODEL_GLB = '/models/environmentModel.glb';
-const AVATAR_MODEL_GLB = '/models/avartarModel.glb';
+const ENVIRONMENT_MODEL_GLB = '/models/envModel.glb';
+const AVATAR_MODEL_GLB = '/models/avataModel.glb';
 
 export default function ModelViewer({}) {
   const currentStage = useSettingStore((s) => s.currentStage);
@@ -121,7 +121,7 @@ export default function ModelViewer({}) {
               files='/textures/brown_photostudio_02_4k.exr'
               background={false}
               /> */}
-                <CameraViewSaver />
+                {/* <CameraViewSaver /> */}
                 {/* <OrbitControls
                   enableZoom={false}
                   enablePan={false}

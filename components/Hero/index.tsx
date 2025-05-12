@@ -160,12 +160,12 @@ const Hero: FC<HeroProps> = ({}) => {
           closeDrawer();
         }
       },
-      onDown: () => {
-        if (rightDrawerToggleRef.current || isNavBarHiddenRef.current) return;
-        if (!animatingRef.current) {
-          goPrevStage();
-        }
-      },
+      // onDown: () => {
+      //   if (rightDrawerToggleRef.current || isNavBarHiddenRef.current) return;
+      //   if (!animatingRef.current) {
+      //     goPrevStage();
+      //   }
+      // },
       onUp: () => {
         console.log(currentStage, 'current stage onup');
         if (rightDrawerToggleRef.current || isNavBarHiddenRef.current) return;
@@ -243,7 +243,6 @@ const Hero: FC<HeroProps> = ({}) => {
               },
               onLeaveBack: () => {
                 console.log('on leave Back');
-                initObserver();
                 goPrevStage();
               },
             },
@@ -302,6 +301,9 @@ const Hero: FC<HeroProps> = ({}) => {
             document.body.style.overflow = 'hidden';
             tl.to(container, { y: 0 });
             playAudioForStage(prevStageRef.current);
+            if (prevStageRef.current === 1) {
+              initObserver();
+            }
             break;
           case 1:
             document.body.style.overflow = '';
@@ -338,7 +340,7 @@ const Hero: FC<HeroProps> = ({}) => {
           >
             <img
               ref={aboutImgRef}
-              src='/aboutme/aboutMeFill.png'
+              src='/aboutme/aboutMeFill.webp'
               alt='About Me'
               className='md:w-2/5 w-full h-auto'
             />

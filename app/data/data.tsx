@@ -27,7 +27,7 @@ export const projectsData: Project[] = [
   {
     timelineYear: '2025',
     title: 'Portfolio',
-    imgUrl: ['projects/2025-2.png', 'projects/2025-1.png'],
+    imgUrl: ['projects/2025-2.webp', 'projects/2025-1.webp'],
     live: 'https://portfolio-hong-seo.vercel.app/',
     description: (
       <div>
@@ -54,7 +54,7 @@ export const projectsData: Project[] = [
   {
     timelineYear: '2025',
     title: 'Craftify',
-    imgUrl: ['projects/craftify-1.png', 'projects/craftify-2.png'],
+    imgUrl: ['projects/craftify-1.webp', 'projects/craftify-2.webp'],
     live: 'https://pdf-creator-tool-kit.vercel.app/',
     description: (
       <div>
@@ -168,12 +168,12 @@ export const projectsData: Project[] = [
       </div>
     ),
     imgUrl: [
-      'projects/2024-4.png',
-      'projects/2024-3.png',
-      'projects/2024-1.png',
-      'projects/2024-2.png',
-      'projects/commit-1.png',
-      'projects/leetcode-1.png',
+      'projects/2024-4.webp',
+      'projects/2024-3.webp',
+      'projects/2024-1.webp',
+      'projects/2024-2.webp',
+      'projects/commit-1.webp',
+      'projects/leetcode-1.webp',
     ],
     stacks: [
       'javascript',
@@ -193,7 +193,7 @@ export const projectsData: Project[] = [
   {
     title: 'Figma Plugin',
     timelineYear: '2024',
-    imgUrl: ['projects/plugin-1.png'],
+    imgUrl: ['projects/plugin-1.webp'],
     description: (
       <div className='mt-6'>
         <h3 className='font-semibold mb-1'>Figma Plugin</h3>
@@ -219,9 +219,7 @@ export const projectsData: Project[] = [
   {
     title: 'Image Resizer App',
     timelineYear: '2023',
-    imgUrl: [
-      'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677282754/portfolio/ojwrq345s3qrmv4afqt7.png',
-    ],
+    imgUrl: ['/projects/ojwrq345s3qrmv4afqt7.webp'],
     description: (
       <div>
         <h3 className='font-semibold mb-1'>
@@ -254,9 +252,7 @@ export const projectsData: Project[] = [
   {
     title: 'Star Wars Movie App',
     timelineYear: '2022',
-    imgUrl: [
-      'https://res.cloudinary.com/dwbsxpk82/image/upload/v1640824416/portfolio/bqevtrmvfqkocbddby0c.png',
-    ],
+    imgUrl: ['/projects/bqevtrmvfqkocbddby0c.webp'],
 
     description: (
       <div>
@@ -288,9 +284,7 @@ export const projectsData: Project[] = [
     title: 'Boot Drive Thru ',
     timelineYear: '2021',
     link: 'https://boot-drive-thru.netlify.app/',
-    imgUrl: [
-      'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459643/portfolio/bzrhiuinz3tlqfrovjbg.png',
-    ],
+    imgUrl: ['/projects/bzrhiuinz3tlqfrovjbg.webp'],
 
     description: (
       <div>
@@ -319,9 +313,7 @@ export const projectsData: Project[] = [
     title: 'Netflix Noogle Search Movie',
     timelineYear: '2021',
     link: 'https://netflix-noogle-search-movie.vercel.app/',
-    imgUrl: [
-      'https://res.cloudinary.com/dwbsxpk82/image/upload/v1639613226/portfolio/tqrzdspkhhwyupksruv5.png',
-    ],
+    imgUrl: ['/projects/tqrzdspkhhwyupksruv5.webp'],
 
     description: (
       <div>
@@ -349,9 +341,7 @@ export const projectsData: Project[] = [
     title: 'Simple API Service',
     timelineYear: '2021',
     link: 'https://github.com/hongchan88/Simple_API_ExpressJs',
-    imgUrl: [
-      'https://res.cloudinary.com/dwbsxpk82/image/upload/v1636459646/portfolio/fkdoj7cza7aol9nnpqpq.png',
-    ],
+    imgUrl: ['/projects/fkdoj7cza7aol9nnpqpq.webp'],
 
     description: (
       <div>

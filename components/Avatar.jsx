@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import { useGLTF, useAnimations, useTexture } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useAnimations, useTexture } from '@react-three/drei';
+import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useSettingStore } from '../app/stores/settingStore';
 import { useAudioStore } from '@store/audioStore';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default function Avatar({ currentStage, isLoadingDone, url }) {
   const groupRef = useRef(null);
@@ -23,13 +26,27 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
   /** ------------------------------------------------------------------
    * LOAD ASSETS
    * ------------------------------------------------------------------ */
-  const { scene, animations } = useGLTF(url);
+  const { gl: renderer } = useThree();
+
+  const gltf = useLoader(GLTFLoader, url, (loader) => {
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    dracoLoader.setDecoderConfig({ type: 'wasm' });
+
+    const ktx2Loader = new KTX2Loader();
+    ktx2Loader.setTranscoderPath('/ktx2/');
+    ktx2Loader.detectSupport(renderer); // 🚨 Must be called before load
+
+    loader.setDRACOLoader(dracoLoader);
+    loader.setKTX2Loader(ktx2Loader);
+  });
+  const { scene, animations } = gltf;
   const { actions } = useAnimations(animations, groupRef);
 
   const [normalFace, waveFace, surpriseFace] = useTexture([
-    '/face/normal8.png',
-    '/face/wave7.png',
-    '/face/surprise4.png',
+    '/face/normal8.webp',
+    '/face/wave7.webp',
+    '/face/surprise4.webp',
   ]);
   [normalFace, waveFace, surpriseFace].forEach((t) => {
     t.flipY = false;

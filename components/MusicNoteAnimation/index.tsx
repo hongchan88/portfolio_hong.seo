@@ -9,11 +9,11 @@ import { useSettingStore } from '@store/settingStore';
 export function MusicNoteAnimation() {
   const isMobile = useSettingStore((s) => s.isMobile);
   const textures = [
-    useLoader(TextureLoader, '/music/music_1.png'),
-    useLoader(TextureLoader, '/music/music_2.png'),
-    useLoader(TextureLoader, '/music/music_3.png'),
-    useLoader(TextureLoader, '/music/music_4.png'),
-    useLoader(TextureLoader, '/music/music_5.png'),
+    useLoader(TextureLoader, '/music/music_1.webp'),
+    useLoader(TextureLoader, '/music/music_2.webp'),
+    useLoader(TextureLoader, '/music/music_3.webp'),
+    useLoader(TextureLoader, '/music/music_4.webp'),
+    useLoader(TextureLoader, '/music/music_5.webp'),
   ];
 
   const meshRef = useRef<THREE.Mesh>(null);
