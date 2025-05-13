@@ -14,6 +14,7 @@ export default function AudioElements() {
         src='/sounds/lazy_sunday.mp3'
         loop
         autoPlay
+        preload='none'
       />
       {/* <audio
         ref={(el) => {
@@ -23,6 +24,7 @@ export default function AudioElements() {
         src='/sounds/woosh.mp3'
       /> */}
       <audio
+        preload='none'
         ref={(el) => {
           if (el && getAudioRefs['stage2Start'] !== el)
             setAudioRef('stage2Start', el);
@@ -30,6 +32,7 @@ export default function AudioElements() {
         src='/sounds/transition.mp3'
       />
       <audio
+        preload='none'
         ref={(el) => {
           if (el && getAudioRefs['stage2Bubble'] !== el)
             setAudioRef('stage2Bubble', el);
@@ -37,6 +40,7 @@ export default function AudioElements() {
         src='/sounds/bubble.mp3'
       />
       <audio
+        preload='none'
         ref={(el) => {
           if (el && getAudioRefs['stage2BGLab'] !== el)
             setAudioRef('stage2BGLab', el);
@@ -46,12 +50,14 @@ export default function AudioElements() {
         autoPlay
       />
       <audio
+        preload='none'
         ref={(el) => {
           if (el && getAudioRefs['splash'] !== el) setAudioRef('splash', el);
         }}
         src='/sounds/splash.mp3'
       />
       <audio
+        preload='none'
         ref={(el) => {
           if (el && getAudioRefs['clickingSound'] !== el)
             setAudioRef('clickingSound', el);
@@ -59,6 +65,7 @@ export default function AudioElements() {
         src='/sounds/click.mp3'
       />
       <audio
+        preload='none'
         ref={(el) => {
           if (el && getAudioRefs['clickMenuAudio'] !== el)
             setAudioRef('clickMenuAudio', el);
@@ -66,6 +73,7 @@ export default function AudioElements() {
         src='/sounds/menu.wav'
       />
       <audio
+        preload='none'
         ref={(el) => {
           if (el && getAudioRefs['typingAudio'] !== el)
             setAudioRef('typingAudio', el);
@@ -73,6 +81,7 @@ export default function AudioElements() {
         src='/sounds/typing4.mp3'
       />
       <audio
+        preload='none'
         ref={(el) => {
           if (el && getAudioRefs['scrollAudio'] !== el)
             setAudioRef('scrollAudio', el);

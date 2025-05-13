@@ -27,7 +27,7 @@ export const projectsData: Project[] = [
   {
     timelineYear: '2025',
     title: 'Portfolio',
-    imgUrl: ['projects/2025-2.webp', 'projects/2025-1.webp'],
+    imgUrl: ['/projects/2025-2.webp', '/projects/2025-1.webp'],
     live: 'https://portfolio-hong-seo.vercel.app/',
     description: (
       <div>
@@ -54,7 +54,7 @@ export const projectsData: Project[] = [
   {
     timelineYear: '2025',
     title: 'Craftify',
-    imgUrl: ['projects/craftify-1.webp', 'projects/craftify-2.webp'],
+    imgUrl: ['/projects/craftify-1.webp', '/projects/craftify-2.webp'],
     live: 'https://pdf-creator-tool-kit.vercel.app/',
     description: (
       <div>
@@ -168,12 +168,12 @@ export const projectsData: Project[] = [
       </div>
     ),
     imgUrl: [
-      'projects/2024-4.webp',
-      'projects/2024-3.webp',
-      'projects/2024-1.webp',
-      'projects/2024-2.webp',
-      'projects/commit-1.webp',
-      'projects/leetcode-1.webp',
+      '/projects/2024-4.webp',
+      '/projects/2024-3.webp',
+      '/projects/2024-1.webp',
+      '/projects/2024-2.webp',
+      '/projects/commit-1.webp',
+      '/projects/leetcode-1.webp',
     ],
     stacks: [
       'javascript',
@@ -193,7 +193,7 @@ export const projectsData: Project[] = [
   {
     title: 'Figma Plugin',
     timelineYear: '2024',
-    imgUrl: ['projects/plugin-1.webp'],
+    imgUrl: ['/projects/plugin-1.webp'],
     description: (
       <div className='mt-6'>
         <h3 className='font-semibold mb-1'>Figma Plugin</h3>
@@ -392,10 +392,7 @@ export const stackImages = {
     url: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/netlify/netlify-original.svg',
     desc: 'Netlify',
   },
-  cloudinary: {
-    url: 'https://res.cloudinary.com/cloudinary-marketing/image/upload/v1599098500/creative_source/Logo/Cloud%20Glyph/cloudinary_cloud_glyph_blue_png.png',
-    desc: 'Cloudinary',
-  },
+
   apollo: {
     url: 'https://www.vectorlogo.zone/logos/apollographql/apollographql-icon.svg',
     desc: 'Apollo',

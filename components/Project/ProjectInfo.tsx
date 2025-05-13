@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getStackImg } from '../../app/utils/getStackImage';
+import Image from 'next/image';
 interface ProjectInfoProps {
   stacks: string[];
   git?: string;
@@ -32,11 +33,14 @@ const ProjectInfo = ({ stacks }: ProjectInfoProps) => {
                   {isHovered ? (
                     <p className='text-sm text-center'>{stackInfo.desc}</p>
                   ) : (
-                    <img
+                    <Image
+                      width={56}
+                      height={56}
                       src={stackInfo.url}
                       title={stackInfo.desc}
                       alt={stackInfo.desc}
-                      className='h-full w-full object-contain'
+                      className='object-contain'
+                      loading='lazy'
                     />
                   )}
                 </div>

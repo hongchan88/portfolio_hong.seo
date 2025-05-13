@@ -347,7 +347,7 @@ const Hero: FC<HeroProps> = ({}) => {
           </div>
           <div
             ref={leftText}
-            className='absolute font-bold top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'
+            className='absolute top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'
           >
             <div className='flex flex-col gap-5'>
               <p className='font-rubik font-bold md:text-5xl md:leading-normal text-2xl leading-relaxed'>

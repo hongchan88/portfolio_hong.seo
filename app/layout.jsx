@@ -17,7 +17,7 @@ const spaceMono = Space_Mono({
 });
 const rubik = Rubik({
   subsets: ['latin'],
-  weight: ['400', '700'], // or ['300', '400', '500', '700', etc.] if needed
+  weight: ['700'], // or ['300', '400', '500', '700', etc.] if needed
   variable: '--font-rubik',
   display: 'swap',
 });

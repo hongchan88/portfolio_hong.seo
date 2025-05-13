@@ -7,7 +7,6 @@ import Projects from '../components/Projects';
 import Hero from 'components/Hero';
 import Footer from 'components/Footer';
 import HydrationLoading from 'components/HydrationLoading';
-import { useCameraStore } from '@store/cameraStore';
 export default function App() {
   const [isHydrated, setIsHydrated] = useState(false);
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
