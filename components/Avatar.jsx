@@ -134,7 +134,7 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
   useEffect(() => {
     if (!actions || !groupRef.current) return;
 
-    const bakedAction = actions['baked_final'];
+    const bakedAction = actions['baked_final']; // falldown, wave animation
     const typingAction = actions['typing3'];
     const nextSectionAction = actions['avatarModel'];
 
@@ -193,6 +193,8 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
     /* stage‑change logic --------------------------------------------- */
     if (prevStage === 1 && currentStage === 0) {
       playNextSectionReverse();
+      faceMesh.material = new THREE.MeshBasicMaterial({ map: normalFace });
+      faceMesh.material.needsUpdate = true;
     } else if (currentStage === 0 && isLoadingDone) {
       playInitialSequence();
       originalMaterials.current.set('body', bodyMesh.material.clone());
@@ -228,26 +230,36 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
       lastIsScrolling.current = inRange;
     }
   };
+  const lastFaceTypeRef = useRef('');
   const updateFaceTexture = () => {
     const action = actions?.['baked_final'];
-    if (!action) return;
+    if (!action || action.paused) return;
+
     const frame = Math.floor(action.time * 30);
     const useWave = frame >= 41 && frame <= 67;
+
+    const newFaceType = useWave ? 'wave' : 'normal';
+    if (lastFaceTypeRef.current === newFaceType) return;
+
+    lastFaceTypeRef.current = newFaceType;
+
     const map = useWave ? waveFace : normalFace;
     faceMesh.material = new THREE.MeshBasicMaterial({ map });
     faceMesh.material.needsUpdate = true;
   };
 
-  const frameCount = useRef(0);
   const lastIsScrolling = useRef(false);
-
-  useFrame(() => {
+  const lastUpdateRef = useRef(0);
+  useFrame(({ clock }) => {
     if (currentStage !== 0 || !isLoadingDone) return;
 
-    frameCount.current++;
-    if (frameCount.current % 2 === 0) {
-      calculateScrolling();
+    const now = clock.getElapsedTime();
+    if (now < 5) {
       updateFaceTexture();
+    } else if (now - lastUpdateRef.current > 1) {
+      // every 0.5 frame it updates. to increase performance less laggy
+      lastUpdateRef.current = now;
+      calculateScrolling();
     }
   });
 
