@@ -34,8 +34,13 @@ export default function App() {
         <Hero />
 
         {/* Normal scrolling content (Projects) */}
-        <Projects />
-        <Footer />
+        {isLoadingDone ? (
+          <>
+            <Projects />
+
+            <Footer />
+          </>
+        ) : null}
       </main>
     </>
   );
