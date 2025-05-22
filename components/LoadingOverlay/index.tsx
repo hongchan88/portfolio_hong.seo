@@ -40,7 +40,7 @@ export default function LoadingOverlay({}) {
 
       const timeout = setTimeout(() => {
         setIsLoadingDone(true);
-      }, 600); // wait until animation finishes
+      }, 1500); // wait until animation finishes
 
       return () => clearTimeout(timeout);
     }
@@ -52,7 +52,7 @@ export default function LoadingOverlay({}) {
     <div className='fixed inset-0 h-full w-full bg-greenYellowGradient z-[9999] flex flex-col items-center justify-center pointer-events-none'>
       <div
         ref={imageRefWrapper}
-        className='relative w-56 h-56 mb-4 overflow-hidden '
+        className='relative w-56 h-56 mb-4 overflow-hidden animate-subtlePulse '
       >
         {/* Base image (desaturated/gray) */}
         <Image

@@ -251,7 +251,7 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
   const lastIsScrolling = useRef(false);
   const lastUpdateRef = useRef(0);
   useFrame(({ clock }) => {
-    if (currentStage !== 0 || !isLoadingDone) return;
+    if (currentStage !== 0) return; // useFrame still count for buffer loading 1.5s for face change
 
     const now = clock.getElapsedTime();
     if (now < 5) {
