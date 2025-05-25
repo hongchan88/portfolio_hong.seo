@@ -20,10 +20,8 @@ export default function App() {
   }, []);
   return (
     <>
-      {/* Show HydrationLoading only before hydration */}
       {!isHydrated && <HydrationLoading />}
 
-      {/* Show LoadingOverlay only after hydration and before loading done */}
       {isHydrated && !isLoadingDone && <LoadingOverlay />}
       <AudioGroup />
       <main
@@ -33,7 +31,6 @@ export default function App() {
       >
         <Hero />
 
-        {/* Normal scrolling content (Projects) */}
         {isLoadingDone ? (
           <>
             <Projects />
