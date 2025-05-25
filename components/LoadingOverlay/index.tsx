@@ -18,7 +18,6 @@ export default function LoadingOverlay({}) {
       setMaxProgress(progress); // grow only
     }
 
-    // ✅ Play animation ONCE when fully loaded
     if (!active && progress === 100) {
       const tl = gsap.timeline();
       tl.to(imageRef.current, {
@@ -40,7 +39,7 @@ export default function LoadingOverlay({}) {
 
       const timeout = setTimeout(() => {
         setIsLoadingDone(true);
-      }, 1500); // wait until animation finishes
+      }, 1500);
 
       return () => clearTimeout(timeout);
     }

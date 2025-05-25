@@ -43,7 +43,6 @@ export default function ModelViewer({}) {
   return (
     <>
       <div className='w-full h-full'>
-        {/* ✅ Background Image (behind the canvas) */}
         <div
           style={{
             position: 'absolute',
