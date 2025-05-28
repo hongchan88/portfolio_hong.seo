@@ -33,7 +33,6 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
   });
   const { scene, materials } = gltf;
   const isScrolling = useSettingStore((s) => s.isScrolling);
-  // ✅ Load textures once using useTexture
   const [wallShadowTex, groundShadowTex] = useTexture([
     '/models/wallShadow_transparent.webp',
     '/models/groundShadow_transparent.webp',
