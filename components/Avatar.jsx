@@ -247,7 +247,9 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
     faceMesh.material = new THREE.MeshBasicMaterial({ map });
     faceMesh.material.needsUpdate = true;
   };
-
+  useEffect(() => {
+    updateFaceTexture(); // update face as soon as land to fix black face issue.
+  }, []);
   const lastIsScrolling = useRef(false);
   const lastUpdateRef = useRef(0);
   useFrame(({ clock }) => {

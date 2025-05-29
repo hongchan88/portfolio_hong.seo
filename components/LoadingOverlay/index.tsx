@@ -39,7 +39,7 @@ export default function LoadingOverlay({}) {
 
       const timeout = setTimeout(() => {
         setIsLoadingDone(true);
-      }, 1500);
+      }, 800);
 
       return () => clearTimeout(timeout);
     }
