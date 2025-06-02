@@ -266,7 +266,7 @@ const Hero: FC<HeroProps> = ({}) => {
       waitForObserver();
 
       return () => {
-        ctx?.revert(); // Only revert if ctx is defined
+        ctx?.revert();
       };
     },
     {
