@@ -13,7 +13,6 @@ export default function AudioElements() {
         }}
         src='/sounds/lazy_sunday.mp3'
         loop
-        autoPlay
         preload='none'
       />
       {/* <audio
@@ -47,7 +46,6 @@ export default function AudioElements() {
         }}
         src='/sounds/lab_bg.mp3'
         loop
-        autoPlay
       />
       <audio
         preload='none'
