@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode } from "react";
 
 type Project = {
   timelineYear: string;
@@ -25,22 +25,71 @@ export const projectsData: Project[] = [
   // },
 
   {
-    timelineYear: '2025',
-    title: 'Portfolio',
-    imgUrl: ['/projects/2025-2.webp', '/projects/2025-1.webp'],
-    live: 'https://portfolio-hong-seo.vercel.app/',
+    timelineYear: "2025",
+    title: "CoSnap",
+    imgUrl: ["/projects/2025-cosnap.webp", "/projects/2025-cosnap2.webp"],
+    live: "https://co-snap.vercel.app/",
     description: (
       <div>
-        <h3 className='font-semibold mb-1'>Personal Portfolio Website</h3>
-        <ul className='list-disc list-inside ml-4 space-y-1'>
+        <h3 className="font-semibold mb-1">
+          Travel Snapshot Exchange Platform
+        </h3>
+        <ul className="list-disc list-inside ml-4 space-y-1">
+          <li>
+            Map-driven platform where travelers connect by matching destinations
+            and travel dates.
+          </li>
+          <li>
+            Implemented <strong>Airbnb-style map search</strong> with real-time
+            filtering based on map bounds, zoom level, and viewport movement.
+          </li>
+          <li>
+            Users drop <strong>route flags</strong> and send meet-up requests to
+            coordinate photo sessions and connect with fellow travelers.
+          </li>
+          <li>
+            Tech stack: <strong>React Router</strong>, <strong>Supabase</strong>{" "}
+            (auth & storage),
+            <strong>TailwindCSS</strong>, <strong>Leaflet</strong>.
+          </li>
+          <li>
+            Shipped rapidly using modular patterns and AI-assisted workflows (
+            <strong>Claude Code</strong>, <strong>Codex</strong>,{" "}
+            <strong>Antigravity</strong>).
+          </li>
+        </ul>
+      </div>
+    ),
+    stacks: [
+      "antigravity",
+      "claude code",
+      "codex",
+      "leaflet",
+      "react",
+      "supabase",
+      "tailwind",
+      "vercel",
+      "typescript",
+    ],
+    git: "https://github.com/hongchan88/CoSnap",
+  },
+  {
+    timelineYear: "2025",
+    title: "Portfolio",
+    imgUrl: ["/projects/2025-2.webp", "/projects/2025-1.webp"],
+    live: "https://portfolio-hong-seo.vercel.app/",
+    description: (
+      <div>
+        <h3 className="font-semibold mb-1">Personal Portfolio Website</h3>
+        <ul className="list-disc list-inside ml-4 space-y-1">
           <li>Showcases personal projects and technical skills</li>
           <li>
             Built with <strong>Next.js</strong>, <strong>TypeScript</strong>,
             and <strong>Tailwind CSS</strong> for a responsive design
           </li>
           <li>
-            Integrated <strong>3D animation</strong> using{' '}
-            <strong>Blender</strong>, <strong>Three.js</strong>, and{' '}
+            Integrated <strong>3D animation</strong> using{" "}
+            <strong>Blender</strong>, <strong>Three.js</strong>, and{" "}
             <strong>GSAP</strong> for impressive visual effects
           </li>
           <li>
@@ -49,19 +98,19 @@ export const projectsData: Project[] = [
         </ul>
       </div>
     ),
-    stacks: ['typescript', 'nextjs', 'tailwind', 'blender', '3djs', 'GSAP'],
+    stacks: ["typescript", "nextjs", "tailwind", "blender", "3djs", "GSAP"],
   },
   {
-    timelineYear: '2025',
-    title: 'Craftify',
-    imgUrl: ['/projects/craftify-1.webp', '/projects/craftify-2.webp'],
-    live: 'https://pdf-creator-tool-kit.vercel.app/',
+    timelineYear: "2025",
+    title: "Craftify",
+    imgUrl: ["/projects/craftify-1.webp", "/projects/craftify-2.webp"],
+    live: "https://pdf-creator-tool-kit.vercel.app/",
     description: (
       <div>
-        <h3 className='font-semibold mb-1'>
+        <h3 className="font-semibold mb-1">
           Customizable PDF Workflow Platform
         </h3>
-        <ul className='list-disc list-inside ml-4 space-y-1'>
+        <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Streamlines PDF customization and export for business documents
           </li>
@@ -76,14 +125,14 @@ export const projectsData: Project[] = [
         </ul>
       </div>
     ),
-    stacks: ['typescript', 'nextjs', 'tailwind'],
-    git: 'https://github.com/hongchan88/pdf-creator-tool-kit',
+    stacks: ["typescript", "nextjs", "tailwind"],
+    git: "https://github.com/hongchan88/pdf-creator-tool-kit",
   },
   {
-    title: 'Life as a startup dev ',
-    timelineYear: '2022-current',
+    title: "Life as a startup dev ",
+    timelineYear: "2022-current",
     description: (
-      <div className='mt-6 space-y-6'>
+      <div className="mt-6 space-y-6">
         <div>
           During my time at a startup, I tackled a range of challenges—from
           building new features to debugging and quickly picking up new
@@ -91,27 +140,27 @@ export const projectsData: Project[] = [
         </div>
 
         <div>
-          <h3 className='font-semibold mb-1'>Front-End Development</h3>
+          <h3 className="font-semibold mb-1">Front-End Development</h3>
           <div>
             Built <strong>responsive, component-based UIs</strong>, managed
             state, and integrated APIs to deliver smooth user experiences.
-            Collaborated closely with the design team using{' '}
+            Collaborated closely with the design team using{" "}
             <strong>Figma</strong>.
           </div>
         </div>
 
         <div>
-          <h3 className='font-semibold mb-1'>Internal Toolkit</h3>
+          <h3 className="font-semibold mb-1">Internal Toolkit</h3>
           <div>
             Contributed to building internal tools that streamlined operations,
             including:
-            <ul className='list-disc list-inside mt-2 space-y-1'>
+            <ul className="list-disc list-inside mt-2 space-y-1">
               <li>
                 <strong>QR code</strong> label image generation for label
                 printers
               </li>
               <li>
-                Customizable legal documents and proposal templates with{' '}
+                Customizable legal documents and proposal templates with{" "}
                 <strong>PDF export</strong>
               </li>
               <li>
@@ -122,10 +171,10 @@ export const projectsData: Project[] = [
         </div>
 
         <div>
-          <h3 className='font-semibold mb-1'>Retool, Three.js & Analytics</h3>
+          <h3 className="font-semibold mb-1">Retool, Three.js & Analytics</h3>
           <div>
             I worked across multiple internal and growth-focused initiatives:
-            <ul className='list-disc list-inside mt-2 space-y-1'>
+            <ul className="list-disc list-inside mt-2 space-y-1">
               <li>
                 Built internal tools using <strong>Retool</strong> to streamline
                 operations and reduce manual work
@@ -136,9 +185,9 @@ export const projectsData: Project[] = [
                 visualizations
               </li>
               <li>
-                Collaborated with the growth team to implement{' '}
-                <strong>Segment.io</strong>, integrating it with{' '}
-                <strong>Amplitude</strong>, <strong>GTM</strong>, and{' '}
+                Collaborated with the growth team to implement{" "}
+                <strong>Segment.io</strong>, integrating it with{" "}
+                <strong>Amplitude</strong>, <strong>GTM</strong>, and{" "}
                 <strong>CRM platforms</strong>
               </li>
             </ul>
@@ -146,11 +195,11 @@ export const projectsData: Project[] = [
         </div>
 
         <div>
-          <h3 className='font-semibold mb-1'>Personal Side Projects</h3>
+          <h3 className="font-semibold mb-1">Personal Side Projects</h3>
           <div>
             Even with a packed schedule, I focused on steady progress through
             small, meaningful wins:
-            <ul className='list-disc list-inside mt-2 space-y-1'>
+            <ul className="list-disc list-inside mt-2 space-y-1">
               <li>
                 Maintained regular <strong>GitHub commits</strong> across
                 various projects
@@ -168,37 +217,37 @@ export const projectsData: Project[] = [
       </div>
     ),
     imgUrl: [
-      '/projects/2024-4.webp',
-      '/projects/2024-3.webp',
-      '/projects/2024-1.webp',
-      '/projects/2024-2.webp',
-      '/projects/commit-1.webp',
-      '/projects/leetcode-1.webp',
+      "/projects/2024-4.webp",
+      "/projects/2024-3.webp",
+      "/projects/2024-1.webp",
+      "/projects/2024-2.webp",
+      "/projects/commit-1.webp",
+      "/projects/leetcode-1.webp",
     ],
     stacks: [
-      'javascript',
-      'nextjs',
-      'typescript',
-      'scss',
-      'retool',
-      'segment.io',
-      '3djs',
-      'python',
-      'GSAP',
-      'AWS',
+      "javascript",
+      "nextjs",
+      "typescript",
+      "scss",
+      "retool",
+      "segment.io",
+      "3djs",
+      "python",
+      "GSAP",
+      "AWS",
     ],
-    git: 'https://github.com/hongchan88',
-    leetcode: 'https://leetcode.com/hongchan88/',
+    git: "https://github.com/hongchan88",
+    leetcode: "https://leetcode.com/hongchan88/",
   },
   {
-    title: 'Figma Plugin',
-    timelineYear: '2024',
-    imgUrl: ['/projects/plugin-1.webp'],
+    title: "Figma Plugin",
+    timelineYear: "2024",
+    imgUrl: ["/projects/plugin-1.webp"],
     description: (
-      <div className='mt-6'>
-        <h3 className='font-semibold mb-1'>Figma Plugin</h3>
+      <div className="mt-6">
+        <h3 className="font-semibold mb-1">Figma Plugin</h3>
         <div>
-          <ul className='list-disc list-inside mt-2 space-y-1'>
+          <ul className="list-disc list-inside mt-2 space-y-1">
             <li>
               <strong>Built a bulk text-swap feature</strong> to streamline
               repetitive edits across designs
@@ -211,27 +260,27 @@ export const projectsData: Project[] = [
         </div>
       </div>
     ),
-    stacks: ['typescript', 'scss'],
-    git: '',
-    live: 'https://www.figma.com/community/plugin/1422432392194647189/textswapper',
+    stacks: ["typescript", "scss"],
+    git: "",
+    live: "https://www.figma.com/community/plugin/1422432392194647189/textswapper",
   },
 
   {
-    title: 'Image Resizer App',
-    timelineYear: '2023',
-    imgUrl: ['/projects/ojwrq345s3qrmv4afqt7.webp'],
+    title: "Image Resizer App",
+    timelineYear: "2023",
+    imgUrl: ["/projects/ojwrq345s3qrmv4afqt7.webp"],
     description: (
       <div>
-        <h3 className='font-semibold mb-1'>
+        <h3 className="font-semibold mb-1">
           Image Resizing Tool for Visa Applications
         </h3>
-        <ul className='list-disc list-inside ml-4 space-y-1'>
+        <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Built a full-stack image resizing tool tailored for visa photo
             requirements
           </li>
           <li>
-            Developed using <strong>Next.js</strong> and{' '}
+            Developed using <strong>Next.js</strong> and{" "}
             <strong>Tailwind CSS</strong> for responsive and fast performance
           </li>
           <li>
@@ -245,21 +294,21 @@ export const projectsData: Project[] = [
         </ul>
       </div>
     ),
-    stacks: ['nextjs', 'tailwind', 'sendgrid', 'supabase'],
-    git: 'https://github.com/hongchan88/k-app',
-    live: 'https://kappimageresize.vercel.app/?from=resume',
+    stacks: ["nextjs", "tailwind", "sendgrid", "supabase"],
+    git: "https://github.com/hongchan88/k-app",
+    live: "https://kappimageresize.vercel.app/?from=resume",
   },
   {
-    title: 'Star Wars Movie App',
-    timelineYear: '2022',
-    imgUrl: ['/projects/bqevtrmvfqkocbddby0c.webp'],
+    title: "Star Wars Movie App",
+    timelineYear: "2022",
+    imgUrl: ["/projects/bqevtrmvfqkocbddby0c.webp"],
 
     description: (
       <div>
-        <h3 className='font-semibold mb-1'>Star Wars Movie Search Platform</h3>
-        <ul className='list-disc list-inside ml-4 space-y-1'>
+        <h3 className="font-semibold mb-1">Star Wars Movie Search Platform</h3>
+        <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
-            Built an interactive movie search platform using{' '}
+            Built an interactive movie search platform using{" "}
             <strong>Next.js</strong> and the <strong>Star Wars API</strong>
           </li>
           <li>
@@ -276,20 +325,20 @@ export const projectsData: Project[] = [
         </ul>
       </div>
     ),
-    stacks: ['nextjs', 'scss', 'motionframer', 'vercel'],
-    git: 'https://github.com/hongchan88/star-wars-api',
-    live: 'https://star-wars-api-hong.vercel.app/',
+    stacks: ["nextjs", "scss", "motionframer", "vercel"],
+    git: "https://github.com/hongchan88/star-wars-api",
+    live: "https://star-wars-api-hong.vercel.app/",
   },
   {
-    title: 'Boot Drive Thru ',
-    timelineYear: '2021',
-    link: 'https://boot-drive-thru.netlify.app/',
-    imgUrl: ['/projects/bzrhiuinz3tlqfrovjbg.webp'],
+    title: "Boot Drive Thru ",
+    timelineYear: "2021",
+    link: "https://boot-drive-thru.netlify.app/",
+    imgUrl: ["/projects/bzrhiuinz3tlqfrovjbg.webp"],
 
     description: (
       <div>
-        <h3 className='font-semibold mb-1'>Contactless E-commerce Platform</h3>
-        <ul className='list-disc list-inside ml-4 space-y-1'>
+        <h3 className="font-semibold mb-1">Contactless E-commerce Platform</h3>
+        <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Designed and developed an e-commerce platform inspired by the rise
             of contactless shopping
@@ -305,22 +354,22 @@ export const projectsData: Project[] = [
         </ul>
       </div>
     ),
-    stacks: ['javascript', 'react', 'firebase', 'tailwind', 'netlify'],
-    git: 'https://github.com/hongchan88/driveboot',
-    live: 'https://boot-drive-thru.netlify.app/',
+    stacks: ["javascript", "react", "firebase", "tailwind", "netlify"],
+    git: "https://github.com/hongchan88/driveboot",
+    live: "https://boot-drive-thru.netlify.app/",
   },
   {
-    title: 'Netflix Noogle Search Movie',
-    timelineYear: '2021',
-    link: 'https://netflix-noogle-search-movie.vercel.app/',
-    imgUrl: ['/projects/tqrzdspkhhwyupksruv5.webp'],
+    title: "Netflix Noogle Search Movie",
+    timelineYear: "2021",
+    link: "https://netflix-noogle-search-movie.vercel.app/",
+    imgUrl: ["/projects/tqrzdspkhhwyupksruv5.webp"],
 
     description: (
       <div>
-        <h3 className='font-semibold mb-1'>
+        <h3 className="font-semibold mb-1">
           Netflix-style Movie Search Engine
         </h3>
-        <ul className='list-disc list-inside ml-4 space-y-1'>
+        <ul className="list-disc list-inside ml-4 space-y-1">
           <li>Final project for my Web Development Diploma</li>
           <li>
             Built using <strong>Next.js</strong> and <strong>Supabase</strong>
@@ -333,24 +382,24 @@ export const projectsData: Project[] = [
       </div>
     ),
 
-    stacks: ['nextjs', 'vercel', 'supabase'],
-    git: 'https://github.com/hongchan88/Netflix_Noogle_searchMovie',
-    live: 'https://netflix-noogle-search-movie.vercel.app/',
+    stacks: ["nextjs", "vercel", "supabase"],
+    git: "https://github.com/hongchan88/Netflix_Noogle_searchMovie",
+    live: "https://netflix-noogle-search-movie.vercel.app/",
   },
   {
-    title: 'Simple API Service',
-    timelineYear: '2021',
-    link: 'https://github.com/hongchan88/Simple_API_ExpressJs',
-    imgUrl: ['/projects/fkdoj7cza7aol9nnpqpq.webp'],
+    title: "Simple API Service",
+    timelineYear: "2021",
+    link: "https://github.com/hongchan88/Simple_API_ExpressJs",
+    imgUrl: ["/projects/fkdoj7cza7aol9nnpqpq.webp"],
 
     description: (
       <div>
-        <h3 className='font-semibold mb-1'>
+        <h3 className="font-semibold mb-1">
           RESTful API with Node.js & Express
         </h3>
-        <ul className='list-disc list-inside ml-4 space-y-1'>
+        <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
-            Built a RESTful API using <strong>Node.js</strong> and{' '}
+            Built a RESTful API using <strong>Node.js</strong> and{" "}
             <strong>Express</strong>
           </li>
           <li>
@@ -366,125 +415,145 @@ export const projectsData: Project[] = [
         </ul>
       </div>
     ),
-    stacks: ['nodejs', 'expressjs', 'jest', 'postman'],
-    git: 'https://github.com/hongchan88/Simple_API_ExpressJs',
+    stacks: ["nodejs", "expressjs", "jest", "postman"],
+    git: "https://github.com/hongchan88/Simple_API_ExpressJs",
   },
 ];
 
 export const stackImages = {
   javascript: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
-    desc: 'JavaScript',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+    desc: "JavaScript",
   },
   react: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
-    desc: 'ReactJS',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+    desc: "ReactJS",
   },
   firebase: {
-    url: 'https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/firebase/firebase.png',
-    desc: 'Firebase',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg",
+    desc: "Firebase",
   },
   tailwind: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg',
-    desc: 'Tailwind CSS',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg",
+    desc: "Tailwind CSS",
   },
   netlify: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/netlify/netlify-original.svg',
-    desc: 'Netlify',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/netlify/netlify-original.svg",
+    desc: "Netlify",
   },
 
   apollo: {
-    url: 'https://www.vectorlogo.zone/logos/apollographql/apollographql-icon.svg',
-    desc: 'Apollo',
+    url: "https://www.vectorlogo.zone/logos/apollographql/apollographql-icon.svg",
+    desc: "Apollo",
   },
   graphql: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg',
-    desc: 'GraphQL',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg",
+    desc: "GraphQL",
   },
   prisma: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg',
-    desc: 'Prisma',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/prisma/prisma-original.svg",
+    desc: "Prisma",
   },
   nodejs: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
-    desc: 'NodeJS',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+    desc: "NodeJS",
   },
   expressjs: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original-wordmark.svg',
-    desc: 'Express.js',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original-wordmark.svg",
+    desc: "Express.js",
   },
   jest: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg',
-    desc: 'Jest',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg",
+    desc: "Jest",
   },
   postman: {
-    url: 'https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg',
-    desc: 'POSTMAN',
+    url: "https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg",
+    desc: "POSTMAN",
   },
   nextjs: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original-wordmark.svg',
-    desc: 'NextJS',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original-wordmark.svg",
+    desc: "NextJS",
   },
   neo4j: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/neo4j/neo4j-original-wordmark.svg',
-    desc: 'Neo4j',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/neo4j/neo4j-original-wordmark.svg",
+    desc: "Neo4j",
   },
   vercel: {
-    url: 'https://res.cloudinary.com/dwbsxpk82/image/upload/v1639612757/portfolio/prd7rdrrbtqku95c6igm.svg',
-    desc: 'Vercel',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg",
+    desc: "Vercel",
   },
   scss: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg',
-    desc: 'SASS',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg",
+    desc: "SASS",
   },
   motionframer: {
-    url: 'https://logosandtypes.com/wp-content/uploads/2021/04/Framer-Motion.png',
-    desc: 'Motion Framer',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/framermotion/framermotion-original.svg",
+    desc: "Motion Framer",
   },
   amplify: {
-    url: 'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677286540/portfolio/xpshbpdf2rjayr909ewj.svg',
-    desc: 'Amplify',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg",
+    desc: "AWS Amplify",
   },
   sendgrid: {
-    url: 'https://res.cloudinary.com/dwbsxpk82/image/upload/v1677286641/portfolio/o8nk0yiaqaztzwz7nj4i.jpg',
-    desc: 'SendGrid',
+    url: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/sendgrid.svg",
+    desc: "SendGrid",
   },
   supabase: {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg',
-    desc: 'supabase',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg",
+    desc: "supabase",
   },
 
-  '3djs': {
-    url: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/threejs/threejs-original.svg',
-    desc: 'Three.js',
+  "3djs": {
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/threejs/threejs-original.svg",
+    desc: "Three.js",
   },
   AWS: {
-    url: 'https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-ar21.svg',
-    desc: 'Amazon Web Services',
+    url: "https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-ar21.svg",
+    desc: "Amazon Web Services",
   },
   GSAP: {
-    url: '/projects/logo/gsap.svg',
-    desc: 'GreenSock Animation Platform',
+    url: "/projects/logo/gsap.svg",
+    desc: "GreenSock Animation Platform",
   },
   blender: {
-    url: 'https://www.vectorlogo.zone/logos/blender/blender-ar21.svg',
-    desc: 'Blender',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/blender/blender-original.svg",
+    desc: "Blender",
   },
   python: {
-    url: 'https://cdn.jsdelivr.net/npm/@programming-languages-logos/python@0.0.0/python.svg',
-    desc: 'Python',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+    desc: "Python",
   },
   retool: {
-    url: 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Retool_logo.svg',
-    desc: 'Retool',
+    url: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/retool.svg",
+    desc: "Retool",
   },
-  'segment.io': {
-    url: 'https://www.vectorlogo.zone/logos/segment/segment-ar21.svg',
-    desc: 'Segment.io',
+  "segment.io": {
+    url: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/segment.svg",
+    desc: "Segment.io",
   },
   typescript: {
-    url: 'https://cdn.jsdelivr.net/npm/programming-languages-logos@0.0.3/src/typescript/typescript.svg',
-    desc: 'TypeScript',
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+    desc: "TypeScript",
+  },
+  leaflet: {
+    url: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/openstreetmap.svg",
+    desc: "Leaflet",
+  },
+  "claude code": {
+    url: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/anthropic.svg",
+    desc: "Claude Code",
+  },
+  codex: {
+    url: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/openai.svg",
+    desc: "OpenAI Codex",
+  },
+  antigravity: {
+    url: "/projects/logo/antigravity.png",
+    desc: "Anti-Gravity",
+  },
+  figma: {
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+    desc: "Figma",
   },
 };
 
