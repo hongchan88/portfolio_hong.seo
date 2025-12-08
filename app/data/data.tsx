@@ -65,7 +65,7 @@ export const projectsData: Project[] = [
       "claude code",
       "codex",
       "leaflet",
-      "react",
+      "reactrouter",
       "supabase",
       "tailwind",
       "vercel",
@@ -554,6 +554,10 @@ export const stackImages = {
   figma: {
     url: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
     desc: "Figma",
+  },
+  reactrouter: {
+    url: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/reactrouter/reactrouter-original.svg",
+    desc: "React Router",
   },
 };
 
