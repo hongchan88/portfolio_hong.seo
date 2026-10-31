@@ -1,28 +1,31 @@
+import Link from 'next/link';
+
 export default function Footer() {
   return (
-    <div className='bg-[#F1F1F1] dark:bg-gray-900'>
+    <footer className='bg-[#F1F1F1] dark:bg-gray-900'>
       <div className='max-w-6xl  mx-auto px-4 py-10 md:py-20'>
+        <Link href='/contact' className='inline-block text-xl font-bold underline mb-6'>Contact</Link>
         <div className='h-0.5 w-full bg-white dark:bg-gray-700'></div>
         <div className='flex flex-col space-y-4 md:space-y-0 md:flex-row justify-between md:items-center mt-8'>
           <div>
             <p className='flex items-end'>
               Built with
-              <a href='https://nextjs.org' target='__blank'>
-                <img
+              <a aria-label='Built with Next.js' href='https://nextjs.org' target='_blank' rel='noopener noreferrer'>
+                <img alt=""
                   className='w-8 h-8 mx-2'
                   src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg'
                 />
               </a>
-              <a href='https://tailwindcss.com' target='__blank'>
-                <img
+              <a aria-label='Built with Tailwind CSS' href='https://tailwindcss.com' target='_blank' rel='noopener noreferrer'>
+                <img alt=""
                   className='w-8 h-8 mx-2'
                   src='https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg'
                 />
               </a>
               and{' '}
               <a
-                href='https://www.youtube.com/watch?v=m3DZsBw5bnE'
-                target='__blank'
+                aria-label='Music inspiration on YouTube' href='https://www.youtube.com/watch?v=m3DZsBw5bnE'
+                target='_blank' rel='noopener noreferrer'
               >
                 &nbsp; 💛
               </a>
@@ -43,8 +46,8 @@ export default function Footer() {
           </div>
           <div className='space-x-4 flex flex-row items-center'>
             <a
-              target='_blank'
-              href='https://www.linkedin.com/in/hong-seo/'
+              target='_blank' rel='noopener noreferrer'
+              aria-label='Hong Seo on LinkedIn' href='https://www.linkedin.com/in/hong-seo/'
               className='text-base font-normal text-gray-600 dark:text-gray-300'
             >
               <svg
@@ -61,6 +64,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 }

@@ -42,18 +42,20 @@ export default function CameraController() {
         },
       }
     );
-  }, [camPos]);
+    return () => tl.kill();
+  }, [camPos, camera]);
   useEffect(() => {
     // animate zoom / FOV
     if (camera instanceof THREE.PerspectiveCamera) {
-      gsap.to(camera, {
+      const tween = gsap.to(camera, {
         fov: isMobile ? mobileZoom : zoom,
         duration: 2,
         ease: 'power2.out',
         onUpdate: () => camera.updateProjectionMatrix(),
       });
+      return () => tween.kill();
     }
-  }, [zoom, mobileZoom]); // ensure re-runs
+  }, [zoom, mobileZoom, isMobile, camera]); // ensure re-runs
 
   return null;
 }

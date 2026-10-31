@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import { useAnimations, useTexture } from '@react-three/drei';
+import { FACE_TEXTURES, DRACO_DECODER_PATH, KTX2_TRANSCODER_PATH } from './sceneAssets';
 import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useSettingStore } from '../app/stores/settingStore';
@@ -30,11 +31,11 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
 
   const gltf = useLoader(GLTFLoader, url, (loader) => {
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    dracoLoader.setDecoderPath(DRACO_DECODER_PATH);
     dracoLoader.setDecoderConfig({ type: 'wasm' });
 
     const ktx2Loader = new KTX2Loader();
-    ktx2Loader.setTranscoderPath('/ktx2/');
+    ktx2Loader.setTranscoderPath(KTX2_TRANSCODER_PATH);
     ktx2Loader.detectSupport(renderer); // 🚨 Must be called before load
 
     loader.setDRACOLoader(dracoLoader);
@@ -43,11 +44,7 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
   const { scene, animations } = gltf;
   const { actions } = useAnimations(animations, groupRef);
 
-  const [normalFace, waveFace, surpriseFace] = useTexture([
-    '/face/normal8.webp',
-    '/face/wave7.webp',
-    '/face/surprise4.webp',
-  ]);
+  const [normalFace, waveFace, surpriseFace] = useTexture(FACE_TEXTURES);
   [normalFace, waveFace, surpriseFace].forEach((t) => {
     t.flipY = false;
     t.colorSpace = THREE.SRGBColorSpace;
@@ -63,6 +60,30 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
 
   // keep originals so we can restore them later
   const originalMaterials = useRef(new Map());
+  const faceMaterials = useMemo(
+    () => ({
+      normal: new THREE.MeshBasicMaterial({ map: normalFace }),
+      wave: new THREE.MeshBasicMaterial({ map: waveFace }),
+      surprise: new THREE.MeshBasicMaterial({ map: surpriseFace }),
+      wire: new THREE.MeshBasicMaterial({ color: '#ffaa00', wireframe: true }),
+    }),
+    [normalFace, waveFace, surpriseFace]
+  );
+  const lastFaceTypeRef = useRef('');
+  useLayoutEffect(() => {
+    const originals = originalMaterials.current;
+    originals.set('body', bodyMesh.material);
+    originals.set('face', faceMesh.material);
+    // Set the face before the first draw, including Strict Mode effect replay.
+    faceMesh.material = faceMaterials.normal;
+    lastFaceTypeRef.current = 'normal';
+    return () => {
+      bodyMesh.material = originals.get('body');
+      faceMesh.material = originals.get('face');
+      lastFaceTypeRef.current = '';
+      Object.values(faceMaterials).forEach((material) => material.dispose());
+    };
+  }, [bodyMesh, faceMesh, faceMaterials]);
 
   /** ------------------------------------------------------------------
    * CONSTANTS
@@ -112,7 +133,15 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
       typingAudio?.pause();
       scrollAudio?.pause();
     }
-  }, [isScrolling, currentStage, audioToggleState]);
+  }, [
+    isScrolling,
+    currentStage,
+    audioToggleState,
+    isTypingRunning,
+    typingAudio,
+    scrollAudio,
+    clickingSound,
+  ]);
 
   const typingFps = useMemo(() => {
     const typingClip = actions?.['typing3']?.getClip();
@@ -124,9 +153,6 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
   /** ------------------------------------------------------------------
    * TYPING STATUS (for other UI parts)
    * ------------------------------------------------------------------ */
-  useEffect(() => {
-    setIsTypingRunning(actions?.['typing3']?.isRunning() ?? false);
-  }, [actions?.['typing3']?.isRunning()]);
 
   /** ------------------------------------------------------------------
    * ANIMATION STATE MACHINE (baked → typing → nextSection etc.)
@@ -145,13 +171,16 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
     const cleanupFns = [];
 
     const playInitialSequence = () => {
+      setIsTypingRunning(false);
       bakedAction.reset().setLoop(THREE.LoopOnce, 1);
       bakedAction.clampWhenFinished = true;
       bakedAction.play();
 
-      const onFinish = () => {
+      const onFinish = (event) => {
+        if (event.action !== bakedAction) return;
         typingAction.syncWith(bakedAction);
         typingAction.reset().setLoop(THREE.LoopRepeat).play();
+        setIsTypingRunning(true);
       };
 
       mixer.addEventListener('finished', onFinish);
@@ -161,6 +190,7 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
     const playNextSectionOnce = () => {
       bakedAction.stop();
       typingAction.stop();
+      setIsTypingRunning(false);
 
       nextSectionAction.reset();
       nextSectionAction.setLoop(THREE.LoopOnce, 1);
@@ -168,7 +198,9 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
       nextSectionAction.timeScale = 1.5;
       nextSectionAction.play();
 
-      const holdLast = () => (nextSectionAction.paused = true);
+      const holdLast = (event) => {
+        if (event.action === nextSectionAction) nextSectionAction.paused = true;
+      };
       mixer.addEventListener('finished', holdLast);
       cleanupFns.push(() => mixer.removeEventListener('finished', holdLast));
     };
@@ -182,9 +214,11 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
       nextSectionAction.paused = false;
       nextSectionAction.play();
 
-      const holdStart = () => {
+      const holdStart = (event) => {
+        if (event.action !== nextSectionAction) return;
         nextSectionAction.paused = true;
         typingAction.play();
+        setIsTypingRunning(true);
       };
       mixer.addEventListener('finished', holdStart);
       cleanupFns.push(() => mixer.removeEventListener('finished', holdStart));
@@ -193,20 +227,21 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
     /* stage‑change logic --------------------------------------------- */
     if (prevStage === 1 && currentStage === 0) {
       playNextSectionReverse();
-      faceMesh.material = new THREE.MeshBasicMaterial({ map: normalFace });
+      faceMesh.material = faceMaterials.normal;
       faceMesh.material.needsUpdate = true;
     } else if (currentStage === 0 && isLoadingDone) {
       playInitialSequence();
-      originalMaterials.current.set('body', bodyMesh.material.clone());
-      originalMaterials.current.set('face', faceMesh.material.clone());
     } else if (prevStage === 0 && currentStage === 1) {
-      faceMesh.material = new THREE.MeshBasicMaterial({ map: surpriseFace });
+      faceMesh.material = faceMaterials.surprise;
       faceMesh.material.needsUpdate = true;
       playNextSectionOnce();
     }
 
     setPrevStage(currentStage);
-    return () => cleanupFns.forEach((fn) => fn());
+    return () => {
+      cleanupFns.forEach((fn) => fn());
+      setIsTypingRunning(false);
+    };
   }, [currentStage, isLoadingDone]);
 
   /** ------------------------------------------------------------------
@@ -230,10 +265,9 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
       lastIsScrolling.current = inRange;
     }
   };
-  const lastFaceTypeRef = useRef('');
   const updateFaceTexture = () => {
     const action = actions?.['baked_final'];
-    if (!action || action.paused) return;
+    if (!action || !action.isRunning()) return;
 
     const frame = Math.floor(action.time * 30);
     const useWave = frame >= 41 && frame <= 67;
@@ -243,23 +277,19 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
 
     lastFaceTypeRef.current = newFaceType;
 
-    const map = useWave ? waveFace : normalFace;
-    faceMesh.material = new THREE.MeshBasicMaterial({ map });
+    faceMesh.material = useWave ? faceMaterials.wave : faceMaterials.normal;
     faceMesh.material.needsUpdate = true;
   };
-  useEffect(() => {
-    updateFaceTexture(); // update face as soon as land to fix black face issue.
-  }, []);
   const lastIsScrolling = useRef(false);
   const lastUpdateRef = useRef(0);
   useFrame(({ clock }) => {
-    if (currentStage !== 0) return; // useFrame still count for buffer loading 1.5s for face change
+    if (currentStage !== 0) return;
 
+    // Intro timing belongs to the clip, not the canvas's asset-loading clock.
+    updateFaceTexture();
     const now = clock.getElapsedTime();
-    if (now < 5) {
-      updateFaceTexture();
-    } else if (now - lastUpdateRef.current > 1) {
-      // every 0.5 frame it updates. to increase performance less laggy
+    if (now - lastUpdateRef.current > 1) {
+      // Throttle typing/scrolling checks independently of face animation.
       lastUpdateRef.current = now;
       calculateScrolling();
     }
@@ -267,18 +297,13 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
 
   useEffect(() => {
     if (currentStage === 1) {
+      let flickerTimer;
       const flicker = () => {
-        bodyMesh.material = new THREE.MeshBasicMaterial({
-          color: '#ffaa00',
-          wireframe: true,
-        });
-        faceMesh.material = new THREE.MeshBasicMaterial({
-          color: '#ffaa00',
-          wireframe: true,
-        });
+        bodyMesh.material = faceMaterials.wire;
+        faceMesh.material = faceMaterials.wire;
 
         let count = 0;
-        const flickerTimer = setInterval(() => {
+        flickerTimer = setInterval(() => {
           const visible = count % 2 === 0;
           faceMesh.visible = visible;
           bodyMesh.visible = visible;
@@ -293,12 +318,15 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
 
       const timer = setTimeout(flicker, 1000); // wait 1 sec, then flicker
       return () => {
-        clearTimeout(timer); // cancel if unmounted or stage changes
+        clearTimeout(timer);
+        clearInterval(flickerTimer);
+        faceMesh.visible = true;
+        bodyMesh.visible = true;
       };
     } else {
       function restoreOriginalMaterials() {
         if (bodyMesh && originalMaterials.current.has('body')) {
-          bodyMesh.material = originalMaterials.current.get('body').clone();
+          bodyMesh.material = originalMaterials.current.get('body');
           bodyMesh.material.needsUpdate = true;
         }
       }

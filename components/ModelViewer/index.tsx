@@ -1,6 +1,6 @@
 'use client';
-import { Suspense, useEffect, useRef } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { Canvas } from '@react-three/fiber';
 // Import your existing components
 import Avatar from '../Avatar';
 import { Model } from '../EnvironmentModel';
@@ -8,16 +8,29 @@ import TiltedScene from '../TiltScene/TiltedScene';
 import CameraController from '../CameraController/CameraController';
 import { useSettingStore } from '../../app/stores/settingStore';
 import { MusicNoteAnimation } from '../MusicNoteAnimation';
-import * as THREE from 'three';
 
-const ENVIRONMENT_MODEL_GLB = '/models/envModel.glb';
-const AVATAR_MODEL_GLB = '/models/avataModel.glb';
+import { ENVIRONMENT_MODEL_GLB, AVATAR_MODEL_GLB } from '../sceneAssets';
 
 export default function ModelViewer({}) {
   const currentStage = useSettingStore((s) => s.currentStage);
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
   const isMobile = useSettingStore((s) => s.isMobile);
   const canvasRef = useRef(null);
+  const [supported, setSupported] = useState(false);
+  useEffect(() => {
+    const probe = document.createElement('canvas');
+    try {
+      const context = probe.getContext('webgl2');
+      if (!context) {
+        useSettingStore.getState().enterBasicMode('WebGL unavailable');
+        return;
+      }
+      context.getExtension('WEBGL_lose_context')?.loseContext();
+      setSupported(true);
+    } catch {
+      useSettingStore.getState().enterBasicMode('WebGL unavailable');
+    }
+  }, []);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -25,7 +38,7 @@ export default function ModelViewer({}) {
     const handleLost = (e) => {
       e.preventDefault();
       console.warn('WebGL context lost');
-      window.location.reload(); // refreshes the page
+      useSettingStore.getState().enterBasicMode('WebGL context lost');
     };
     const handleRestore = () => {
       console.log('WebGL context restored');
@@ -38,8 +51,9 @@ export default function ModelViewer({}) {
       canvas.removeEventListener('webglcontextlost', handleLost);
       canvas.removeEventListener('webglcontextrestored', handleRestore);
     };
-  }, []);
+  }, [supported]);
 
+  if (!supported) return null;
   return (
     <>
       <div className='w-full h-full'>
@@ -83,6 +97,7 @@ export default function ModelViewer({}) {
         >
           <Suspense fallback={null}>
             <Canvas
+              fallback={<p>3D rendering unavailable. Use the basic version.</p>}
               onTouchStart={(e) => e.preventDefault()}
               ref={canvasRef}
               className={`${
@@ -98,6 +113,7 @@ export default function ModelViewer({}) {
               // onPointerOver={handlePointerOver}
               // onPointerOut={handlePointerOut}
             >
+              <Suspense fallback={null}>
               <TiltedScene>
                 <CameraController />
                 <MusicNoteAnimation />
@@ -138,6 +154,8 @@ export default function ModelViewer({}) {
                   }}
                 /> */}
               </TiltedScene>
+              <SceneReady />
+              </Suspense>
             </Canvas>
           </Suspense>
         </div>
@@ -146,31 +164,11 @@ export default function ModelViewer({}) {
   );
 }
 
-// ✅ Tilt the Entire 3D Scene When Moving Mouse Over It
-function CameraViewSaver() {
-  const { camera } = useThree();
 
-  const saveCameraView = () => {
-    camera.updateMatrixWorld(); // Ensure matrices are current
-    const position = camera.position.toArray();
-    const direction = camera.getWorldDirection(new THREE.Vector3()).toArray();
-
-    console.log('Saved view:', { position, direction });
-
-    // You can save to Zustand, localStorage, or send to backend
-    // Example: useCameraStore.setState({ savedCamera: { position, direction } });
-  };
-
-  // Option 1: Trigger it by keypress for testing
+function SceneReady() {
   useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === 's') {
-        saveCameraView();
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    useSettingStore.getState().setSceneReady(true);
+    return () => useSettingStore.getState().setSceneReady(false);
   }, []);
-
   return null;
 }

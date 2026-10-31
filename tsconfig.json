@@ -1,11 +1,21 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "paths": {
-      "@store/*": ["./app/stores/*"],
-      "@utils/*": ["./app/utils/*"],
-      "@components/*": ["./app/components/*"]
+      "@store/*": [
+        "./app/stores/*"
+      ],
+      "@utils/*": [
+        "./app/utils/*"
+      ],
+      "@components/*": [
+        "./app/components/*"
+      ]
     }, // 이렇게 추가},
     "allowJs": true,
     "skipLibCheck": true,
@@ -25,6 +35,14 @@
     ],
     "target": "ES2017"
   },
-  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    ".next-test/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

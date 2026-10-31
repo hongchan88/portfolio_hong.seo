@@ -1,9 +1,17 @@
+import { useEffect } from 'react';
 import { useAudioStore } from '@store/audioStore';
 
 export default function AudioElements() {
   const setAudioRef = useAudioStore((s) => s.setAudioRef);
   const getAudioRefs = useAudioStore.getState().audioRefs;
 
+  useEffect(() => () => {
+    Object.values(useAudioStore.getState().audioRefs).forEach(audio => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+    useAudioStore.setState({ audioRefs: {} });
+  }, []);
   return (
     <>
       <audio

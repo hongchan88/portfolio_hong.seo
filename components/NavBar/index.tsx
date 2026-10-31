@@ -16,7 +16,6 @@ interface indexProps {
 const NavBar: FC<indexProps> = ({ closeDrawer, currentStage }) => {
   const toggleAudio = useAudioStore((s) => s.toggleAudio);
   const audioToggleState = useAudioStore((s) => s.audioToggleState);
-  const audioRefs = useAudioStore((s) => s.audioRefs);
   const rightDrawerToggle = useSettingStore((s) => s.rightDrawerToggle);
   const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
   const setFirstMenuCamera = useCameraStore((s) => s.setFirstMenuCameraPos);
@@ -36,10 +35,13 @@ const NavBar: FC<indexProps> = ({ closeDrawer, currentStage }) => {
     <div ref={navMainRef} className='fixed top-0 w-full z-30 '>
       <div className='flex w-full justify-between p-10'>
         <div className='w-12 h-12'>
-          <img src='./loading/loading2.webp' />
+          <img src='/loading/loading2.webp' alt='Hong Seo avatar' />
         </div>
         <div className='flex gap-5  '>
-          <div
+          <button
+            type='button'
+            aria-label={audioToggleState ? 'Mute audio' : 'Unmute audio'}
+            aria-pressed={audioToggleState}
             className=' cursor-pointer'
             title='Music from #Uppbeat (free for Creators!):
 https://uppbeat.io/t/hybridas/lazy-sunday
@@ -59,15 +61,20 @@ License code: 6IRKHLAO88BY9C1L'
                 <HiOutlineSpeakerXMark className='text-white text-4xl' />
               )}
             </div>
-          </div>
-          <div
+          </button>
+          <button
+            id='menu-toggle'
+            type='button'
+            aria-label={rightDrawerToggle ? 'Close menu' : 'Open menu'}
+            aria-expanded={rightDrawerToggle}
+            aria-controls='navigation-drawer'
             className=' cursor-pointer transition-transform duration-300 hover:scale-110'
             onClick={() => {
               if (rightDrawerToggle) {
                 closeDrawer();
               } else {
                 if (audioToggleState) {
-                  audioRefs['clickMenuAudio']?.play();
+                  useAudioStore.getState().playAudio('clickMenuAudio');
                 }
                 setRightDrawerToggle(true);
                 if (currentStage === 0) {
@@ -85,7 +92,7 @@ License code: 6IRKHLAO88BY9C1L'
                 <RxCross2 className='text-white text-4xl' />
               )}
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </div>

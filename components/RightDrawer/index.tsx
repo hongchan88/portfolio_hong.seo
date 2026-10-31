@@ -1,5 +1,5 @@
 import gsap from 'gsap';
-import { FC } from 'react';
+import { FC, useEffect, useLayoutEffect } from 'react';
 import { useSettingStore } from '../../app/stores/settingStore';
 import { useCameraStore } from '../../app/stores/cameraStore';
 import { FaLinkedin } from 'react-icons/fa';
@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useGSAP } from '@gsap/react';
 
 interface indexProps {
+  closeDrawer: () => void;
   rightDrawerRef: React.RefObject<HTMLDivElement>;
   leftText: React.RefObject<HTMLDivElement>;
   animatingRef: React.RefObject<Boolean>;
@@ -15,6 +16,7 @@ interface indexProps {
 }
 
 const RightDrawer: FC<indexProps> = ({
+  closeDrawer,
   rightDrawerRef,
   leftText,
   animatingRef,
@@ -28,7 +30,41 @@ const RightDrawer: FC<indexProps> = ({
   const setCameraDefault = useCameraStore((s) => s.setDefault);
   const isMobile = useSettingStore((s) => s.isMobile);
   const setMobileDefault = useCameraStore((s) => s.setMobileDefault);
-  const playBubbleCover = () => {
+  useEffect(() => {
+    if (!rightDrawerToggle) return;
+    const trigger = document.activeElement as HTMLElement;
+    const drawer = rightDrawerRef.current;
+    if (drawer) drawer.scrollTop = 0;
+    drawer
+      ?.querySelector<HTMLButtonElement>('button')
+      ?.focus({ preventScroll: true });
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeDrawer();
+      }
+      if (event.key !== 'Tab' || !drawer) return;
+      const controls = Array.from(
+        drawer.querySelectorAll<HTMLElement>('button:not(:disabled), a[href]')
+      );
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true });
+    };
+  }, [rightDrawerToggle]);
+  const { contextSafe } = useGSAP({ scope: rightDrawerRef });
+  const playBubbleCover = contextSafe(() => {
     const wrapper = document.getElementById('bubbleOverlayWrapper');
     const circle = document.getElementById('bubbleCircle');
 
@@ -62,10 +98,22 @@ const RightDrawer: FC<indexProps> = ({
 
     // Hide wrapper again
     tl.set(wrapper, { opacity: 0, pointerEvents: 'none' });
-  };
+  });
 
-  useGSAP(
+  // Restore original styles only when this owner unmounts.
+  useGSAP(() => {
+    gsap.set(rightDrawerRef.current, { right: '-100%' });
+    gsap.set(leftText.current, { left: '5%' });
+    gsap.set(aboutSectionRef.current, { left: 0 });
+  });
+
+  useLayoutEffect(
     () => {
+      if (
+        !rightDrawerToggle &&
+        !(currentStage === 0 ? leftText.current : aboutSectionRef.current)
+      )
+        return;
       const tl = gsap.timeline({
         defaults: { duration: 1, ease: 'power1.inOut' },
         onComplete: () => {
@@ -100,18 +148,30 @@ const RightDrawer: FC<indexProps> = ({
           '<'
         );
       }
+      // One owner for drawer position and text, including interrupted closes.
+      return () => { tl.kill(); };
     },
-    {
-      dependencies: [currentStage, rightDrawerToggle],
-    }
+    [currentStage, rightDrawerToggle]
   );
   return (
     <div
+      id='navigation-drawer'
+      role='dialog'
+      aria-label='Navigation'
+      aria-modal={rightDrawerToggle ? true : undefined}
+      aria-hidden={!rightDrawerToggle}
+      inert={!rightDrawerToggle}
+      style={{ right: '-100%' }}
       ref={rightDrawerRef}
-      className={`fixed top-0 h-full md:w-80 w-full bg-white z-10 ${'opacity-95'}`}
+      className={`fixed top-0 h-full overflow-y-auto overscroll-contain md:w-80 w-full bg-white z-40 ${'opacity-95'}`}
     >
-      <div className='w-full h-full flex justify-center items-center'>
+      <div className='w-full min-h-full py-6 flex justify-center items-center'>
         <ul className='font-mono font-bold text-2xl flex flex-col gap-10'>
+          <li>
+            <button type='button' aria-label='Close menu' onClick={closeDrawer}>
+              Close ×
+            </button>
+          </li>
           {currentStage === 0 ? (
             <li className='cursor-pointer '>
               <div className='flex items-center gap-5'>
@@ -121,27 +181,30 @@ const RightDrawer: FC<indexProps> = ({
               </div>
             </li>
           ) : (
-            <li
-              onClick={() => {
-                playBubbleCover();
-                setRightDrawerToggle(false);
-                if (isMobile) {
-                  setMobileDefault();
-                } else {
-                  setCameraDefault();
-                }
-                setCurrentStage(0);
-                gsap.to(window, {
-                  duration: 1,
-                  scrollTo: {
-                    y: 0,
-                  },
-                  ease: 'power2.out',
-                });
-              }}
-              className='cursor-pointer'
-            >
-              Main
+            <li>
+              <button
+                type='button'
+                onClick={contextSafe(() => {
+                  playBubbleCover();
+                  setRightDrawerToggle(false);
+                  if (isMobile) {
+                    setMobileDefault();
+                  } else {
+                    setCameraDefault();
+                  }
+                  setCurrentStage(0);
+                  gsap.to(window, {
+                    duration: 1,
+                    scrollTo: {
+                      y: 0,
+                    },
+                    ease: 'power2.out',
+                  });
+                })}
+                className='cursor-pointer'
+              >
+                Main
+              </button>
             </li>
           )}
           {currentStage === 1 ? (
@@ -153,8 +216,37 @@ const RightDrawer: FC<indexProps> = ({
               </div>
             </li>
           ) : (
-            <li
-              onClick={() => {
+            <li>
+              <button
+                type='button'
+                onClick={contextSafe(() => {
+                  playBubbleCover();
+                  setRightDrawerToggle(false);
+                  if (isMobile) {
+                    setMobileDefault();
+                  } else {
+                    setCameraDefault();
+                  }
+                  setCurrentStage(1);
+                  gsap.to(window, {
+                    duration: 1,
+                    scrollTo: {
+                      y: 200,
+                    },
+                    ease: 'power2.out',
+                  });
+                })}
+                className='cursor-pointer'
+              >
+                About me
+              </button>
+            </li>
+          )}
+          <li>
+            <button
+              type='button'
+              onClick={contextSafe(() => {
+                document.body.style.overflow = '';
                 playBubbleCover();
                 setRightDrawerToggle(false);
                 if (isMobile) {
@@ -163,55 +255,41 @@ const RightDrawer: FC<indexProps> = ({
                   setCameraDefault();
                 }
                 setCurrentStage(1);
+                const scrollAmount = window.innerHeight * 2; // 200vh
                 gsap.to(window, {
                   duration: 1,
+                  onComplete: () =>
+                    document
+                      .getElementById('projects-heading')
+                      ?.focus({ preventScroll: true }),
                   scrollTo: {
-                    y: 200,
+                    y: `${
+                      currentStage === 0
+                        ? window.scrollY + scrollAmount + (isMobile ? 500 : 300)
+                        : scrollAmount +
+                          window.scrollY +
+                          (isMobile ? 400 : 300) -
+                          amountOfScrollingInStage2
+                    }`,
                   },
                   ease: 'power2.out',
                 });
-              }}
+              })}
               className='cursor-pointer'
             >
-              About me
-            </li>
-          )}
-          <li
-            onClick={() => {
-              document.body.style.overflow = '';
-              playBubbleCover();
-              setRightDrawerToggle(false);
-              if (isMobile) {
-                setMobileDefault();
-              } else {
-                setCameraDefault();
-              }
-              setCurrentStage(1);
-              const scrollAmount = window.innerHeight * 2; // 200vh
-              gsap.to(window, {
-                duration: 1,
-                scrollTo: {
-                  y: `${
-                    currentStage === 0
-                      ? window.scrollY + scrollAmount + (isMobile ? 500 : 300)
-                      : scrollAmount +
-                        window.scrollY +
-                        (isMobile ? 400 : 300) -
-                        amountOfScrollingInStage2
-                  }`,
-                },
-                ease: 'power2.out',
-              });
-            }}
-            className='cursor-pointer'
-          >
-            Work
+              Work
+            </button>
           </li>
-          {/* <li className='cursor-pointer'>Contact me</li> */}
+          <li>
+            <Link href='/contact' onClick={() => setRightDrawerToggle(false)}>
+              Contact
+            </Link>
+          </li>
           <li>
             <div className='flex gap-5 '>
               <span className=' cursor-pointer'>
                 <Link
+                  aria-label='Hong Seo on LinkedIn'
                   href='https://www.linkedin.com/in/hong-seo/'
                   target='_blank'
                   rel='noopener noreferrer'
@@ -222,6 +300,7 @@ const RightDrawer: FC<indexProps> = ({
 
               <span className=' cursor-pointer'>
                 <Link
+                  aria-label='Hong Seo on GitHub'
                   href='https://github.com/hongchan88'
                   target='_blank'
                   rel='noopener noreferrer'

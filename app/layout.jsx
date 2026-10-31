@@ -1,14 +1,6 @@
-'use client';
 import '../styles/globals.css';
-import { ThemeProvider } from 'next-themes';
+import ClientProviders from './ClientProviders';
 import { Space_Mono, Rubik } from 'next/font/google';
-import dynamic from 'next/dynamic';
-import { useSettingStore } from '@store/settingStore';
-import { useCameraStore } from '@store/cameraStore';
-import { useEffect } from 'react';
-const ScrollRestoration = dynamic(() => import('./utils/ScrollRestoration'), {
-  ssr: false,
-});
 const spaceMono = Space_Mono({
   subsets: ['latin'],
   weight: ['400', '700'], // adjust if needed
@@ -21,31 +13,21 @@ const rubik = Rubik({
   variable: '--font-rubik',
   display: 'swap',
 });
+export const metadata = {
+  metadataBase: new URL('https://portfolio-hong-seo.vercel.app'),
+  title: { default: 'Hong Seo | Developer Portfolio', template: '%s | Hong Seo' },
+  description: 'Hong Seo’s developer portfolio: web projects, skills, and interactive 3D work.',
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Hong Seo | Developer Portfolio',
+    description: 'Explore Hong Seo’s web projects, skills, and interactive 3D work.',
+    url: '/',
+    siteName: 'Hong Seo Portfolio',
+    type: 'website',
+  },
+};
+
 export default function RootLayout({ children }) {
-  const setIsMobile = useSettingStore((s) => s.setIsMobile);
-  const setZoom = useCameraStore((s) => s.setZoom);
-  const isMobile = useSettingStore((s) => s.isMobile);
-  const mobileZoom = useCameraStore((s) => s.mobileZoom);
-  const defaultZoom = useCameraStore((s) => s.zoom);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const isMobile = window.innerWidth <= 768;
-      if (isMobile) return; // it keeps re-render on mobile
-      window.location.reload(); // refreshes the page
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [isMobile]);
-  useEffect(() => {
-    const isMobile = window.innerWidth <= 768;
-    setIsMobile(isMobile);
-    setZoom(isMobile ? mobileZoom : defaultZoom);
-  }, []);
   return (
     <html
       lang='en'
@@ -56,31 +38,7 @@ export default function RootLayout({ children }) {
         style={{ overscrollBehavior: 'none' }}
         className='dark:bg-gray-800 w-full'
       >
-        {/* Add to your layout, at the root */}
-        <div
-          id='bubbleOverlayWrapper'
-          className='fixed inset-0 z-[9999] pointer-events-none opacity-0'
-        >
-          <svg
-            id='bubbleOverlay'
-            className='w-full h-full'
-            viewBox='0 0 100 100'
-            preserveAspectRatio='none'
-          >
-            <circle
-              id='bubbleCircle'
-              cx='0'
-              cy='100'
-              r='0'
-              fill='#b1cc70' /* Tailwind yellow-400 */
-            />
-          </svg>
-        </div>
-
-        <ThemeProvider defaultTheme='light' attribute='class'>
-          <ScrollRestoration />
-          <div className='main-contents'>{children}</div>
-        </ThemeProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

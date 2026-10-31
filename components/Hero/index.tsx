@@ -1,5 +1,5 @@
 'use client';
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useLayoutEffect, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { useSettingStore } from '@store/settingStore';
 import { useAudioStore } from '@store/audioStore';
@@ -11,6 +11,7 @@ import { useCameraStore } from '@store/cameraStore';
 import dynamic from 'next/dynamic';
 import { useRefStore } from '@store/refsStore';
 import HeroOverlays from 'components/HeroOverlays';
+import Biography from 'components/Biography';
 
 const ModelViewer = dynamic(() => import('../../components/ModelViewer'), {
   ssr: false,
@@ -34,7 +35,6 @@ const Hero: FC<HeroProps> = ({}) => {
     (s) => s.setAmountOfScrollingInStage2
   );
   const isTypingRunning = useSettingStore((s) => s.isTypingRunning);
-  const audioRefs = useAudioStore((s) => s.audioRefs);
   const isMobile = useSettingStore((s) => s.isMobile);
 
   const setRightDrawerToggle = useSettingStore((s) => s.setRightDrawerToggle);
@@ -54,7 +54,6 @@ const Hero: FC<HeroProps> = ({}) => {
   const leftText = useRef<HTMLDivElement>(null);
   const prevStageRef = useRef(currentStage); // new!
   const rightDrawerToggleRef = useRef(rightDrawerToggle);
-  const rightDrawerRef = useRefStore((s) => s.rightDrawerRef);
   const aboutSectionRef = useRefStore((s) => s.aboutSectionRef);
 
   useEffect(() => {
@@ -72,28 +71,17 @@ const Hero: FC<HeroProps> = ({}) => {
     rightDrawerToggleRef.current = rightDrawerToggle;
   }, [rightDrawerToggle]);
 
-  const closeDrawer = () => {
+  const { contextSafe } = useGSAP({ scope: heroAboutmeRef });
+  const closeDrawer = contextSafe(() => {
     if (audioToggleRef.current) {
-      audioRefs?.['clickMenuAudio']?.play();
+      useAudioStore.getState().playAudio('clickMenuAudio');
     }
-    if (isMobile) {
-      setMobileDefault();
-    } else {
-      setCameraDefault();
-    }
-    gsap.to(rightDrawerRef.current, {
-      right: -320,
-      delay: 0.1,
-      ease: 'power1.in',
-      onStart: () => {
-        setRightDrawerToggle(false);
-        rightDrawerToggleRef.current = false;
-      },
-      onComplete: () => {
-        animatingRef.current = false;
-      },
-    });
-  };
+    // Escape may retain this handler across a breakpoint change.
+    setMobileDefault();
+    setCameraDefault();
+    setRightDrawerToggle(false);
+    rightDrawerToggleRef.current = false;
+  });
   useEffect(() => {
     if (isTypingRunning) {
       setIsNavBarHideen(false);
@@ -122,7 +110,7 @@ const Hero: FC<HeroProps> = ({}) => {
 
   // Kill the Observer if we don’t want snapping
   function killObserver() {
-    Observer.getAll().forEach((obs) => obs.kill());
+    observerRef.current?.kill();
     animatingRef.current = false;
   }
 
@@ -154,6 +142,8 @@ const Hero: FC<HeroProps> = ({}) => {
       wheelSpeed: -1,
       tolerance: 10,
       preventDefault: true,
+      ignoreCheck: (event) => event.target instanceof Element &&
+        Boolean(event.target.closest('#navigation-drawer')),
       onClick: () => {
         if (rightDrawerToggleRef.current) {
           animatingRef.current = true;
@@ -182,7 +172,7 @@ const Hero: FC<HeroProps> = ({}) => {
       if (!isLoadingDone) return;
 
       const ctx = gsap.context(() => {
-        initObserver();
+        if (currentStage === 0) initObserver();
       }, heroAboutmeRef); // or any root-level container if preferred
 
       return () => {
@@ -191,7 +181,8 @@ const Hero: FC<HeroProps> = ({}) => {
       };
     },
     {
-      dependencies: [isLoadingDone],
+      dependencies: [isLoadingDone, isMobile],
+      revertOnUpdate: true,
       scope: heroAboutmeRef, // ✅ same scope for future-proofing
     }
   );
@@ -204,7 +195,6 @@ const Hero: FC<HeroProps> = ({}) => {
       console.log(isObserverReady.current, 'observer ready');
       function waitForObserver() {
         if (!isObserverReady.current) {
-          setTimeout(waitForObserver, 20); // Retry until ready
           return;
         }
         gsap.registerPlugin(ScrollTrigger);
@@ -217,12 +207,13 @@ const Hero: FC<HeroProps> = ({}) => {
               id: 'my-scroll-trigger',
               trigger: heroAboutmeRef.current,
               start: '5 top',
-              end: `+=${aboutImgRef.current.offsetHeight}`,
+              end: () => `+=${aboutImgRef.current.offsetHeight}`,
+              invalidateOnRefresh: true,
               scrub: 1.5,
               pin: true,
               pinSpacing: true,
 
-              markers: process.env.NODE_ENV === 'development',
+              markers: false,
               onUpdate: () => {
                 if (rightDrawerToggleRef.current) {
                   closeDrawer();
@@ -255,7 +246,7 @@ const Hero: FC<HeroProps> = ({}) => {
           tl.to(
             aboutSectionRef.current,
             {
-              y: -aboutImgRef.current.offsetHeight,
+              y: () => -aboutImgRef.current.offsetHeight,
               ease: 'none',
             },
             '<'
@@ -271,55 +262,63 @@ const Hero: FC<HeroProps> = ({}) => {
     },
     {
       scope: heroAboutmeRef,
-      dependencies: [aboutImgRef, heroAboutmeRef, isLoadingDone],
+      dependencies: [isLoadingDone, isMobile],
+      revertOnUpdate: true,
     }
   );
 
-  useGSAP(
-    () => {
-      if (!isLoadingDone) return;
+  // Capture original transform once; dependency changes must not revert it.
+  useGSAP(() => {
+    gsap.set(heroContentRef.current, { y: 0 });
+  }, { scope: heroAboutmeRef });
 
-      const ctx = gsap.context(() => {
-        const container = heroContentRef.current;
-        const height = container?.getBoundingClientRect().height ?? 0;
-        if (!container || height === 0) return;
-
-        animatingRef.current = true;
-
-        const tl = gsap.timeline({
-          defaults: { duration: 1, ease: 'power1.inOut' },
-          onComplete: () => {
-            animatingRef.current = false;
-            if (currentStage === 1) {
-              killObserver();
-            }
-          },
-        });
-
-        switch (currentStage) {
-          case 0:
-            document.body.style.overflow = 'hidden';
-            tl.to(container, { y: 0 });
-            playAudioForStage(prevStageRef.current);
-            if (prevStageRef.current === 1) {
-              initObserver();
-            }
-            break;
-          case 1:
-            document.body.style.overflow = '';
-            tl.to(container, { y: isMobile ? '-102vh' : -height / 2 });
-            playAudioForStage();
-            break;
-        }
-      }, heroAboutmeRef); // Scoped to section
-
-      return () => ctx.revert();
-    },
-    {
-      dependencies: [currentStage, isLoadingDone, heroContentRef],
-      scope: heroAboutmeRef,
+  useLayoutEffect(() => {
+    if (!isLoadingDone) return;
+    if (currentStage === 0) {
+      document.body.style.overflow = 'hidden';
+      playAudioForStage(prevStageRef.current);
+      initObserver();
+    } else {
+      document.body.style.overflow = '';
+      playAudioForStage();
     }
-  );
+  }, [currentStage, isLoadingDone]);
+
+  useLayoutEffect(() => {
+    const container = heroContentRef.current;
+    if (!isLoadingDone || !container) return;
+
+    let tween: gsap.core.Tween | undefined;
+    let previousTarget: number | undefined;
+    const retarget = () => {
+      const height = container.getBoundingClientRect().height;
+      if (!height) return;
+      // Mobile container is calc(204vh + 200px); preserve CSS -102vh,
+      // including browsers where innerHeight differs from the CSS vh viewport.
+      const target = currentStage === 0 ? 0 : -(height - (isMobile ? 200 : 0)) / 2;
+      if (target === previousTarget) return;
+      previousTarget = target;
+      // Kill only: resizing/reversing must retain the intermediate transform.
+      tween?.kill();
+      animatingRef.current = true;
+      tween = gsap.to(container, {
+        y: target,
+        duration: 1,
+        ease: 'power1.inOut',
+        onComplete: () => {
+          animatingRef.current = false;
+          if (currentStage === 1) killObserver();
+        },
+      });
+    };
+    retarget();
+    const resizeObserver = new ResizeObserver(retarget);
+    resizeObserver.observe(container);
+    return () => {
+      resizeObserver.disconnect();
+      tween?.kill();
+    };
+  }, [currentStage, isLoadingDone, isMobile]);
 
   return (
     <>
@@ -341,7 +340,7 @@ const Hero: FC<HeroProps> = ({}) => {
             <img
               ref={aboutImgRef}
               src='/aboutme/aboutMeFill.webp'
-              alt='About Me'
+              alt='' aria-hidden='true'
               className='md:w-2/5 w-full h-auto'
             />
           </div>
@@ -350,14 +349,15 @@ const Hero: FC<HeroProps> = ({}) => {
             className='absolute top-[30vh] left-[5%] w-full h-full z-10 pointer-events-none'
           >
             <div className='flex flex-col gap-5'>
-              <p className='font-rubik font-bold md:text-5xl md:leading-normal text-2xl leading-relaxed'>
+              <h1 className='font-rubik font-bold md:text-5xl md:leading-normal text-2xl leading-relaxed'>
                 Hey,
                 <br /> My name is Hong.
-              </p>
+              </h1>
             </div>
           </div>
         </div>
       </section>
+      <Biography className='sr-only' />
     </>
   );
 };

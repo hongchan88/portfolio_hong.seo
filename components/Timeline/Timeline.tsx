@@ -26,12 +26,12 @@ const projectData = projectsData.map((project) => ({
         {project.description}
       </div>
       <div className='grid grid-cols-2 gap-4'>
-        {project.imgUrl.map((project) => (
+        {project.imgUrl.map((src, index) => (
           <Image
             loading='lazy'
-            key={project}
-            src={project}
-            alt='project_image'
+            key={src}
+            src={src}
+            alt={`${project.title.trim()} screenshot ${index + 1}`}
             width={500}
             height={500}
             className='h-full w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] md:h-full lg:h-full'
@@ -63,7 +63,6 @@ export const Timeline = () => {
 
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
-        console.log('Observed size:', entry.contentRect.height);
         setHeight(entry.contentRect.height);
       }
     });
@@ -82,13 +81,14 @@ export const Timeline = () => {
 
   return (
     <div
-      className='w-full h-full bg-white dark:bg-neutral-950 font-sans md:px-10'
+      className='relative w-full h-full bg-white dark:bg-neutral-950 font-sans md:px-10'
       ref={containerRef}
     >
       <div ref={ref} className='relative max-w-7xl mx-auto pb-20'>
         {data.map((item, index) => (
           <div
             key={index}
+            data-project={item.title.trim()}
             className={`flex md:flex-row flex-col justify-start pt-10 md:pt-5  md:gap-10 md:border-0 gap-12`}
           >
             <div className='sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full'>
@@ -102,11 +102,12 @@ export const Timeline = () => {
                   <div className='flex gap-5 items-center'>
                     {item?.git && (
                       <a
+                        aria-label={`${item.title.trim()} source on GitHub`}
                         href={item.git}
-                        target={'_blank'}
+                        target='_blank' rel='noopener noreferrer'
                         className='dark:bg-yellow-50 rounded-lg'
                       >
-                        <img
+                        <img alt=""
                           className='h-auto w-10 object-cover '
                           src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg'
                         />
@@ -114,11 +115,12 @@ export const Timeline = () => {
                     )}
                     {item?.live && (
                       <a
+                        aria-label={`Visit ${item.title.trim()}`}
                         href={item.live}
-                        target={'_blank'}
+                        target='_blank' rel='noopener noreferrer'
                         className='dark:bg-yellow-50 rounded-lg'
                       >
-                        <img
+                        <img alt=""
                           className='h-auto w-10 '
                           src='https://img.icons8.com/pastel-glyph/64/000000/external-link--v1.png'
                         />
@@ -126,8 +128,9 @@ export const Timeline = () => {
                     )}
                     {item?.leetcode && (
                       <a
+                        aria-label="Hong Seo on LeetCode"
                         href={item.leetcode}
-                        target={'_blank'}
+                        target='_blank' rel='noopener noreferrer'
                         className='dark:bg-yellow-50 rounded-lg'
                         title='leetcode'
                       >
@@ -147,11 +150,12 @@ export const Timeline = () => {
                 <div className='flex gap-5 items-center'>
                   {item?.git && (
                     <a
-                      href={item.git}
-                      target={'_blank'}
+                      aria-label={`${item.title.trim()} source on GitHub`}
+                        href={item.git}
+                      target='_blank' rel='noopener noreferrer'
                       className='dark:bg-yellow-50 rounded-lg'
                     >
-                      <img
+                      <img alt=""
                         className='h-auto w-10 object-cover '
                         src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg'
                       />
@@ -159,11 +163,12 @@ export const Timeline = () => {
                   )}
                   {item?.live && (
                     <a
-                      href={item.live}
-                      target={'_blank'}
+                      aria-label={`Visit ${item.title.trim()}`}
+                        href={item.live}
+                      target='_blank' rel='noopener noreferrer'
                       className='dark:bg-yellow-50 rounded-lg'
                     >
-                      <img
+                      <img alt=""
                         className='h-auto w-10 '
                         src='https://img.icons8.com/pastel-glyph/64/000000/external-link--v1.png'
                       />
@@ -171,8 +176,9 @@ export const Timeline = () => {
                   )}
                   {item?.leetcode && (
                     <a
-                      href={item.leetcode}
-                      target={'_blank'}
+                      aria-label="Hong Seo on LeetCode"
+                        href={item.leetcode}
+                      target='_blank' rel='noopener noreferrer'
                       className='dark:bg-yellow-50 rounded-lg'
                       title='leetcode'
                     >
@@ -181,6 +187,7 @@ export const Timeline = () => {
                   )}
                 </div>
               </div>
+              <p className='md:hidden text-lg mb-5'>{item.timelineYear}</p>
               {item.content}
             </div>
           </div>

@@ -44,6 +44,7 @@ const HeroOverlays: FC<HeroOverlaysProps> = ({
         <NavBar closeDrawer={closeDrawer} currentStage={currentStage} />
       ) : null}
       <RightDrawer
+        closeDrawer={closeDrawer}
         rightDrawerRef={rightDrawerRef}
         leftText={leftText}
         animatingRef={animatingRef}

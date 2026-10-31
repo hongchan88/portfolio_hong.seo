@@ -14,7 +14,7 @@ type AudioStore = {
   typingAudio: HTMLAudioElement | null;
   clickMenuAudio: HTMLAudioElement | null;
   // setAudioRef: (el: HTMLAudioElement, name: keyof AudioStore) => void;
-  playAudio: (name: keyof AudioStore) => void;
+  playAudio: (name: AudioKey) => void;
   pauseAuido: (name: AudioKey) => void;
   audioToggleState: boolean;
   toggleAudio: () => void;
@@ -33,7 +33,8 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
   toggleAudio: () =>
     set((state) => ({ audioToggleState: !state.audioToggleState })),
   // setAudioRef: (el, name) => set({ [name]: el }),
-  playAudio: (name: string) => {
+  playAudio: (name: AudioKey) => {
+    if (!get().audioToggleState) return;
     const audio = get().audioRefs[name];
     if (audio instanceof HTMLAudioElement) {
       audio.play().catch((e) => console.warn('Play blocked:', e));
@@ -62,15 +63,15 @@ export const useAudioStore = create<AudioStore>((set, get) => ({
     // 3. Play specific audio for the given stage
     switch (stage) {
       case 0:
-        audioRefs['stage1BG']?.play();
+        get().playAudio('stage1BG');
         if (prevStage === 1) {
-          audioRefs['splash']?.play();
+          get().playAudio('splash');
         }
         break;
       case 1:
-        audioRefs['stage2Start']?.play();
-        audioRefs['stage2BGLab']?.play();
-        audioRefs['stage2Bubble']?.play();
+        get().playAudio('stage2Start');
+        get().playAudio('stage2BGLab');
+        get().playAudio('stage2Bubble');
         break;
       case 2:
         break;

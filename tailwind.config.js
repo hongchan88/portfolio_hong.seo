@@ -1,4 +1,4 @@
-const { keyframes } = require('motion');
+const colors = require('tailwindcss/colors');
 
 module.exports = {
   mode: 'jit',
@@ -6,6 +6,10 @@ module.exports = {
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
+      colors: {
+        neutral: { ...colors.trueGray, 950: '#0a0a0a' },
+        primary: { 500: '#15803d' },
+      },
       keyframes: {
         subtlePulse: {
           '0%, 100%': { opacity: '1', transform: 'scale(1)' },

@@ -1,7 +1,8 @@
 'use client';
 import * as THREE from 'three';
 import React, { useRef, useEffect } from 'react';
-import { useGLTF, useTexture } from '@react-three/drei';
+import { useTexture } from '@react-three/drei';
+import { SHADOW_TEXTURES, DRACO_DECODER_PATH, KTX2_TRANSCODER_PATH } from './sceneAssets';
 import gsap from 'gsap';
 import Bubbles from './Bubble';
 import { useSettingStore } from '../app/stores/settingStore';
@@ -21,11 +22,11 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
 
   const gltf = useLoader(GLTFLoader, url, (loader) => {
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    dracoLoader.setDecoderPath(DRACO_DECODER_PATH);
     dracoLoader.setDecoderConfig({ type: 'wasm' });
 
     const ktx2Loader = new KTX2Loader();
-    ktx2Loader.setTranscoderPath('/ktx2/');
+    ktx2Loader.setTranscoderPath(KTX2_TRANSCODER_PATH);
     ktx2Loader.detectSupport(renderer); // 🚨 Must be called before load
 
     loader.setDRACOLoader(dracoLoader);
@@ -33,11 +34,7 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
   });
   const { scene, materials } = gltf;
   const isScrolling = useSettingStore((s) => s.isScrolling);
-  const [wallShadowTex, groundShadowTex] = useTexture([
-    '/models/wallShadow_transparent.webp',
-    '/models/groundShadow_transparent.webp',
-    // '/models/labwallGround_transparent.webp',
-  ]);
+  const [wallShadowTex, groundShadowTex] = useTexture(SHADOW_TEXTURES);
   // useEffect(() => {
   //   const empty = scene.getObjectByName('speakerPosition'); // your Empty's name
   //   if (empty) {
@@ -59,9 +56,13 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
     wallShadowTex.needsUpdate = true;
     groundShadowTex.needsUpdate = true;
 
+    const originals = new Map<THREE.Mesh, THREE.Material | THREE.Material[]>();
+    const owned: THREE.Material[] = [];
     scene.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
 
+      if (child.name === 'wall' || child.name === 'ground')
+        originals.set(child, child.material);
       if (child.name === 'wall') {
         child.material = new THREE.MeshStandardMaterial({
           map: wallShadowTex,
@@ -89,9 +90,16 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
       //   });
       // }
 
+      if (originals.has(child)) owned.push(child.material as THREE.Material);
       child.material.needsUpdate = true;
     });
-  }, [scene]);
+    return () => {
+      originals.forEach((material, mesh) => {
+        mesh.material = material;
+      });
+      owned.forEach((material) => material.dispose());
+    };
+  }, [scene, wallShadowTex, groundShadowTex]);
 
   const scrollTl = useRef<gsap.core.Timeline | null>(null);
 
@@ -113,6 +121,7 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
     return () => {
       // Optional cleanup
       scrollTl.current?.kill();
+      scrollTl.current = null;
     };
   }, [isScrolling, materials]);
 
@@ -127,90 +136,92 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
       return;
     }
 
-    gsap.killTweensOf([roomObj.scale, wallObj.scale, wallShadow.material]);
     if (!isLoadingDone) return;
-    if (currentStage === 0) {
-      if (Array.isArray(wallShadow.material)) {
-        wallShadow.material.forEach((mat) => (mat.transparent = true));
-      } else {
-        wallShadow.material.transparent = true;
-      }
+    const context = gsap.context(() => {
+      if (currentStage === 0) {
+        if (Array.isArray(wallShadow.material)) {
+          wallShadow.material.forEach((mat) => (mat.transparent = true));
+        } else {
+          wallShadow.material.transparent = true;
+        }
 
-      gsap.fromTo(
-        wallShadow.material,
-        { opacity: 0 },
-        {
-          opacity: 0.1,
-          duration: 1,
-          delay: 1.2,
+        gsap.fromTo(
+          wallShadow.material,
+          { opacity: 0 },
+          {
+            opacity: 0.1,
+            duration: 1,
+            delay: 1.2,
+            ease: 'power1.inOut',
+          }
+        );
+        gsap.fromTo(
+          groundShadow.material,
+          { opacity: 0 },
+          {
+            opacity: 0.1,
+            duration: 1,
+            delay: 1.2,
+            ease: 'power1.inOut',
+          }
+        );
+
+        gsap.fromTo(
+          roomObj.scale,
+          { x: 0, y: 0, z: 0 },
+          {
+            x: 1,
+            y: 1,
+            z: 1,
+            duration: 1.2,
+            ease: 'back.out(1.7)',
+          }
+        );
+
+        gsap.fromTo(
+          wallObj.scale,
+          { x: 0, y: 0, z: 0 },
+          {
+            x: 1,
+            y: 1,
+            z: 1,
+            duration: 1.2,
+            delay: 0.2,
+            ease: 'back.out(1.7)',
+          }
+        );
+      } else if (currentStage === 1) {
+        gsap.to(groundShadow.material, {
+          opacity: 0,
+          duration: 0.2,
           ease: 'power1.inOut',
-        }
-      );
-      gsap.fromTo(
-        groundShadow.material,
-        { opacity: 0 },
-        {
-          opacity: 0.1,
-          duration: 1,
-          delay: 1.2,
-          ease: 'power1.inOut',
-        }
-      );
-
-      gsap.fromTo(
-        roomObj.scale,
-        { x: 0, y: 0, z: 0 },
-        {
-          x: 1,
-          y: 1,
-          z: 1,
-          duration: 1.2,
-          ease: 'back.out(1.7)',
-        }
-      );
-
-      gsap.fromTo(
-        wallObj.scale,
-        { x: 0, y: 0, z: 0 },
-        {
-          x: 1,
-          y: 1,
-          z: 1,
-          duration: 1.2,
+        });
+        gsap.to(wallShadow.material, {
+          opacity: 0,
+          duration: 2,
           delay: 0.2,
-          ease: 'back.out(1.7)',
-        }
-      );
-    } else if (currentStage === 1) {
-      gsap.to(groundShadow.material, {
-        opacity: 0,
-        duration: 0.2,
-        ease: 'power1.inOut',
-      });
-      gsap.to(wallShadow.material, {
-        opacity: 0,
-        duration: 2,
-        delay: 0.2,
-        ease: 'power1.inOut',
-      });
+          ease: 'power1.inOut',
+        });
 
-      gsap.to(roomObj.scale, {
-        x: 0,
-        y: 0,
-        z: 0,
-        duration: 1,
-        ease: 'back.in(1.7)',
-      });
+        gsap.to(roomObj.scale, {
+          x: 0,
+          y: 0,
+          z: 0,
+          duration: 1,
+          ease: 'back.in(1.7)',
+        });
 
-      gsap.to(wallObj.scale, {
-        x: 0,
-        y: 0,
-        z: 0,
-        duration: 1,
-        delay: 0.2,
-        ease: 'back.in(1.7)',
-      });
-    }
+        gsap.to(wallObj.scale, {
+          x: 0,
+          y: 0,
+          z: 0,
+          duration: 1,
+          delay: 0.2,
+          ease: 'back.in(1.7)',
+        });
+      }
+    });
+    return () => context.revert();
   }, [currentStage, isLoadingDone]);
 
   return (

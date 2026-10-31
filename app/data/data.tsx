@@ -31,9 +31,9 @@ export const projectsData: Project[] = [
     live: "https://co-snap.vercel.app/",
     description: (
       <div>
-        <h3 className="font-semibold mb-1">
+        <h4 className="font-semibold mb-1">
           Travel Snapshot Exchange Platform
-        </h3>
+        </h4>
         <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Map-driven platform where travelers connect by matching destinations
@@ -80,7 +80,7 @@ export const projectsData: Project[] = [
     live: "https://portfolio-hong-seo.vercel.app/",
     description: (
       <div>
-        <h3 className="font-semibold mb-1">Personal Portfolio Website</h3>
+        <h4 className="font-semibold mb-1">Personal Portfolio Website</h4>
         <ul className="list-disc list-inside ml-4 space-y-1">
           <li>Showcases personal projects and technical skills</li>
           <li>
@@ -107,9 +107,9 @@ export const projectsData: Project[] = [
     live: "https://pdf-creator-tool-kit.vercel.app/",
     description: (
       <div>
-        <h3 className="font-semibold mb-1">
+        <h4 className="font-semibold mb-1">
           Customizable PDF Workflow Platform
-        </h3>
+        </h4>
         <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Streamlines PDF customization and export for business documents
@@ -140,7 +140,7 @@ export const projectsData: Project[] = [
         </div>
 
         <div>
-          <h3 className="font-semibold mb-1">Front-End Development</h3>
+          <h4 className="font-semibold mb-1">Front-End Development</h4>
           <div>
             Built <strong>responsive, component-based UIs</strong>, managed
             state, and integrated APIs to deliver smooth user experiences.
@@ -150,7 +150,7 @@ export const projectsData: Project[] = [
         </div>
 
         <div>
-          <h3 className="font-semibold mb-1">Internal Toolkit</h3>
+          <h4 className="font-semibold mb-1">Internal Toolkit</h4>
           <div>
             Contributed to building internal tools that streamlined operations,
             including:
@@ -171,7 +171,7 @@ export const projectsData: Project[] = [
         </div>
 
         <div>
-          <h3 className="font-semibold mb-1">Retool, Three.js & Analytics</h3>
+          <h4 className="font-semibold mb-1">Retool, Three.js & Analytics</h4>
           <div>
             I worked across multiple internal and growth-focused initiatives:
             <ul className="list-disc list-inside mt-2 space-y-1">
@@ -195,7 +195,7 @@ export const projectsData: Project[] = [
         </div>
 
         <div>
-          <h3 className="font-semibold mb-1">Personal Side Projects</h3>
+          <h4 className="font-semibold mb-1">Personal Side Projects</h4>
           <div>
             Even with a packed schedule, I focused on steady progress through
             small, meaningful wins:
@@ -245,7 +245,7 @@ export const projectsData: Project[] = [
     imgUrl: ["/projects/plugin-1.webp"],
     description: (
       <div className="mt-6">
-        <h3 className="font-semibold mb-1">Figma Plugin</h3>
+        <h4 className="font-semibold mb-1">Figma Plugin</h4>
         <div>
           <ul className="list-disc list-inside mt-2 space-y-1">
             <li>
@@ -271,9 +271,9 @@ export const projectsData: Project[] = [
     imgUrl: ["/projects/ojwrq345s3qrmv4afqt7.webp"],
     description: (
       <div>
-        <h3 className="font-semibold mb-1">
+        <h4 className="font-semibold mb-1">
           Image Resizing Tool for Visa Applications
-        </h3>
+        </h4>
         <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Built a full-stack image resizing tool tailored for visa photo
@@ -305,7 +305,7 @@ export const projectsData: Project[] = [
 
     description: (
       <div>
-        <h3 className="font-semibold mb-1">Star Wars Movie Search Platform</h3>
+        <h4 className="font-semibold mb-1">Star Wars Movie Search Platform</h4>
         <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Built an interactive movie search platform using{" "}
@@ -337,7 +337,7 @@ export const projectsData: Project[] = [
 
     description: (
       <div>
-        <h3 className="font-semibold mb-1">Contactless E-commerce Platform</h3>
+        <h4 className="font-semibold mb-1">Contactless E-commerce Platform</h4>
         <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Designed and developed an e-commerce platform inspired by the rise
@@ -366,9 +366,9 @@ export const projectsData: Project[] = [
 
     description: (
       <div>
-        <h3 className="font-semibold mb-1">
+        <h4 className="font-semibold mb-1">
           Netflix-style Movie Search Engine
-        </h3>
+        </h4>
         <ul className="list-disc list-inside ml-4 space-y-1">
           <li>Final project for my Web Development Diploma</li>
           <li>
@@ -394,9 +394,9 @@ export const projectsData: Project[] = [
 
     description: (
       <div>
-        <h3 className="font-semibold mb-1">
+        <h4 className="font-semibold mb-1">
           RESTful API with Node.js & Express
-        </h3>
+        </h4>
         <ul className="list-disc list-inside ml-4 space-y-1">
           <li>
             Built a RESTful API using <strong>Node.js</strong> and{" "}
@@ -528,7 +528,7 @@ export const stackImages = {
     desc: "Retool",
   },
   "segment.io": {
-    url: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/segment.svg",
+    url: "", // Segment logo unavailable upstream; render its verified name instead.
     desc: "Segment.io",
   },
   typescript: {

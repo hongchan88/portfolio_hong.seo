@@ -6,19 +6,24 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 export default function LoadingOverlay({}) {
-  const { progress, active } = useProgress();
+  const { progress, active, errors } = useProgress();
   const [maxProgress, setMaxProgress] = useState(0);
   const imageRef = useRef<HTMLImageElement>(null);
   const imageRefWrapper = useRef<HTMLImageElement>(null);
   const setIsLoadingDone = useSettingStore((s) => s.setIsLoadingDone);
   const isLoadingDone = useSettingStore((s) => s.isLoadingDone);
 
+  const sceneReady = useSettingStore(s => s.sceneReady);
+  useEffect(() => {
+    if (errors.length) useSettingStore.getState().enterBasicMode('Asset loading failed');
+  }, [errors]);
+
   useEffect(() => {
     if (progress > maxProgress) {
       setMaxProgress(progress); // grow only
     }
 
-    if (!active && progress === 100) {
+    if (!active && progress === 100 && sceneReady) {
       const tl = gsap.timeline();
       tl.to(imageRef.current, {
         clipPath: `inset(0 0% 0 0)`,
@@ -41,9 +46,9 @@ export default function LoadingOverlay({}) {
         setIsLoadingDone(true);
       }, 800);
 
-      return () => clearTimeout(timeout);
+      return () => { clearTimeout(timeout); tl.kill(); };
     }
-  }, [active, progress]);
+  }, [active, progress, sceneReady]);
 
   if (isLoadingDone) return null;
 
@@ -83,7 +88,7 @@ export default function LoadingOverlay({}) {
           }}
         />
       </div>
-      <p className=' font-rubik font-bold text-gray-500'>LOADING</p>
+      <p role='status' className=' font-rubik font-bold text-gray-500'>LOADING</p>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
+import { createBubbleAnimation } from './createBubbleAnimation';
 
 function SingleBubble({ position }) {
   const ref = useRef();
@@ -7,24 +7,7 @@ function SingleBubble({ position }) {
   useEffect(() => {
     if (!ref.current) return;
 
-    // Random delay so bubbles animate independently
-    const delay = Math.random() * 2;
-
-    gsap.to(ref.current.position, {
-      y: ref.current.position.y + 1.9,
-      duration: 2,
-      repeat: -1,
-      ease: 'power1.out',
-      delay,
-    });
-
-    gsap.to(ref.current.material, {
-      opacity: 0,
-      duration: 2,
-      repeat: -1,
-      ease: 'power1.out',
-      delay,
-    });
+    return createBubbleAnimation(ref.current);
   }, []);
 
   return (

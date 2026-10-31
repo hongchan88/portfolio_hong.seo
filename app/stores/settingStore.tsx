@@ -2,6 +2,12 @@
 import { create } from 'zustand';
 
 type SettingState = {
+  mode: 'animated' | 'basic';
+  sceneError: string | null;
+  sceneReady: boolean;
+  setSceneReady: (value: boolean) => void;
+  enterBasicMode: (reason?: string) => void;
+  resetScene: () => void;
   rightDrawerToggle: boolean;
   isScrolling: boolean;
   isLoadingDone: boolean;
@@ -22,6 +28,28 @@ type SettingState = {
 };
 
 export const useSettingStore = create<SettingState>((set, get) => ({
+  mode: 'animated',
+  sceneError: null,
+  sceneReady: false,
+  setSceneReady: (sceneReady) => set({ sceneReady }),
+  enterBasicMode: (reason) =>
+    set({
+      mode: 'basic',
+      sceneError: reason ?? null,
+      rightDrawerToggle: false,
+    }),
+  resetScene: () =>
+    set({
+      mode: 'animated',
+      sceneError: null,
+      sceneReady: false,
+      isLoadingDone: false,
+      currentStage: 0,
+      isTypingRunning: false,
+      isScrolling: false,
+      isNavBarHideen: true,
+      rightDrawerToggle: false,
+    }),
   currentStage: 0,
   rightDrawerToggle: false,
   isScrolling: false,

@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig([
   {
-    files: ['app/**/*.{js,jsx,ts,tsx}', 'components/**/*.{js,jsx,ts,tsx}'],
+    files: ['app/**/*.{js,jsx,ts,tsx}', 'components/**/*.{js,jsx,ts,tsx}', 'tests/**/*.ts'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {

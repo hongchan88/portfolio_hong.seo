@@ -8,7 +8,7 @@ interface indexProps {}
 const Projects: FC<indexProps> = ({}) => {
   const isMobile = useSettingStore((s) => s.isMobile);
   return (
-    <section
+    <section id='projects'
       className='block'
       style={{
         height: '100%',
@@ -32,7 +32,7 @@ const Projects: FC<indexProps> = ({}) => {
             animationDuration={600}
           />{' '}
         </div>
-        <h2 className='text-3xl md:text-4xl font-bold font-rubik mt-10 text-left text-black dark:text-white max-w-4xl'>
+        <h2 id='projects-heading' tabIndex={-1} className='text-3xl md:text-4xl font-bold font-rubik mt-10 text-left text-black dark:text-white max-w-4xl'>
           Some things I’ve worked on
         </h2>
       </div>

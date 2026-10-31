@@ -35,3 +35,7 @@ yarn-error.log*
 .history
 
 .yarn
+/.next-test/
+/test-results/
+/playwright-report/
+*.tsbuildinfo
