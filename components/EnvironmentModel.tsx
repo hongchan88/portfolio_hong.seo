@@ -1,15 +1,15 @@
 'use client';
 import * as THREE from 'three';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useTexture } from '@react-three/drei';
-import { SHADOW_TEXTURES, DRACO_DECODER_PATH, KTX2_TRANSCODER_PATH } from './sceneAssets';
+import { SHADOW_TEXTURES, STUDIO_BAKED_TEXTURE, DRACO_DECODER_PATH, KTX2_TRANSCODER_PATH } from './sceneAssets';
 import gsap from 'gsap';
-import Bubbles from './Bubble';
 import { useSettingStore } from '../app/stores/settingStore';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useLoader, useThree } from '@react-three/fiber';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader';
+import { createSurfaceTexture } from './surfaceTextures';
 type ModelProps = {
   url: string;
   currentStage: number;
@@ -35,6 +35,96 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
   const { scene, materials } = gltf;
   const isScrolling = useSettingStore((s) => s.isScrolling);
   const [wallShadowTex, groundShadowTex] = useTexture(SHADOW_TEXTURES);
+  const bakedAtlas = useTexture(STUDIO_BAKED_TEXTURE);
+  const lightTarget = useMemo(() => {
+    const target = new THREE.Object3D();
+    target.position.set(2.5, 1.2, 0);
+    return target;
+  }, []);
+
+  useLayoutEffect(() => {
+    bakedAtlas.flipY = false;
+    bakedAtlas.colorSpace = THREE.SRGBColorSpace;
+    bakedAtlas.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    bakedAtlas.needsUpdate = true;
+    const wood = createSurfaceTexture('wood');
+    const fabric = createSurfaceTexture('fabric');
+    const originals = new Map<THREE.Mesh, { material: THREE.Material | THREE.Material[]; cast: boolean; receive: boolean }>();
+    const owned = new Map<THREE.Material, THREE.Material>();
+    const prepare = (original: THREE.Material) => {
+      if (owned.has(original)) return owned.get(original)!;
+      if (BAKED_PROP_MATERIALS.has(original.name)) {
+        // This atlas already contains light and shadows. Relighting it as
+        // albedo doubles the shading and washes out the small UV islands.
+        const material = new THREE.MeshBasicMaterial({
+          name: original.name, map: bakedAtlas, side: original.side,
+        });
+        owned.set(original, material);
+        return material;
+      }
+      const material = original.clone();
+      if (material instanceof THREE.MeshStandardMaterial) {
+        // The source uses black albedo + emission for almost every prop.
+        // Reuse its colors/textures as albedo so the surfaces receive light.
+        if (material.name !== 'Material.002') {
+          if (material.emissive.getHex() !== 0) material.color.copy(material.emissive);
+          if (material.emissiveMap) material.map = material.emissiveMap;
+          material.emissive.set(0);
+          material.emissiveMap = null;
+          const finish = STUDIO_FINISHES[material.name];
+          if (finish) {
+            material.color.set(finish.color);
+            material.roughness = finish.roughness;
+            material.metalness = finish.metalness ?? 0;
+          } else {
+            material.roughness = .72;
+            material.metalness = 0;
+          }
+          if (['Material.010', 'Material.177'].includes(material.name)) {
+            material.map = wood;
+            material.bumpMap = wood;
+            material.bumpScale = .012;
+          }
+          if (['Material.019', 'Material.143', 'Material.144', 'Material.145', 'Material.146'].includes(material.name)) {
+            material.bumpMap = fabric;
+            material.bumpScale = .009;
+          }
+        } else {
+          // Keep the monitor's scrolling emissive texture linked to GSAP.
+          material.emissiveIntensity = .8;
+          material.roughness = .24;
+        }
+        material.envMapIntensity = .28;
+      }
+      owned.set(original, material);
+      return material;
+    };
+    for (const name of ['room_obj', 'wall_obj']) {
+      scene.getObjectByName(name)?.traverse(object => {
+        if (!(object instanceof THREE.Mesh)) return;
+        originals.set(object, { material: object.material, cast: object.castShadow, receive: object.receiveShadow });
+        object.material = Array.isArray(object.material) ? object.material.map(prepare) : prepare(object.material);
+        object.castShadow = object.receiveShadow = true;
+      });
+    }
+    return () => {
+      originals.forEach((original, mesh) => {
+        mesh.material = original.material;
+        mesh.castShadow = original.cast;
+        mesh.receiveShadow = original.receive;
+      });
+      owned.forEach(material => material.dispose());
+      wood.dispose();
+      fabric.dispose();
+    };
+  }, [scene, bakedAtlas, renderer]);
+  useEffect(() => {
+    const oldLab = scene.getObjectByName('lab_scene');
+    if (!oldLab) return;
+    const visible = oldLab.visible;
+    oldLab.visible = false;
+    return () => { oldLab.visible = visible; };
+  }, [scene]);
   // useEffect(() => {
   //   const empty = scene.getObjectByName('speakerPosition'); // your Empty's name
   //   if (empty) {
@@ -224,23 +314,36 @@ export function Model({ url, currentStage, isLoadingDone }: ModelProps) {
     return () => context.revert();
   }, [currentStage, isLoadingDone]);
 
-  return (
-    <>
-      <primitive ref={modelRef} object={scene} dispose={null} />
-      {bubblePositions.map((bubble, index) => (
-        <Bubbles
-          key={index}
-          position={[bubble.position.x, bubble.position.y, bubble.position.z]}
-        />
-      ))}
-    </>
-  );
+  return <>
+    <primitive ref={modelRef} object={scene} dispose={null} />
+    <primitive object={lightTarget} />
+    <spotLight position={[6, 9, -4]} target={lightTarget} color='#fff0da'
+      intensity={65} distance={16} angle={.8} penumbra={.85} decay={2}
+      castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}
+      shadow-bias={-.0002} shadow-normalBias={.025} shadow-camera-near={.5} shadow-camera-far={16} />
+    <rectAreaLight position={[3, 5, 5]} rotation={[-Math.PI / 4, 0, 0]}
+      color='#dae9ff' intensity={.8} width={5} height={4} />
+  </>;
 }
 
-const bubblePositions = [
-  { position: { x: 4.1687, y: -6.8497, z: -1.7472 } },
-  { position: { x: 4.439, y: -7.0102, z: -0.8573 } },
-  { position: { x: 4.8597, y: -6.4299, z: -0.6849 } },
-  { position: { x: 3.8687, y: -6.0447, z: -0.9829 } },
-  { position: { x: 4.2313, y: -6.4428, z: -1.1091 } },
-];
+const STUDIO_FINISHES: Record<string, { color: string; roughness: number; metalness?: number }> = {
+  'Material.010': { color: '#65452f', roughness: .42 },
+  'Material.177': { color: '#765239', roughness: .38 },
+  'Material.019': { color: '#7c9276', roughness: .78 },
+  'Material.033': { color: '#777c79', roughness: .45, metalness: .25 },
+  'Material.034': { color: '#507b8b', roughness: .75 },
+  'Material.032': { color: '#c1b16b', roughness: .85 },
+  'Material.030': { color: '#78895a', roughness: .8 },
+  'Material.029': { color: '#c38d50', roughness: .75 },
+  'Material.028': { color: '#45515a', roughness: .3, metalness: .65 },
+  'Material.009': { color: '#30393c', roughness: .55 },
+  'Material.007': { color: '#768084', roughness: .32, metalness: .55 },
+  'Material.173': { color: '#9fa6a6', roughness: .32, metalness: .6 },
+  'Material.174': { color: '#414a4b', roughness: .4, metalness: .3 },
+  'Material.146': { color: '#a2aa8d', roughness: .97 },
+  'Material.145': { color: '#a2aa8d', roughness: .97 },
+  'Material.144': { color: '#d2bc87', roughness: .97 },
+  'Material.143': { color: '#d2bc87', roughness: .97 },
+};
+
+const BAKED_PROP_MATERIALS = new Set(['Material.147', 'Material.148', 'Material.005']);

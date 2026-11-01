@@ -50,7 +50,7 @@ const Hero: FC<HeroProps> = ({}) => {
   const prevRightDrawerToggle = useRef(false);
   const isObserverReady = useRef(false);
 
-  const aboutImgRef = useRef(null);
+  const aboutContentRef = useRef<HTMLDivElement>(null);
   const leftText = useRef<HTMLDivElement>(null);
   const prevStageRef = useRef(currentStage); // new!
   const rightDrawerToggleRef = useRef(rightDrawerToggle);
@@ -189,7 +189,7 @@ const Hero: FC<HeroProps> = ({}) => {
 
   useGSAP(
     () => {
-      if (!heroAboutmeRef.current || !isLoadingDone || !aboutImgRef.current)
+      if (!heroAboutmeRef.current || !isLoadingDone || !aboutContentRef.current)
         return;
       let ctx: gsap.Context; // Declare ctx here
       console.log(isObserverReady.current, 'observer ready');
@@ -207,7 +207,7 @@ const Hero: FC<HeroProps> = ({}) => {
               id: 'my-scroll-trigger',
               trigger: heroAboutmeRef.current,
               start: '5 top',
-              end: () => `+=${aboutImgRef.current.offsetHeight}`,
+              end: () => `+=${aboutContentRef.current.offsetHeight}`,
               invalidateOnRefresh: true,
               scrub: 1.5,
               pin: true,
@@ -246,7 +246,7 @@ const Hero: FC<HeroProps> = ({}) => {
           tl.to(
             aboutSectionRef.current,
             {
-              y: () => -aboutImgRef.current.offsetHeight,
+              y: () => -aboutContentRef.current.offsetHeight,
               ease: 'none',
             },
             '<'
@@ -337,12 +337,12 @@ const Hero: FC<HeroProps> = ({}) => {
             ref={aboutSectionRef}
             className='absolute top-2/3 left-0 w-full z-20 opacity-0 pointer-events-none'
           >
-            <img
-              ref={aboutImgRef}
-              src='/aboutme/aboutMeFill.webp'
-              alt='' aria-hidden='true'
-              className='md:w-2/5 w-full h-auto'
-            />
+            <div ref={aboutContentRef} data-about-content className='relative md:w-2/5 w-full'
+              style={{ containerType: 'inline-size' }}>
+              <img src='/aboutme/aboutMeFill.webp' alt='' aria-hidden='true'
+                width={1024} height={2200} className='block w-full h-auto' />
+              <Biography artwork />
+            </div>
           </div>
           <div
             ref={leftText}
@@ -357,7 +357,6 @@ const Hero: FC<HeroProps> = ({}) => {
           </div>
         </div>
       </section>
-      <Biography className='sr-only' />
     </>
   );
 };

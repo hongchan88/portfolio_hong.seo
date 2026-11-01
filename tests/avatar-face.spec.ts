@@ -59,13 +59,14 @@ async function observeFaceFrames(page: Page) {
 
 async function expectIntroFaces(page: Page) {
   await expect.poll(() => page.evaluate(() => (window as any).__faceFrames.length), {
-    timeout: 30_000,
+    // Software WebGL also prepares the lab shaders behind the loading overlay.
+    timeout: 60_000,
   }).toBeGreaterThan(0);
   const initial = await page.evaluate(() => (window as any).__firstSceneFace);
-  expect(initial.type).toBe('MeshBasicMaterial');
+  expect(initial.type).toBe('MeshStandardMaterial');
   expect(initial.url).toContain('/face/normal8.webp');
   const first = await page.evaluate(() => (window as any).__faceFrames[0]);
-  expect(first.type).toBe('MeshBasicMaterial');
+  expect(first.type).toBe('MeshStandardMaterial');
   // A stalled software-GPU frame may advance the clip into its wave window
   // before the first visible draw; either expression must already be textured.
   expect(first.url).toMatch(/\/face\/(normal8|wave7)\.webp/);
@@ -78,8 +79,12 @@ async function expectIntroFaces(page: Page) {
     (frame: any) => frame.url.includes('/face/wave7.webp')
   )), { timeout: 15_000 }).toBe(true);
   await expect(page.getByRole('button', { name: 'Open menu' })).toBeVisible();
+  // Menu visibility and the greeting clip finish independently. Wait for
+  // the expression to return rather than sampling the waving frame itself.
+  await expect.poll(() => page.evaluate(() => (window as any).__faceFrames.at(-1)?.url),
+    { timeout: 15_000 }).toContain('/face/normal8.webp');
   const frames = await page.evaluate(() => (window as any).__faceFrames);
-  expect(frames.every((frame: any) => frame.type === 'MeshBasicMaterial' &&
+  expect(frames.every((frame: any) => frame.type === 'MeshStandardMaterial' &&
     /\/face\/(normal8|wave7)\.webp/.test(frame.url) && frame.visible)).toBe(true);
   expect(frames.at(-1).url).toContain('/face/normal8.webp');
   await test.info().attach('face-frames', {

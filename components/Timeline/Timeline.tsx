@@ -97,8 +97,8 @@ export const Timeline = () => {
               </div>
               <div className='hidden md:block text-xl md:pl-20 md:text-5xl font-bold text-neutral-500 dark:text-neutral-500 '>
                 <div className='flex flex-col gap-3'>
-                  <h3>{item.title}</h3>
-                  <p className='text-lg '>{item.timelineYear}</p>
+                  <h3 className='text-black dark:text-white'>{item.title}</h3>
+                  <p className='text-lg text-black dark:text-white'>{item.timelineYear}</p>
                   <div className='flex gap-5 items-center'>
                     {item?.git && (
                       <a
@@ -144,7 +144,7 @@ export const Timeline = () => {
 
             <div className='relative px-10 pr-4 md:pl-4 w-full '>
               <div className='md:hidden flex items-center gap-5 mb-5'>
-                <h3 className='block text-2xl text-left font-bold text-neutral-500 dark:text-neutral-500'>
+                <h3 className='block text-2xl text-left font-bold text-black dark:text-white'>
                   {item.title}
                 </h3>
                 <div className='flex gap-5 items-center'>
@@ -187,7 +187,7 @@ export const Timeline = () => {
                   )}
                 </div>
               </div>
-              <p className='md:hidden text-lg mb-5'>{item.timelineYear}</p>
+              <p className='md:hidden text-lg mb-5 text-black dark:text-white'>{item.timelineYear}</p>
               {item.content}
             </div>
           </div>

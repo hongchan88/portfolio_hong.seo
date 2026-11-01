@@ -1,8 +1,11 @@
 'use client';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Euler, Matrix4, Quaternion, Vector3 } from 'three';
 import { Canvas } from '@react-three/fiber';
 // Import your existing components
 import Avatar from '../Avatar';
+import LabModel from '../LabModel';
+import SceneLighting from '../SceneLighting';
 import { Model } from '../EnvironmentModel';
 import TiltedScene from '../TiltScene/TiltedScene';
 import CameraController from '../CameraController/CameraController';
@@ -17,6 +20,11 @@ export default function ModelViewer({}) {
   const isMobile = useSettingStore((s) => s.isMobile);
   const canvasRef = useRef(null);
   const [supported, setSupported] = useState(false);
+  const introMatrix = useMemo(() => new Matrix4().compose(
+    isMobile ? new Vector3(1, 4.8, -2) : new Vector3(3, 1, -3),
+    new Quaternion().setFromEuler(isMobile ? new Euler(.2, 4.6, .07) : new Euler(0, 4.6, 0)),
+    new Vector3(1, 1, 1),
+  ), [isMobile]);
   useEffect(() => {
     const probe = document.createElement('canvas');
     try {
@@ -97,6 +105,7 @@ export default function ModelViewer({}) {
         >
           <Suspense fallback={null}>
             <Canvas
+              dpr={[1, 1.5]}
               fallback={<p>3D rendering unavailable. Use the basic version.</p>}
               onTouchStart={(e) => e.preventDefault()}
               ref={canvasRef}
@@ -115,23 +124,23 @@ export default function ModelViewer({}) {
             >
               <Suspense fallback={null}>
               <TiltedScene>
+                <SceneLighting />
                 <CameraController />
-                <MusicNoteAnimation />
-                <group
-                  position={isMobile ? [1, 4.8, -2] : [3, 1, -3]}
-                  rotation={isMobile ? [0.2, 4.6, 0.07] : [0, 4.6, 0]}
-                >
+                <group visible={currentStage === 0}><MusicNoteAnimation /></group>
+                <group matrix={introMatrix} matrixAutoUpdate={false}>
                   <Model
                     url={ENVIRONMENT_MODEL_GLB}
                     currentStage={currentStage}
                     isLoadingDone={isLoadingDone}
                   />
+                </group>
+                <LabModel isMobile={isMobile} introMatrix={introMatrix}>
                   <Avatar
                     url={AVATAR_MODEL_GLB}
                     currentStage={currentStage}
                     isLoadingDone={isLoadingDone}
                   />
-                </group>
+                </LabModel>
                 {/* <Environment
               files='/textures/brown_photostudio_02_4k.exr'
               background={false}
@@ -154,7 +163,6 @@ export default function ModelViewer({}) {
                   }}
                 /> */}
               </TiltedScene>
-              <SceneReady />
               </Suspense>
             </Canvas>
           </Suspense>
@@ -162,13 +170,4 @@ export default function ModelViewer({}) {
       </div>
     </>
   );
-}
-
-
-function SceneReady() {
-  useEffect(() => {
-    useSettingStore.getState().setSceneReady(true);
-    return () => useSettingStore.getState().setSceneReady(false);
-  }, []);
-  return null;
 }

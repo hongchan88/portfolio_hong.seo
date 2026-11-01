@@ -5,6 +5,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export const ENVIRONMENT_MODEL_GLB = '/models/envModel.glb';
 export const AVATAR_MODEL_GLB = '/models/avataModel.glb';
+export const LAB_MODEL_GLB = '/models/lab-v02.glb';
+export const STUDIO_BAKED_TEXTURE = '/models/studio-baked-2k.webp';
 export const DRACO_DECODER_PATH = 'https://www.gstatic.com/draco/v1/decoders/';
 export const KTX2_TRANSCODER_PATH = '/ktx2/';
 const SCENE_CODEC_URLS = [
@@ -32,16 +34,16 @@ export function prepareSceneRetry() {
   );
   const failedCodecs = SCENE_CODEC_URLS.filter(failed);
   const cleared = new Set<string>(failedCodecs);
-  // Both scene GLBs use both codecs. KTX2 failure can resolve a GLTF with
-  // missing textures, so invalidate these two dependent entries even without
-  // a model URL error. Independent texture/model caches remain untouched.
-  for (const url of [ENVIRONMENT_MODEL_GLB, AVATAR_MODEL_GLB]) {
-    if (!failed(url) && !failedCodecs.length) continue;
+  // The intro GLBs use Draco and KTX2; Lab V02 uses Draco and embedded WebP.
+  // Clear only models that depend on the failed decoder or failed themselves.
+  for (const url of [ENVIRONMENT_MODEL_GLB, AVATAR_MODEL_GLB, LAB_MODEL_GLB]) {
+    const codecFailed = failedCodecs.some(codec => url !== LAB_MODEL_GLB || codec.startsWith(DRACO_DECODER_PATH));
+    if (!failed(url) && !codecFailed) continue;
     useLoader.clear(GLTFLoader, url);
     cleared.add(url);
   }
   // Fiber keys array loads as one entry, not one entry per texture.
-  for (const input of [SHADOW_TEXTURES, FACE_TEXTURES, ...MUSIC_TEXTURES]) {
+  for (const input of [SHADOW_TEXTURES, FACE_TEXTURES, STUDIO_BAKED_TEXTURE, ...MUSIC_TEXTURES]) {
     const urls = Array.isArray(input) ? input : [input];
     if (!urls.some(failed)) continue;
     useLoader.clear(TextureLoader, input);

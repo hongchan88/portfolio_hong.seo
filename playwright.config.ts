@@ -10,7 +10,9 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:18000',
     channel: process.env.PLAYWRIGHT_CHANNEL || 'chrome',
     launchOptions: {
-      args: [
+      args: process.env.PLAYWRIGHT_GPU === 'metal' ? [
+        '--enable-webgl', '--enable-gpu', '--use-angle=metal',
+      ] : [
         '--enable-webgl',
         '--use-angle=swiftshader',
         '--enable-unsafe-swiftshader',

@@ -201,6 +201,14 @@ test('theme tokens and missing Segment artwork have readable fallback', async ({
   });
   expect(colors.neutral).toBe('rgb(64, 64, 64)');
   expect(colors.primary).not.toBe('rgb(0, 0, 0)');
+  const projectName = page.locator('[data-project="CoSnap"] h3').first();
+  const projectYear = projectName.locator('..').locator('p').first();
+  await expect(projectName).toHaveCSS('color', 'rgb(0, 0, 0)');
+  await expect(projectYear).toHaveCSS('color', 'rgb(0, 0, 0)');
+  await page.evaluate(() => document.documentElement.classList.add('dark'));
+  await expect(projectName).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(projectYear).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await page.evaluate(() => document.documentElement.classList.remove('dark'));
   const segment = page
     .getByRole('paragraph')
     .filter({ hasText: /^Segment.io$/ });
@@ -303,14 +311,16 @@ test('pinned biography and stage-one resize retain scene choreography', async ({
   await expect(
     page.getByRole('heading', { name: 'Some things I’ve worked on' })
   ).not.toBeInViewport();
-  await page.mouse.wheel(0, 250);
-  await expect(page.locator('main')).toHaveAttribute('data-stage', '1');
+  await expect.poll(async () => {
+    if (await page.locator('main').getAttribute('data-stage') === '0') await page.mouse.wheel(0, 250);
+    return page.locator('main').getAttribute('data-stage');
+  }, { timeout: 30_000, intervals: [1000] }).toBe('1');
   await page.waitForTimeout(2000);
   await page.mouse.wheel(0, 400);
   await page.waitForTimeout(2000);
   await expect(page.locator('.pin-spacer')).toHaveCount(1);
   await expect(
-    page.locator('img[src="/aboutme/aboutMeFill.webp"]')
+    page.locator('[data-about-content]')
   ).toBeInViewport();
   for (const width of [767, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });

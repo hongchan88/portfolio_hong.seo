@@ -62,9 +62,9 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
   const originalMaterials = useRef(new Map());
   const faceMaterials = useMemo(
     () => ({
-      normal: new THREE.MeshBasicMaterial({ map: normalFace }),
-      wave: new THREE.MeshBasicMaterial({ map: waveFace }),
-      surprise: new THREE.MeshBasicMaterial({ map: surpriseFace }),
+      normal: new THREE.MeshStandardMaterial({ map: normalFace, roughness: .9, envMapIntensity: .4 }),
+      wave: new THREE.MeshStandardMaterial({ map: waveFace, roughness: .9, envMapIntensity: .4 }),
+      surprise: new THREE.MeshStandardMaterial({ map: surpriseFace, roughness: .9, envMapIntensity: .4 }),
       wire: new THREE.MeshBasicMaterial({ color: '#ffaa00', wireframe: true }),
     }),
     [normalFace, waveFace, surpriseFace]
@@ -72,14 +72,24 @@ export default function Avatar({ currentStage, isLoadingDone, url }) {
   const lastFaceTypeRef = useRef('');
   useLayoutEffect(() => {
     const originals = originalMaterials.current;
-    originals.set('body', bodyMesh.material);
+    const sourceBody = bodyMesh.material;
+    const shadedBody = new THREE.MeshStandardMaterial({
+      map: sourceBody.map, color: sourceBody.color, roughness: .88, envMapIntensity: .4,
+    });
+    const shadowState = [bodyMesh.castShadow, bodyMesh.receiveShadow, faceMesh.castShadow, faceMesh.receiveShadow];
+    bodyMesh.material = shadedBody;
+    bodyMesh.castShadow = bodyMesh.receiveShadow = true;
+    faceMesh.castShadow = faceMesh.receiveShadow = true;
+    originals.set('body', shadedBody);
     originals.set('face', faceMesh.material);
     // Set the face before the first draw, including Strict Mode effect replay.
     faceMesh.material = faceMaterials.normal;
     lastFaceTypeRef.current = 'normal';
     return () => {
-      bodyMesh.material = originals.get('body');
+      bodyMesh.material = sourceBody;
       faceMesh.material = originals.get('face');
+      [bodyMesh.castShadow, bodyMesh.receiveShadow, faceMesh.castShadow, faceMesh.receiveShadow] = shadowState;
+      shadedBody.dispose();
       lastFaceTypeRef.current = '';
       Object.values(faceMaterials).forEach((material) => material.dispose());
     };

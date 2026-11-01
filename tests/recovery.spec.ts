@@ -43,7 +43,7 @@ async function ready(page: Page) {
 
 const hero = (page: Page) => page.locator('section.relative.overflow-hidden > div').first();
 const intro = (page: Page) => page.getByRole('heading', { name: /My name is Hong/ }).locator('../..');
-const biography = (page: Page) => page.locator('img[src="/aboutme/aboutMeFill.webp"]').locator('..');
+const biography = (page: Page) => page.locator('[data-about-content]').locator('..');
 async function position(locator: Locator, property: 'left' | 'right' | 'y') {
   return locator.evaluate((el, prop) => prop === 'y'
     ? new DOMMatrix(getComputedStyle(el).transform).m42
@@ -53,6 +53,8 @@ async function position(locator: Locator, property: 'left' | 'right' | 'y') {
 for (const [asset, pattern] of [
   ['models', '**/models/*.glb'],
   ['avatar', '**/models/avataModel.glb'],
+  ['lab', '**/models/lab-v02.glb'],
+  ['studio atlas', '**/models/studio-baked-2k.webp'],
   ['face texture group', '**/face/normal8.webp'],
   ['music texture', '**/music/music_3.webp'],
 ]) {
@@ -70,8 +72,8 @@ for (const [asset, pattern] of [
   page.on('response', response => { if (response.ok()) assets.push(response.url()); });
   await page.getByRole('button', { name: 'View animated version' }).click();
   await ready(page);
-  expect(assets.some(url => url.includes(asset === 'face texture group' ? '/face/normal8.webp' : asset === 'music texture' ? '/music/music_3.webp' : '.glb'))).toBe(true);
-  if (asset === 'avatar' || asset === 'face texture group') {
+  expect(assets.some(url => url.includes(asset === 'face texture group' ? '/face/normal8.webp' : asset === 'music texture' ? '/music/music_3.webp' : asset === 'studio atlas' ? '/models/studio-baked-2k.webp' : '.glb'))).toBe(true);
+  if (asset === 'avatar' || asset === 'lab' || asset === 'face texture group' || asset === 'studio atlas') {
     // Successful environment loader cache survives retry of another asset.
     expect(environmentRequests).toHaveLength(1);
   }

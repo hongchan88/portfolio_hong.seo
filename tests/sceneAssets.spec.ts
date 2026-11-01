@@ -2,9 +2,10 @@ import { expect, test } from '@playwright/test';
 import { useProgress } from '@react-three/drei';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { AVATAR_MODEL_GLB, ENVIRONMENT_MODEL_GLB, prepareSceneRetry } from '../components/sceneAssets';
+import { TextureLoader } from 'three';
+import { AVATAR_MODEL_GLB, ENVIRONMENT_MODEL_GLB, LAB_MODEL_GLB, STUDIO_BAKED_TEXTURE, prepareSceneRetry } from '../components/sceneAssets';
 
-test('scene codec retry clears only two associated GLTF keys and preserves unrelated errors and texture caches', () => {
+test('scene codec retry clears dependent GLTF keys and preserves unrelated errors and texture caches', () => {
   const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window');
   const originalClear = useLoader.clear;
   const originalErrors = useProgress.getState().errors;
@@ -29,9 +30,20 @@ test('scene codec retry clears only two associated GLTF keys and preserves unrel
       expect(cleared).toEqual([
         [GLTFLoader, ENVIRONMENT_MODEL_GLB],
         [GLTFLoader, AVATAR_MODEL_GLB],
+        ...(decoder.includes('/draco/') ? [[GLTFLoader, LAB_MODEL_GLB]] : []),
       ]);
       expect(useProgress.getState().errors).toEqual(unrelated);
     }
+    cleared.length = 0;
+    useProgress.setState({ errors: [LAB_MODEL_GLB] });
+    prepareSceneRetry();
+    expect(cleared).toEqual([[GLTFLoader, LAB_MODEL_GLB]]);
+    expect(useProgress.getState().errors).toEqual([]);
+    cleared.length = 0;
+    useProgress.setState({ errors: [STUDIO_BAKED_TEXTURE] });
+    prepareSceneRetry();
+    expect(cleared).toEqual([[TextureLoader, STUDIO_BAKED_TEXTURE]]);
+    expect(useProgress.getState().errors).toEqual([]);
   } finally {
     useLoader.clear = originalClear;
     useProgress.setState({ errors: originalErrors });
